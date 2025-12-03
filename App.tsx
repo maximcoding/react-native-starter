@@ -11,6 +11,7 @@ import {
   SafeAreaProvider,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
+import FontTest from './src/app/screens/FontTest.tsx';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -18,6 +19,7 @@ function App() {
   return (
     <SafeAreaProvider>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+      <FontTest />;
       <AppContent />
     </SafeAreaProvider>
   );
@@ -28,10 +30,7 @@ function AppContent() {
 
   return (
     <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
+      <NewAppScreen templateFileName="App.tsx" safeAreaInsets={safeAreaInsets} />
     </View>
   );
 }
