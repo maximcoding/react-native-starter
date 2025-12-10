@@ -7,7 +7,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { ROUTES } from '@/app/navigation/routes.ts';
-import OnboardingScreen from '@/app/features/settings/screens/OnboardingScreen.tsx';
+import OnboardingScreen from '@/features/settings/screens/OnboardingScreen.tsx';
 
 const Stack = createNativeStackNavigator();
 

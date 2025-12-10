@@ -2,7 +2,7 @@
 // AUTO-GENERATED FILE — DO NOT EDIT MANUALLY
 // Run: npm run gen:icons
 
-import User from '@/app/assets/svgs/user.svg';
+import User from '@assets/svgs/user.svg';
 
 
 export enum IconName {
@@ -16,5 +16,3 @@ export const AppIcon = {
 } as const;
 
 export type IconNameType = keyof typeof AppIcon;
-
-

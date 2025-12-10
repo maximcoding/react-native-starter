@@ -1,10 +1,7 @@
 import React from 'react';
-import { useT } from '@/core/i18n/useT';
-import { useTheme } from '@/core/theme/useTheme';
-
 import { IconSvg } from '@/app/components/IconSvg.tsx';
 import { ROUTES } from '@/app/navigation/routes';
-import { IconName } from '@/app/assets/icons.ts';
+import { IconName } from '@assets/icons.ts';
 
 //
 // ICON LOGIC

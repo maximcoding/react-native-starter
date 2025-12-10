@@ -7,8 +7,8 @@ import { useT } from '@/core/i18n/useT';
 import { ROUTES, RouteName } from '@/app/navigation/routes';
 
 import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import { IconName } from '@/app/assets';
 import { IconSvg } from '@/app/components/IconSvg';
+import { IconName } from '../../../../assets/icons.ts';
 
 /* -----------------------------------------------------
  * STACK PRESETS
@@ -73,10 +73,10 @@ export function useTabPresets() {
     forRoute(route: any) {
       const iconName: IconName =
         route === ROUTES.TAB_HOME
-          ? IconName.User
+          ? IconName.USER
           : route === ROUTES.TAB_SETTINGS
-          ? IconName.User
-          : IconName.User;
+          ? IconName.USER
+          : IconName.USER;
 
       return {
         tabBarIcon: ({ focused, color, size }: any) =>

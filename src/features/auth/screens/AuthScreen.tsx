@@ -4,12 +4,13 @@ import ScreenWrapper from '@/app/components/ScreenWrapper';
 import { Text } from '@/app/components/Text.tsx';
 import { Button } from '@/app/components/Button.tsx';
 import { useT } from '@/core/i18n/useT';
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { ROUTES } from '@/app/navigation/routes';
+import { RootStackParamList } from '@/app/navigation';
 
 export default function AuthScreen() {
   const t = useT();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const handleLogin = () => {
     // Here you would normally set auth store/session token.

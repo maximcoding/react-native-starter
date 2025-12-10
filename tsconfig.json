@@ -3,9 +3,10 @@
   "compilerOptions": {
     "baseUrl": "./src",
     "paths": {
-      "@/*": ["*"]
+      "@/*": ["*"],
+      "@assets/*": ["../assets/*"] // <-- было "assets/*"
     }
   },
-  "include": ["src"],
+  "include": ["src", "assets", "scripts", "src/types", "types"],
   "exclude": ["node_modules", "Pods"]
 }

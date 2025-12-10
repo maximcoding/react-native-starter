@@ -1,8 +1,9 @@
+// generate-icons.js
 const fs = require('fs');
 const path = require('path');
 
-const svgsDir = path.resolve(__dirname, '../src/app/assets/svgs');
-const outputFile = path.resolve(__dirname, '../src/app/assets/icons.ts');
+const svgsDir = path.resolve(__dirname, '../assets/svgs');
+const outputFile = path.resolve(__dirname, '../assets/icons.ts');
 
 function toEnumName(file) {
   return file.replace('.svg', '').replace(/[- ]/g, '_').toUpperCase();
@@ -13,7 +14,7 @@ function toComponentName(file) {
   return name.charAt(0).toUpperCase() + name.slice(1);
 }
 
-const files = fs.readdirSync(svgsDir).filter(f => f.endsWith('.svg'));
+const files = fs.readdirSync(svgsDir).filter(f => f.endsWith('.svg')).sort();
 
 let imports = '';
 let enumEntries = '';
@@ -22,7 +23,8 @@ let registryEntries = '';
 files.forEach(file => {
   const componentName = toComponentName(file);
   const enumName = toEnumName(file);
-  const importPath = `./svgs/${file}`;
+  // use alias-based import
+  const importPath = `@assets/svgs/${file}`;
 
   imports += `import ${componentName} from '${importPath}';\n`;
   enumEntries += `  ${enumName} = '${enumName}',\n`;
@@ -46,6 +48,4 @@ ${registryEntries}
 export type IconNameType = keyof typeof AppIcon;
 `;
 
-fs.writeFileSync(outputFile, content);
-
-console.log(`Generated ${outputFile} with ${files.length} icons.`);
+fs.writeFileSync(outputFile, content, 'utf8');

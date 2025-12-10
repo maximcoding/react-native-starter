@@ -1,14 +1,12 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import HomeScreen from '@/app/features/home/screens/HomeScreen';
 import SettingsStack from '@/app/navigation/stacks/settings-stack';
 import { ROUTES } from '@/app/navigation/routes';
-import { HomeScreenOptions } from '@/app/navigation/options/tabOptions.tsx';
-
+import { HomeScreenOptions } from '@/app/navigation';
+import HomeScreen from '@/features/home/screens/HomeScreen.tsx';
 
 const Tab = createBottomTabNavigator();
-
 
 export default function HomeTabs() {
   return (
