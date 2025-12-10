@@ -1,97 +1,426 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+Вот без лишней воды — просто **готовый README.md**, который можно положить в корень репо.
 
-# Getting Started
+````md
+# React Native Mobile Starter
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+Production-oriented React Native starter: feature-first architecture, strict TypeScript, centralized theme + navigation, i18n, offline-ready infra and extensible transport layer (REST / GraphQL / WebSocket / Firebase).
 
-## Step 1: Start Metro
+---
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## 🚀 Features
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+- React Native `0.82.x` + TypeScript (strict)
+- Feature-first structure: `app/`, `core/`, `infra/`
+- Centralized theme system (light/dark, tokens, semantic colors)
+- Reusable UI Kit: `Button`, `Text`, `ScreenWrapper` (theme-driven)
+- Enterprise navigation: root/app/auth/tabs + presets + tokens
+- i18n with i18next, namespaces per feature, type-safe `useT()`
+- Service layer per domain (`auth`, `user`) with mappers + schemas
+- Transport layer with pluggable adapters (REST/GraphQL/WebSocket/Firebase)
+- Offline layer: cache engine, offline queue, sync engine, NetInfo wrapper
+- Normalized error handling for all data sources
+- Native utilities: device info, permissions, haptics
+- Dev scripts for Android builds, i18n extraction, releases (`standard-version`)
+- Prepared for separate Android / iOS CI/CD pipelines
 
-```sh
-# Using npm
+---
+
+## 📁 Project Structure
+
+```txt
+assets/
+  fonts/
+  images/
+  svgs/
+  splash/
+
+src/
+  app/
+    components/
+      domain/
+      ui/                # Button, Text, ScreenWrapper
+    features/
+      auth/
+        i18n/           # de/en/ru JSON for auth
+      home/
+        i18n/
+      settings/
+        screens/
+          LanguageScreen.tsx
+    hooks/
+    navigation/
+      config/
+        navConfig.tsx
+      helpers/
+        navigation-helpers.ts
+      modals/
+        global-modal.tsx
+        half-sheet.tsx
+      options/
+        navigation.presets.ts
+        navigation.tokens.ts
+        navigation.ts
+      root/
+        root-navigator.tsx
+      stacks/
+        app/home-stack.tsx
+        auth/auth-stack.tsx
+      tabs/
+        app-tabs.tsx
+      types/
+        index.ts
+        routes.ts
+    screens/             # generic / placeholder screens
+    services/
+      auth/
+        auth.mappers.ts
+        auth.schemas.ts
+        auth.service.ts
+      user/
+        user.mappers.ts
+        user.schemas.ts
+        user.service.ts
+    state/               # (Zustand stores – planned)
+    App.tsx
+
+  core/
+    config/
+      app-config.ts
+      constants.ts
+      env.ts
+      feature-flags.ts
+    i18n/
+      locales/
+        de/common.json
+        en/common.json
+        ru/common.json
+      generate-i18n-types.cjs
+      i18n.ts
+      i18next-parser.config.cjs
+      index.ts
+      useT.ts
+    native/
+      device-info.ts
+      haptics.ts
+      permissions.ts
+    theme/
+      tokens/
+        dark.ts
+        light.ts
+        index.ts
+      ThemeContext.tsx
+      ThemeProvider.tsx
+      useTheme.ts
+    utils/               # generic helpers (planned)
+
+  infra/
+    error/
+      normalize-error.ts
+    http/
+      api.ts
+      axios.instance.ts
+      interceptors/
+        auth.interceptor.ts
+        error.interceptor.ts
+        logging.interceptor.ts
+    network/
+      netinfo.ts
+    offline/
+      offline-queue.ts
+      sync-engine.ts
+    storage/
+      cache-engine.ts
+      mmkv.ts
+    transport/
+      adapters/
+        firebase.adapter.ts
+        graphql.adapter.ts
+        rest.adapter.ts
+        websocket.adapter.ts
+      transport.ts
+      transport.types.ts
+````
+
+---
+
+## 🧩 Architecture Overview
+
+* **`app/`** – всё, что видит пользователь:
+
+    * UI-компоненты, экраны, фичи, navigation, services, state.
+* **`core/`** – кросс-срезовые вещи:
+
+    * тема, i18n, native-утилиты, config, общие utils.
+* **`infra/`** – низкоуровневая инфраструктура:
+
+    * HTTP-клиент, transport adapters, offline, storage, error-нормализация.
+
+### Navigation
+
+* Root Navigator переключает флоу:
+
+    * `ROOT_AUTH` → `AuthStack`
+    * `ROOT_APP` → `AppStack` (+ Tabs)
+* Все опции/стили навигации централизованы:
+
+    * `navigation.tokens.ts` – цвета/типографика из темы
+    * `navigation.presets.ts` – базовые пресеты (stack/tab/modal)
+    * `navConfig.tsx` + `routes.ts` – именованные маршруты, лейблы, иконки
+
+### Theme
+
+* `core/theme/tokens/*` – spacing, radius, typography, elevation, fonts
+* `light.ts` / `dark.ts` – семантические палитры (`background`, `surface`, `textPrimary`, `primary`, `danger` и т.д.)
+* `ThemeProvider` + `useTheme()` – доступ к теме из любого места
+* Все UI-компоненты используют токены, а не голые числа/hex.
+
+### i18n
+
+* `core/i18n/i18n.ts` – инициализация i18next (+ авто-детект языка)
+* `core/i18n/useT.ts` – hook-обёртка `useTranslation`
+* `core/i18n/locales/*/common.json` – глобальные тексты
+* `app/features/*/i18n/*.json` – текст фичей (namespaced)
+* dev-скрипты:
+
+    * `npm run i18n:extract`
+    * `npm run i18n:types`
+
+### Services & Infra
+
+* `app/services/{auth,user}/…`:
+
+    * `*.schemas.ts` – Zod-схемы (валидация входных/выходных данных)
+    * `*.mappers.ts` – адаптация API → доменная модель
+    * `*.service.ts` – публичные методы для фичей (используют `infra/transport`)
+
+* `infra/transport`:
+
+    * `transport.types.ts` – общий интерфейс Transport
+    * `transport.ts` – выбор актуального адаптера (REST/GraphQL/WebSocket/Firebase)
+    * адаптеры:
+
+        * `rest.adapter.ts` – через Axios
+        * `graphql.adapter.ts` – заглушка под Apollo/urql
+        * `websocket.adapter.ts` – заглушка под WS-клиент
+        * `firebase.adapter.ts` – заглушка под Firebase SDK
+
+* `infra/offline`:
+
+    * `offline-queue.ts` – очередь мутаций в оффлайне
+    * `sync-engine.ts` – реплей очереди при восстановлении сети
+
+* `infra/storage`:
+
+    * `mmkv.ts` – интерфейс key-value-хранилища (пока in-memory, позже MMKV)
+    * `cache-engine.ts` – кэш снапшотов запросов
+
+---
+
+## 🧑‍💻 Local Development Guide
+
+### 1. Установка
+
+```bash
+npm install
+```
+
+(при конфликтах peerDeps можно использовать `npm install --legacy-peer-deps`)
+
+### 2. Запуск Metro
+
+```bash
 npm start
-
-# OR using Yarn
-yarn start
 ```
 
-## Step 2: Build and run your app
+### 3. Запуск приложений
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
-```
-
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
+```bash
+# iOS (симулятор)
 npm run ios
-
-# OR using Yarn
-yarn ios
+# Android (эмулятор/устройство)
+npm run android
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+### 4. Полезные dev-скрипты
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+```bash
+npm run lint          # ESLint
+npm run test          # Jest
+npm run cache:clean   # очистка npm cache
+npm run clean         # очистка проекта RN
+npm run clean:auto    # deep clean через react-native-clean-project
 
-## Step 3: Modify your app
+# Android tooling
+npm run android:build:debug
+npm run android:build:release
+npm run android:build:bundle
+npm run android:clean
+npm run debug:key
 
-Now that you have successfully run the app, let's make changes!
+# i18n
+npm run i18n:extract  # вытащить ключи из кода
+npm run i18n:types    # сгенерировать ts-типы для строк
+npm run i18n:all      # extract + types
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+# Releases (semver + CHANGELOG)
+npm run release
+npm run release:patch
+npm run release:minor
+npm run release:major
+```
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+---
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+## 🧱 Feature Development Guidelines
 
-## Congratulations! :tada:
+### Добавление новой фичи
 
-You've successfully run and modified your React Native App. :partying_face:
+1. Создай директорию:
 
-### Now what?
+```txt
+src/app/features/<feature-name>/
+  i18n/
+  screens/
+  hooks/
+  components/
+```
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+2. Создай экраны в `screens/` и используй:
 
-# Troubleshooting
+    * `ScreenWrapper` для базовой разметки
+    * UI-kit (`Text`, `Button` и т.п.) вместо raw RN view-компонентов.
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+3. Тексты:
 
-# Learn More
+    * `src/app/features/<feature-name>/i18n/en.json`
+    * `…/ru.json`, `…/de.json` по необходимости
+    * ключи по схеме: `"featureName.actionName"`.
 
-To learn more about React Native, take a look at the following resources:
+4. Services:
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+    * Логика работы с API — в `src/app/services/<domain>`.
+    * UI никогда не вызывает `infra` напрямую.
+
+5. Navigation:
+
+    * Добавь новый маршрут в `src/app/navigation/types/routes.ts`
+    * Обнови `navConfig.tsx` для лейблов/иконок.
+    * Подключи экран в нужный Stack/Tab.
+
+---
+
+## 🌗 Theme & UI Kit Usage
+
+### ScreenWrapper
+
+* Базовый контейнер, уже обёрнутый в SafeArea + background из темы.
+* Использовать как root каждого экрана.
+
+```tsx
+import { ScreenWrapper } from '@/app/components/ui/ScreenWrapper';
+import { Text } from '@/app/components/ui/Text';
+import { Button } from '@/app/components/ui/Button';
+
+export function ExampleScreen() {
+  return (
+    <ScreenWrapper>
+      <Text>Example</Text>
+      <Button title="Action" />
+    </ScreenWrapper>
+  );
+}
+```
+
+### Text
+
+* По умолчанию: `theme.typography.bodyMedium` + `textPrimary`
+* При необходимости применяй другой стиль из `theme.typography.*`.
+
+### Button
+
+* Варианты: `primary | secondary | outline`
+* Размеры: `md | lg`
+
+---
+
+## 🌍 i18n Workflow
+
+1. Пишешь код с ключами `t('auth.login.title')` и т.п.
+2. Запускаешь:
+
+```bash
+npm run i18n:all
+```
+
+3. Parser вытаскивает новые ключи в JSON.
+4. Генератор создаёт типы, чтобы ключи были type-safe.
+
+---
+
+## 🏗 DevOps Overview (High-Level)
+
+> У тебя уже есть несколько GitHub Actions workflow-файлов
+> (`android-ci.yml`, `ios-ci.yml`, `mobile-ci.yml`, `ci.yml`, `release.yml`).
+> Основная идея — разделить пайплайны для Android и iOS.
+
+Рекомендуемый подход:
+
+* **Обычная разработка**
+
+    * пушишь в feature-ветки → только лёгкий CI (lint/test/build)
+    * без релизных билдов, без деплоя.
+
+* **Релизы**
+
+    * создаёшь tag `vX.Y.Z` или пушишь в `release/*` →
+
+        * Android workflow собирает AAB и (опционально) отправляет в Google Play Internal
+        * iOS workflow собирает IPA и (опционально) отправляет в TestFlight
+
+Локально для проверки релизных команд:
+
+```bash
+# Android
+npm run android:build:release
+
+# iOS — через Xcode/fastlane (когда настроим полностью)
+```
+
+---
+
+## 🔐 Secrets & Environments (для CI/CD)
+
+Для реального продакшена понадобятся секреты в GitHub:
+
+* `GOOGLE_SERVICE_ACCOUNT_JSON` – для `supply` (Google Play)
+* `APP_STORE_CONNECT_API_KEY_JSON` – для `pilot` (TestFlight)
+* `.env` / `env.ts` – конфиги API-эндпоинтов, ключей и т.д.
+
+---
+
+## ✅ Roadmap / TODO
+
+* [ ] Завести Zustand-сторы в `src/app/state`
+* [ ] Добавить TanStack Query для server state
+* [ ] Провести чистку GitHub workflows (оставить только android/ios/release)
+* [ ] Вынести CodePush/OTA в отдельный DevOps-пакет
+* [ ] Добавить Sentry/Crashlytics интеграцию
+* [ ] Расширить UI Kit (Inputs, Cards, Lists, Toasts)
+
+---
+
+## 📝 Conventions
+
+* Components: `PascalCase.tsx`
+* Hooks: `useSomething.ts`
+* Services / mappers / schemas: `kebab-case.ts`
+* Никаких `../../../` — только alias-импорты (`@/app/...`, `@/core/...`, `@/infra/...`)
+* Никаких magic numbers/hex в компонентах — всё через тему и токены
+
+```
+
+Если хочешь, следующим шагом можем:
+
+- сделать **README_DEVOPS.md** чисто про CI/CD,  
+- или **CLEANUP CLI** для удаления лишних YAML и наведения порядка в workflows.
+```

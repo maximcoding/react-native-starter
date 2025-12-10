@@ -1,0 +1,39 @@
+name: iOS CI Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ios-build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install npm packages
+        run: npm install
+
+      - name: Install Pods
+        run: cd ios && pod install
+
+      - name: Build iOS Release
+        run: |
+          cd ios
+          xcodebuild \
+            -workspace YourApp.xcworkspace \
+            -scheme YourApp \
+            -sdk iphoneos \
+            -configuration Release \
+            archive -archivePath build/YourApp.xcarchive
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-release-ipa
+          path: ios/build/**/*.xcarchive

@@ -1,0 +1,32 @@
+{
+  "app": {
+    "title": "Meine App"
+  },
+
+  "home": {
+    "title": "Startseite",
+    "subtitle": "Willkommen!",
+    "go_settings": "Zu den Einstellungen",
+    "hello": "Hallo!"
+  },
+
+  "settings": {
+    "title": "Einstellungen",
+    "language": {
+      "choose": "Sprache auswählen",
+      "english": "Englisch",
+      "russian": "Russisch",
+      "german": "Deutsch"
+    }
+  },
+
+  "onboarding": {
+    "welcome": "Willkommen!",
+    "continue": "Fortfahren"
+  },
+
+  "auth": {
+    "title": "Anmeldung",
+    "login": "Einloggen"
+  }
+}
