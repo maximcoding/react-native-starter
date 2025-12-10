@@ -9,7 +9,7 @@ import { IconName } from '@/app/assets/icons.ts';
 //
 // ICON LOGIC
 //
-const BottomTabIcon = (
+export const BottomTabIcon = (
   route: any,
   focused: boolean,
   color: string,
@@ -34,7 +34,7 @@ const BottomTabIcon = (
 //
 // TITLE LOGIC
 //
-const TabTitle = (route: any, t: any) => {
+export const TabTitle = (route: any, t: any) => {
   switch (route.name) {
     case ROUTES.TAB_HOME:
       return t('home.title');
@@ -48,7 +48,7 @@ const TabTitle = (route: any, t: any) => {
 //
 // TAB BAR STYLE
 //
-const TabBarStyle = (theme: any) => {
+export const TabBarStyle = (theme: any) => {
   return {
     height: 64,
     backgroundColor: theme.colors.background,
@@ -61,23 +61,3 @@ const TabBarStyle = (theme: any) => {
 //
 // MAIN SCREEN OPTIONS (LIKE YOUR OLD APP)
 //
-export const HomeScreenOptions = (props: any) => {
-  const { route } = props;
-  const t = useT();
-  const { theme } = useTheme();
-
-  return {
-    headerShown: false,
-
-    tabBarShowLabel: true,
-    tabBarLabel: TabTitle(route, t),
-
-    tabBarActiveTintColor: theme.colors.primary,
-    tabBarInactiveTintColor: theme.colors.textSecondary,
-
-    tabBarIcon: ({ focused, color, size }: any) =>
-      BottomTabIcon(route, focused, color, size),
-
-    tabBarStyle: TabBarStyle(theme),
-  };
-};

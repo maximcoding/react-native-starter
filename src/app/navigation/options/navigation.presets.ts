@@ -1,17 +1,12 @@
 import React from 'react';
 
-import {
-  useStackTokens,
-  useModalTokens,
-  useTabTokens,
-} from './navigation.tokens';
+import { useStackTokens, useModalTokens } from './navigation.tokens';
 
 import { getNavConfig } from '@/app/navigation/helpers/navigation-helpers';
 import { useT } from '@/core/i18n/useT';
 import { ROUTES, RouteName } from '@/app/navigation/routes';
 
 import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import type { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
 import { IconName } from '@/app/assets';
 import { IconSvg } from '@/app/components/IconSvg';
 
@@ -74,40 +69,22 @@ export function useModalPresets() {
  * TAB PRESETS (SVG ICONS ONLY)
  * ----------------------------------------------------- */
 export function useTabPresets() {
-  const tokens = useTabTokens();
-  const translate = useT();
-
-  function mapRouteToIcon(route: RouteName): IconName {
-    switch (route) {
-      case ROUTES.TAB_HOME:
-        return IconName.User;
-
-      case ROUTES.TAB_SETTINGS:
-        return IconName.User;
-
-      default:
-        return IconName.User; // fallback icon
-    }
-  }
-
   return {
-    default: { ...tokens },
-
-    forRoute(route: RouteName): BottomTabNavigationOptions {
-      const cfg = getNavConfig(route);
-      const iconName = mapRouteToIcon(route);
+    forRoute(route: any) {
+      const iconName: IconName =
+        route === ROUTES.TAB_HOME
+          ? IconName.User
+          : route === ROUTES.TAB_SETTINGS
+          ? IconName.User
+          : IconName.User;
 
       return {
-        tabBarLabel: translate(cfg.label),
-        tabBarIcon: ({ color, size }) =>
+        tabBarIcon: ({ focused, color, size }: any) =>
           React.createElement(IconSvg, {
-            name: iconName,
+            name: iconName as any,
             color,
             size,
           }),
-        tabBarActiveTintColor: tokens.tabBarActiveTintColor,
-        tabBarInactiveTintColor: tokens.tabBarInactiveTintColor,
-        tabBarStyle: tokens.tabBarStyle,
       };
     },
   };
