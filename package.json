@@ -42,7 +42,9 @@
     "i18n:extract": "i18next 'src/**/*.{ts,tsx}' --config src/core/i18n/i18next-parser.config.cjs",
     "i18n:types": "node src/core/i18n/generate-i18n-types.cjs",
     "i18n:all": "npm run i18n:extract && npm run i18n:types",
-    "prepare": "husky"
+    "prepare": "husky",
+    "check:icons": "node scripts/check-icons-stale.js",
+    "check:imports": "node scripts/check-import-paths.js"
   },
   "dependencies": {
     "@react-native-vector-icons/ionicons": "^12.3.0",

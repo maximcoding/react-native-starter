@@ -8,7 +8,7 @@ import { ROUTES, RouteName } from '@/app/navigation/routes';
 
 import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { IconSvg } from '@/app/components/IconSvg';
-import { IconName } from '../../../../assets/icons.ts';
+import { IconName } from '@assets/icons.ts';
 
 /* -----------------------------------------------------
  * STACK PRESETS

@@ -1,1 +1,7 @@
 npm test
+
+# icons freshness
+npm run check:icons || exit 1
+
+# import path policy
+npm run check:imports || exit 1
