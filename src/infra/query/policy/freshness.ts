@@ -21,4 +21,12 @@
  * ASSIGNMENT
  *   - Each feature/hook references one profile; never hardcode numbers in UI.
  */
-export {};
+// src/infra/query/policy/freshness.ts
+export const Freshness = {
+  realtime: { staleTime: 5_000, gcTime: 5 * 60_000, refetchOnWindowFocus: true },
+  nearRealtime: { staleTime: 60_000, gcTime: 5 * 60_000, refetchOnWindowFocus: true },
+  reference: { staleTime: 60 * 60_000, gcTime: 24 * 60 * 60_000, refetchOnWindowFocus: false },
+} as const;
+
+export type FreshnessProfile = keyof typeof Freshness;
+

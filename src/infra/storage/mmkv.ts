@@ -1,3 +1,4 @@
+// src/infra/storage/mmkv.ts
 /**
  * FILE: mmkv.ts
  * LAYER: infra/storage
@@ -69,32 +70,62 @@ export interface KeyValueStorage {
 }
 
 /**
- * CURRENT IMPLEMENTATION:
- *   Simple in-memory Map used only for development.
- *   It resets on app reload and is NOT persistent.
+ * RUNTIME IMPLEMENTATION:
+ *   - Tries to use react-native-mmkv if the lib is installed.
+ *   - Falls back to an in-memory Map in dev environments.
+ *   - Preserves the KeyValueStorage interface EXACTLY.
  */
-const memory = new Map<string, string>();
+function createStorage(): KeyValueStorage {
+  try {
+    // Dynamic require so builds don’t fail if MMKV isn’t installed yet.
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { MMKV } = require('react-native-mmkv');
 
-export const kvStorage: KeyValueStorage = {
-  getString(key) {
-    return memory.has(key) ? memory.get(key)! : null;
-  },
+    // NOTE: Add encryptionKey in production apps.
+    const mmkv = new MMKV({
+      id: 'app-storage',
+      // encryptionKey: 'secure-key', // ← configure via env for production
+    });
 
-  setString(key, value) {
-    memory.set(key, value);
-  },
+    return {
+      getString(key) {
+        return mmkv.getString(key) ?? null;
+      },
+      setString(key, value) {
+        mmkv.set(key, value);
+      },
+      delete(key) {
+        mmkv.delete(key);
+      },
+      clearAll() {
+        mmkv.clearAll();
+      },
+    };
+  } catch {
+    // Fallback: simple, non-persistent in-memory Map (dev only).
+    const memory = new Map<string, string>();
 
-  delete(key) {
-    memory.delete(key);
-  },
+    return {
+      getString(key) {
+        return memory.has(key) ? memory.get(key)! : null;
+      },
+      setString(key, value) {
+        memory.set(key, value);
+      },
+      delete(key) {
+        memory.delete(key);
+      },
+      clearAll() {
+        memory.clear();
+      },
+    };
+  }
+}
 
-  clearAll() {
-    memory.clear();
-  },
-};
+export const kvStorage: KeyValueStorage = createStorage();
 
 /**
- * FUTURE MMKV IMPLEMENTATION EXAMPLE:
+ * FUTURE MMKV IMPLEMENTATION EXAMPLE (explicit):
  *
  * import { MMKV } from 'react-native-mmkv';
  *

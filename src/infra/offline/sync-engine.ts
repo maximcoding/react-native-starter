@@ -1,3 +1,4 @@
+// src/infra/offline/sync-engine.ts
 /**
  * FILE: sync-engine.ts
  * LAYER: infra/offline
@@ -13,13 +14,15 @@
  *   - Remove successfully replayed entries.
  *   - Stop on first failure to avoid destructive cascading errors.
  *   - Provide the main entry point: onConnected().
+ *   - (ADDED) After successful replay, invalidate React Query caches by tags.
  *
  * DATA-FLOW:
  *   NetInfo detects online
  *      → syncEngine.onConnected()
  *         → replayOfflineMutations()
  *            → transport.mutate(...)
- *               → offlineQueue.remove(id)
+ *            → (ADDED) invalidateByTags(...)
+ *            → offlineQueue.remove(id)
  *
  * OFFLINE POLICY:
  *   - Mutations done while offline are always queued.
@@ -50,6 +53,25 @@
 
 import { offlineQueue } from './offline-queue';
 import { transport } from '@/infra/transport/transport';
+import { QueryClient } from '@tanstack/react-query';
+import { invalidateByTags } from '@/infra/query/helpers/invalidate-by-tags';
+
+// Local copy of TagMap type to avoid build issues if "type" imports are restricted
+type TagMap = Record<string, ReadonlyArray<() => unknown[]>>;
+
+// Wired once at app startup
+let qc: QueryClient | null = null;
+let tagMaps: TagMap[] = [];
+
+/** Provide QueryClient so sync-engine can invalidate caches after replay. */
+export function setQueryClientForSync(client: QueryClient) {
+  qc = client;
+}
+
+/** Provide feature tag maps (e.g., authKeys.tagMap, userKeys.tagMap). */
+export function setTagMapsForSync(maps: TagMap[]) {
+  tagMaps = maps;
+}
 
 export const syncEngine = {
   /**
@@ -58,6 +80,7 @@ export const syncEngine = {
    * Default behavior:
    *   - Stop replay on first error.
    *   - Remove only successful operations from the queue.
+   *   - (Added) Invalidate related React Query keys by tags after success.
    */
   async replayOfflineMutations() {
     const items = offlineQueue.getAll();
@@ -65,18 +88,16 @@ export const syncEngine = {
     for (const item of items) {
       try {
         await transport.mutate(item.operation, item.variables);
+
+        // ADDED: targeted invalidation after successful replay (if wired)
+        if (qc && item.tags?.length && tagMaps.length) {
+          await invalidateByTags(qc, item.tags, tagMaps);
+        }
+
         offlineQueue.remove(item.id);
-      } catch (err) {
-        /**
-         * Backend/server is still unavailable OR
-         * operation failed in a non-recoverable way.
-         *
-         * In production you may:
-         *   - implement retry metadata (retryCount++)
-         *   - log error for analytics
-         *   - mark item.lastError = err
-         *   - break or continue based on strategy
-         */
+      } catch {
+        // Backend/server is still unavailable OR non-recoverable failure.
+        // Keep the rest for next attempt.
         return;
       }
     }
@@ -87,15 +108,13 @@ export const syncEngine = {
    *
    * Sync steps:
    *   1. replay offline mutations
-   *   2. hydrate caches (future)
+   *   2. (future) hydrate caches
    */
   async onConnected() {
     await this.replayOfflineMutations();
 
     /**
      * FUTURE:
-     *   If using React Query:
-     *
      *   queryClient.invalidateQueries();
      *   or
      *   syncEngine.hydrateQueryCache();

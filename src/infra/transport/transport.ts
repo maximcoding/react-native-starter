@@ -1,3 +1,4 @@
+// src/infra/transport/transport.ts
 /**
  * FILE: transport.ts
  * LAYER: infra/transport
@@ -21,7 +22,7 @@
  *
  * DATA-FLOW (OFFLINE):
  *   service → transport.mutate/upload
- *      → offlineQueue.push()
+ *      → offlineQueue.push(operation, variables, tags?)
  *      → immediate resolved Promise({ offline: true, queued: true })
  *
  *   netinfo: offline → online
@@ -64,7 +65,13 @@ export const transport: Transport = {
 
   async mutate(operation, variables, meta) {
     if (offline) {
-      offlineQueue.push(operation, variables);
+      const tags = Array.isArray(meta?.tags)
+        ? (meta!.tags as string[])
+        : typeof meta?.tags === 'string'
+        ? [meta!.tags as string]
+        : undefined;
+
+      offlineQueue.push(operation, variables, tags);
       return Promise.resolve({
         offline: true,
         queued: true,
@@ -82,7 +89,13 @@ export const transport: Transport = {
 
   async upload(operation, payload, meta) {
     if (offline) {
-      offlineQueue.push(operation, payload);
+      const tags = Array.isArray(meta?.tags)
+        ? (meta!.tags as string[])
+        : typeof meta?.tags === 'string'
+        ? [meta!.tags as string]
+        : undefined;
+
+      offlineQueue.push(operation, payload, tags);
       return Promise.resolve({
         offline: true,
         queued: true,
@@ -91,4 +104,3 @@ export const transport: Transport = {
     return activeTransport.upload(operation, payload, meta);
   },
 };
-

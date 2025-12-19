@@ -12,4 +12,20 @@
  *   - Offline  → switch to 'offlineFirst'
  *   - Online   → 'online' + trigger silent refetch
  */
-export {};
+// src/infra/query/netmode/network-mode.ts
+import { isOffline as isAppOffline, onNetworkChange } from '@/infra/network/netinfo';
+
+export type NetworkMode = 'online' | 'offlineFirst' | 'always';
+
+let current: NetworkMode = 'online';
+
+export function getNetworkMode(): NetworkMode {
+  return current;
+}
+
+// simple bridge: when offline → 'offlineFirst', when online → 'online'
+export function initNetworkModeBridge() {
+  current = isAppOffline() ? 'offlineFirst' : 'online';
+  onNetworkChange((offline) => { current = offline ? 'offlineFirst' : 'online'; });
+}
+

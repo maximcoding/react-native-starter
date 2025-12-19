@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import { AppIcon, IconName } from '@assets/icons.ts';
+import { AppIcon, IconName } from '@assets/icons';
 
 interface Props {
   name: IconName;

@@ -16,4 +16,20 @@
  *   ['user','list','infinite', { q, sort }]
  *   ['auth','me']
  */
-export {};
+// src/infra/query/keys/factory.ts
+type KeyPart = string | number | boolean | null | undefined | Record<string, unknown>;
+
+export function qk(...parts: KeyPart[]) {
+  return parts.filter((p) => p !== undefined && p !== null) as (string | number | boolean | Record<string, unknown>)[];
+}
+
+// helpers
+export const listKey = (feature: string, entity: string, params?: Record<string, unknown>) =>
+  qk(feature, entity, 'list', params);
+
+export const infiniteKey = (feature: string, entity: string, params?: Record<string, unknown>) =>
+  qk(feature, entity, 'infinite', params);
+
+export const byIdKey = (feature: string, entity: string, id: string | number) =>
+  qk(feature, entity, 'byId', id);
+

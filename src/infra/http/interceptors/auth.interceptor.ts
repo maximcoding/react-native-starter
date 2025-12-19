@@ -20,9 +20,19 @@
  *   - Support refresh-tokens by pairing with a response interceptor.
  * ---------------------------------------------------------------------
  */
-export function attachAuthInterceptor(instance: any, getToken?: () => string | null) {
+
+import { kvStorage } from '@/infra/storage/mmkv';
+import { constants } from '@/core/config/constants';
+
+export function attachAuthInterceptor(
+  instance: any,
+  getToken?: () => string | null,
+) {
   instance.interceptors.request.use((config: any) => {
-    const token = getToken ? getToken() : null;
+    // Prefer provided getter; fallback to MMKV if absent or empty
+    let token = getToken ? getToken() : null;
+    if (!token) token = kvStorage.getString(constants.AUTH_TOKEN);
+
     if (token) {
       config.headers = config.headers ?? {};
       config.headers.Authorization = `Bearer ${token}`;

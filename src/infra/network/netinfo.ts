@@ -38,7 +38,7 @@ export function setNetworkOffline(isOffline: boolean) {
   offline = isOffline;
   setOfflineMode(isOffline);
 
-  listeners.forEach((cb) => cb(offline));
+  listeners.forEach(cb => cb(offline));
 
   if (!offline) {
     syncEngine.onConnected().catch(() => undefined);
@@ -52,4 +52,26 @@ export function onNetworkChange(listener: NetworkListener): () => void {
 
 export function isOffline(): boolean {
   return offline;
+}
+
+// --- APPEND: optional NetInfo bridge (safe no-op if package is absent) ---
+/**
+ * Initializes network listener via @react-native-community/netinfo.
+ * Safe: if the lib is not installed, this function is a no-op.
+ */
+export function initNetInfoBridge() {
+  try {
+    // require динамически, чтобы не падать без зависимости
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const NetInfo = require('@react-native-community/netinfo').default;
+
+    NetInfo.addEventListener((state: any) => {
+      const isOff = !(
+        state?.isConnected && state?.isInternetReachable !== false
+      );
+      setNetworkOffline(isOff);
+    });
+  } catch {
+    // NetInfo не установлен — оставляем ручное управление офлайн/онлайн
+  }
 }
