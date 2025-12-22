@@ -5,16 +5,19 @@
 
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Text } from '@/app/components/Text.tsx';
-import { Button } from '@/app/components/Button.tsx';
+
+import { Text } from '@/app/components/Text';
+import { Button } from '@/app/components/Button';
+import ScreenWrapper from '@/app/components/ScreenWrapper';
+
 import { useT } from '@/core/i18n/useT';
-import ScreenWrapper from '@/app/components/ScreenWrapper.tsx';
-import { ROUTES } from '@/app/navigation/routes.ts';
-import { useNavigation } from '@react-navigation/native';
+import { setOnboardingDone } from '@/core/session/bootstrap';
+
+import { resetRoot } from '@/app/navigation/helpers/navigation-helpers';
+import { ROUTES } from '@/app/navigation/routes';
 
 export default function OnboardingScreen() {
   const t = useT();
-  const navigation = useNavigation(); // ← добавили
 
   return (
     <ScreenWrapper>
@@ -25,7 +28,14 @@ export default function OnboardingScreen() {
           title={t('onboarding.continue')}
           variant="primary"
           onPress={() => {
-            navigation.replace(ROUTES.ROOT_AUTH);
+            // 1) mark onboarding completed
+            setOnboardingDone();
+
+            // 2) go to Auth root (clean history)
+            resetRoot({
+              index: 0,
+              routes: [{ name: ROUTES.ROOT_AUTH as never }],
+            });
           }}
         />
       </View>

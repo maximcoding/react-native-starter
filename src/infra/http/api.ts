@@ -24,10 +24,15 @@
  *   - Do NOT use for domain logic requiring offline queue or adapter routing.
  *   - Keep helpers thin — no retries/backoff.
  *   - Use only for simple classical REST endpoints.
+ *
+ *   - Thin helper wrapper around axiosInstance for simple REST-style calls.
+ *   - IMPORTANT:
+ *   - Do NOT normalize errors here. Throw raw error.
+ *   - Global normalization happens in QueryClient (QueryCache/MutationCache).
+ *
  * ---------------------------------------------------------------------
  */
 import { axiosInstance } from '@/infra/http/axios.instance';
-import { normalizeError, type NormalizedError } from '@/infra/error/normalize-error';
 
 async function apiRequest<TResponse>(
   method: 'GET' | 'POST' | 'PUT' | 'DELETE',
@@ -37,39 +42,34 @@ async function apiRequest<TResponse>(
     body?: unknown;
   },
 ): Promise<TResponse> {
-  try {
-    let res;
+  let res;
 
-    switch (method) {
-      case 'GET':
-        res = await axiosInstance.get<TResponse>(path, {
-          params: options?.params,
-        });
-        break;
+  switch (method) {
+    case 'GET':
+      res = await axiosInstance.get<TResponse>(path, {
+        params: options?.params,
+      });
+      break;
 
-      case 'POST':
-        res = await axiosInstance.post<TResponse>(path, options?.body);
-        break;
+    case 'POST':
+      res = await axiosInstance.post<TResponse>(path, options?.body);
+      break;
 
-      case 'PUT':
-        res = await axiosInstance.put<TResponse>(path, options?.body);
-        break;
+    case 'PUT':
+      res = await axiosInstance.put<TResponse>(path, options?.body);
+      break;
 
-      case 'DELETE':
-        res = await axiosInstance.delete<TResponse>(path, {
-          params: options?.params,
-        });
-        break;
+    case 'DELETE':
+      res = await axiosInstance.delete<TResponse>(path, {
+        params: options?.params,
+      });
+      break;
 
-      default:
-        throw new Error(`Unsupported method: ${method}`);
-    }
-
-    return res.data;
-  } catch (err) {
-    const normalized: NormalizedError = normalizeError(err);
-    throw normalized;
+    default:
+      throw new Error(`Unsupported method: ${method}`);
   }
+
+  return res.data;
 }
 
 export async function apiGet<TResponse = unknown>(
@@ -79,17 +79,17 @@ export async function apiGet<TResponse = unknown>(
   return apiRequest<TResponse>('GET', path, { params });
 }
 
-export async function apiPost<
-  TResponse = unknown,
-  TBody = unknown
->(path: string, body?: TBody): Promise<TResponse> {
+export async function apiPost<TResponse = unknown, TBody = unknown>(
+  path: string,
+  body?: TBody,
+): Promise<TResponse> {
   return apiRequest<TResponse>('POST', path, { body });
 }
 
-export async function apiPut<
-  TResponse = unknown,
-  TBody = unknown
->(path: string, body?: TBody): Promise<TResponse> {
+export async function apiPut<TResponse = unknown, TBody = unknown>(
+  path: string,
+  body?: TBody,
+): Promise<TResponse> {
   return apiRequest<TResponse>('PUT', path, { body });
 }
 

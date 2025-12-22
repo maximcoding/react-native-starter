@@ -1,36 +1,9 @@
-// src/infra/http/interceptors/refresh.interceptor.ts
-/**
- * FILE: refresh.interceptor.ts
- * LAYER: infra/http/interceptors
- * ---------------------------------------------------------------------
- * PURPOSE:
- *   Intercept 401 responses once, attempt token refresh (single-flight),
- *   then retry the original request with the new token.
- *
- * RESPONSIBILITIES:
- *   - Skip refresh for login/refresh endpoints to avoid loops.
- *   - Ensure only one refresh request is in-flight (queue others).
- *   - Persist new tokens using kvStorage + constants keys.
- *   - Respect offline mode (do not attempt refresh when offline).
- *
- * DATA-FLOW:
- *   axiosInstance.response
- *     → (401?) refresh.interceptor.ts
- *       → POST /auth/refresh { refreshToken }
- *         → kvStorage.set(AUTH_TOKEN, newToken)
- *         → retry original request with Authorization: Bearer <newToken>
- *     → error.interceptor.ts (normalize on failure)
- *
- * EXTENSION GUIDELINES:
- *   - Adjust endpoint/method/payload to match your backend.
- *   - Extend shouldSkipRefresh() if some routes must never trigger refresh.
- *   - Add jitter/backoff if your backend requires it.
- * ---------------------------------------------------------------------
- */
 import type { AxiosInstance, AxiosRequestConfig, AxiosError } from 'axios';
 import { kvStorage } from '@/infra/storage/mmkv';
 import { constants } from '@/core/config/constants';
 import { isOffline } from '@/infra/network/netinfo';
+import { performLogout } from '@/core/session/logout';
+import { getSessionQueryClient } from '@/core/session/session-bridge';
 
 type RefreshResponse = {
   token: string;
@@ -40,14 +13,25 @@ type RefreshResponse = {
 // Single-flight state
 let isRefreshing = false;
 let waitQueue: Array<(t: string | null) => void> = [];
+let logoutPromise: Promise<void> | null = null;
 
 function enqueue(cb: (t: string | null) => void) {
   waitQueue.push(cb);
 }
 
 function resolveQueue(newToken: string | null) {
-  waitQueue.forEach(cb => cb(newToken));
+  for (const cb of waitQueue) cb(newToken);
   waitQueue = [];
+}
+
+async function logoutOnce() {
+  if (!logoutPromise) {
+    const qc = getSessionQueryClient() ?? undefined;
+    logoutPromise = performLogout(qc).finally(() => {
+      logoutPromise = null;
+    });
+  }
+  await logoutPromise;
 }
 
 async function doRefresh(instance: AxiosInstance): Promise<string | null> {
@@ -57,10 +41,15 @@ async function doRefresh(instance: AxiosInstance): Promise<string | null> {
   if (!refreshToken) return null;
 
   try {
-    // Adjust path/payload to your API
-    const res = await instance.post<RefreshResponse>('/auth/refresh', {
-      refreshToken,
-    });
+    // IMPORTANT:
+    // - x-skip-auth: do not attach Bearer <expired>
+    // - x-skip-refresh: do not attempt refresh recursion
+    const res = await instance.post<RefreshResponse>(
+      '/auth/refresh',
+      { refreshToken },
+      { headers: { 'x-skip-auth': '1', 'x-skip-refresh': '1' } as any },
+    );
+
     const { token, refreshToken: nextRefresh } =
       res.data || ({} as RefreshResponse);
 
@@ -77,8 +66,11 @@ async function doRefresh(instance: AxiosInstance): Promise<string | null> {
 
 function shouldSkipRefresh(config?: AxiosRequestConfig) {
   const url = config?.url || '';
-  // Avoid loops and explicit auth flows
-  return url.includes('/auth/login') || url.includes('/auth/refresh');
+  const skipFlag = (config?.headers as any)?.['x-skip-refresh'] === '1';
+
+  return (
+    skipFlag || url.includes('/auth/login') || url.includes('/auth/refresh')
+  );
 }
 
 export function attachRefreshTokenInterceptor(instance: AxiosInstance) {
@@ -90,28 +82,24 @@ export function attachRefreshTokenInterceptor(instance: AxiosInstance) {
         | (AxiosRequestConfig & { _retry?: boolean })
         | undefined;
 
-      // Not a 401, or no config, or already retried, or must skip — pass through
-      if (
-        status !== 401 ||
-        !original ||
-        original._retry === true ||
-        shouldSkipRefresh(original)
-      ) {
+      // Only handle 401
+      if (status !== 401 || !original) {
         return Promise.reject(error);
       }
 
-      // Mark to prevent infinite loops
+      // prevent loops
+      if (original._retry === true || shouldSkipRefresh(original)) {
+        return Promise.reject(error);
+      }
       original._retry = true;
 
-      // If a refresh is already running, queue this request
+      // If refresh already running, queue this request
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           enqueue(newToken => {
             if (!newToken) return reject(error);
             original.headers = original.headers ?? {};
-            (
-              original.headers as Record<string, string>
-            ).Authorization = `Bearer ${newToken}`;
+            (original.headers as any).Authorization = `Bearer ${newToken}`;
             resolve(instance(original));
           });
         });
@@ -119,6 +107,7 @@ export function attachRefreshTokenInterceptor(instance: AxiosInstance) {
 
       // Start refresh
       isRefreshing = true;
+
       const newToken = await doRefresh(instance).finally(() => {
         isRefreshing = false;
       });
@@ -126,14 +115,15 @@ export function attachRefreshTokenInterceptor(instance: AxiosInstance) {
       // Release queued requests
       resolveQueue(newToken);
 
-      // If refresh failed, bubble up to error interceptor
-      if (!newToken) return Promise.reject(error);
+      // Refresh failed -> logout once
+      if (!newToken) {
+        await logoutOnce();
+        return Promise.reject(error);
+      }
 
       // Retry original with fresh token
       original.headers = original.headers ?? {};
-      (
-        original.headers as Record<string, string>
-      ).Authorization = `Bearer ${newToken}`;
+      (original.headers as any).Authorization = `Bearer ${newToken}`;
       return instance(original);
     },
   );

@@ -38,10 +38,10 @@ import {
 } from './auth.schemas';
 import { AuthMapper, type AuthSession } from './auth.mappers';
 import { performLogout } from '@/core/session/logout';
-import { isOffline } from '@/infra/network/netinfo'; // ← ADD
-import { constants } from '@/core/config/constants'; // ← ADD
+import { isOffline } from '@/infra/network/netinfo';
+import { constants, flags } from '@/core/config/constants';
 
-export interface LoginResponse {}
+import { OPS } from '@/infra/transport/operations';
 
 export const AuthService = {
   async login(payload: LoginRequest): Promise<AuthSession> {
@@ -50,19 +50,24 @@ export const AuthService = {
       throw new Error('Invalid login payload');
     }
 
-    // DO NOT queue login while offline
-    if (isOffline()) {
-      throw new Error('Offline: login requires network');
+    // ✅ если MOCK — не трогаем сеть вообще
+    if (!flags.USE_MOCK) {
+      if (isOffline()) {
+        const err: any = new Error('Offline: login requires network');
+        err.code = 'NETWORK_OFFLINE';
+        throw err;
+      }
     }
 
-    const raw = await transport.mutate<LoginResponse>('auth/login', ok.data);
+    // ✅ Используем OPS (у тебя Operation = union из OPS)
+    const raw = await transport.mutate<unknown>(OPS.AUTH_LOGIN, ok.data);
 
     const validated = zLoginResponse.parse(raw);
     const session = AuthMapper.toAuthSession(validated);
 
     // persist tokens under canonical keys (used by auth interceptor)
     kvStorage.setString(constants.AUTH_TOKEN, session.token);
-    // set on login
+
     if (session.refreshToken) {
       kvStorage.setString(constants.REFRESH_TOKEN, session.refreshToken);
     }
@@ -71,10 +76,8 @@ export const AuthService = {
   },
 
   async logout() {
-    // remove tokens first
     kvStorage.delete(constants.AUTH_TOKEN);
     kvStorage.delete(constants.REFRESH_TOKEN);
-    // then reset app state & navigate to ROOT_AUTH
     await performLogout();
   },
 };

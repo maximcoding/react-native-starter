@@ -1,21 +1,26 @@
-buildscript {
-    ext {
-        buildToolsVersion = "36.0.0"
-        minSdkVersion = 24
-        compileSdkVersion = 36
-        targetSdkVersion = 36
-        ndkVersion = "27.1.12297006"
-        kotlinVersion = "2.1.20"
-    }
+plugins {
+    id "com.android.application" version "8.13.2" apply false
+    id "com.android.library" version "8.13.2" apply false
+    id "org.jetbrains.kotlin.android" version "2.2.21" apply false
+
+    // Provided by includeBuild("../node_modules/@react-native/gradle-plugin")
+    id "com.facebook.react" apply false
+}
+
+ext {
+    // Android SDK / Tools (AGP 8.13 supports API 36) :contentReference[oaicite:2]{index=2}
+    compileSdkVersion = 36
+    targetSdkVersion  = 36
+    minSdkVersion     = 24
+
+    // As per AGP compatibility defaults (can be installed via SDK Manager) :contentReference[oaicite:3]{index=3}
+    buildToolsVersion = "35.0.0"
+    ndkVersion        = "27.0.12077973"
+}
+
+allprojects {
     repositories {
         google()
         mavenCentral()
     }
-    dependencies {
-        classpath("com.android.tools.build:gradle")
-        classpath("com.facebook.react:react-native-gradle-plugin")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
-    }
 }
-
-apply plugin: "com.facebook.react.rootproject"

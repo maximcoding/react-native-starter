@@ -1,3 +1,4 @@
+// src/infra/transport/transport.types.ts
 /**
  * FILE: transport.types.ts
  * LAYER: infra/transport
@@ -19,21 +20,25 @@
  *   - Keep interface stable; extend meta if needed.
  * ---------------------------------------------------------------------
  */
+
+import type { Operation } from '@/infra/transport/operations';
+import type { Tag } from '@/infra/query/tags';
+
 export type TransportRequestMeta = {
   offline?: boolean;
   retry?: boolean;
-  tags?: string | string[];
+  tags?: Tag | readonly Tag[];
 };
 
 export interface Transport {
   query<TResponse = unknown, TVariables = unknown>(
-    operation: string,
+    operation: Operation,
     variables?: TVariables,
     meta?: TransportRequestMeta,
   ): Promise<TResponse>;
 
   mutate<TResponse = unknown, TVariables = unknown>(
-    operation: string,
+    operation: Operation,
     variables?: TVariables,
     meta?: TransportRequestMeta,
   ): Promise<TResponse>;
@@ -45,7 +50,7 @@ export interface Transport {
   ): () => void;
 
   upload<TResponse = unknown>(
-    operation: string,
+    operation: Operation,
     payload: { file: unknown; extra?: Record<string, unknown> },
     meta?: TransportRequestMeta,
   ): Promise<TResponse>;

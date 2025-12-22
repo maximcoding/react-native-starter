@@ -5,26 +5,38 @@
  *   [feature, entity, id? , params?]
  *   Infinite pagination: [feature, entity, 'infinite', params]
  */
-import { byIdKey, infiniteKey } from '@/infra/query/keys/factory';
+
+import { byIdKey, infiniteKey, qk } from '@/infra/query/keys/factory';
+import type { TagMap } from '@/infra/query/tags';
+
+// ---- key builders (NO self-reference) ----
+
+const me = () => byIdKey('user', 'profile', 'me');
+
+const byId = (id: string | number) => byIdKey('user', 'profile', id);
+
+const infinite = (params?: Record<string, unknown>) =>
+  infiniteKey('user', 'list', params);
+
+const prefixes = {
+  profiles: () => qk('user', 'profile'),
+  listInfinite: () => qk('user', 'list', 'infinite'),
+} as const;
+
+const tagMap = {
+  'user:me': [me],
+  'user:profiles': [prefixes.profiles],
+  'user:list': [prefixes.listInfinite],
+} as const satisfies TagMap;
+
+// ---- exported API ----
 
 export const userKeys = {
-  /** Singleton: current user ("me") detail key */
-  me: () => byIdKey('user', 'profile', 'me'),
+  me,
+  byId,
+  infinite,
+  prefixes,
+  tagMap,
+} as const;
 
-  /** Detail by id */
-  byId: (id: string | number) => byIdKey('user', 'profile', id),
-
-  /** Infinite list (pagination) */
-  infinite: (params?: Record<string, unknown>) =>
-    infiniteKey('user', 'list', params),
-
-  /**
-   * Tag → keys mapping for precise invalidations after mutations.
-   */
-  tagMap: {
-    'user:me': [() => userKeys.me()],
-    'user:list': [() => userKeys.infinite()],
-  } as const,
-};
-
-export type UserTag = keyof typeof userKeys.tagMap;
+export type UserTag = keyof typeof tagMap;

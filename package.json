@@ -44,7 +44,9 @@
     "i18n:all": "npm run i18n:extract && npm run i18n:types",
     "prepare": "husky",
     "check:icons": "node scripts/check-icons-stale.js",
-    "check:imports": "node scripts/check-import-paths.js"
+    "check:imports": "node scripts/check-import-paths.js",
+    "android:rebuild": "rm -rf android/app/build android/app/.cxx android/.gradle && cd android && ./gradlew :app:assembleDebug && cd .. && npx react-native run-android",
+    "bootsplash:generate": "npx react-native-bootsplash generate assets/logo.png --platforms=android,ios --background=FFFFFF --logo-width=100 --assets-output=assets/bootsplash --flavor=main"
   },
   "dependencies": {
     "@react-native-community/netinfo": "^11.4.1",
@@ -62,6 +64,8 @@
     "react": "19.1.1",
     "react-i18next": "^16.3.5",
     "react-native": "0.82.1",
+    "react-native-bootsplash": "^6.3.11",
+    "react-native-config": "^1.6.1",
     "react-native-gesture-handler": "^2.29.1",
     "react-native-localize": "^3.6.0",
     "react-native-mmkv": "^4.1.0",
@@ -78,6 +82,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "@babel/plugin-transform-export-namespace-from": "^7.27.1",
     "@babel/preset-env": "^7.25.3",
     "@babel/runtime": "^7.25.0",
     "@react-native-community/cli": "20.0.0",

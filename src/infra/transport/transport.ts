@@ -14,29 +14,12 @@
  *   - Wrap adapter calls to:
  *       - queue mutations/uploads when offline,
  *       - block queries/subscriptions when offline.
- *
- * DATA-FLOW (ONLINE):
- *   service → transport.query/mutate/subscribe/upload
- *      → activeTransport.query/mutate/subscribe/upload
- *         → adapter (REST/GraphQL/Firebase/...)
- *
- * DATA-FLOW (OFFLINE):
- *   service → transport.mutate/upload
- *      → offlineQueue.push(operation, variables, tags?)
- *      → immediate resolved Promise({ offline: true, queued: true })
- *
- *   netinfo: offline → online
- *      → syncEngine.onConnected()
- *         → replayOfflineMutations()
- *            → transport.mutate() (now online)
- *
- * EXTENSION GUIDELINES:
- *   - Do NOT import adapters directly in services.
- *   - Only modify adapter selection in setTransport().
- *   - Keep offline behavior here, not in services.
  * ---------------------------------------------------------------------
  */
+
+// src/infra/transport/transport.ts
 import type { Transport } from './transport.types';
+import type { Tag } from '@/infra/query/tags';
 import { restAdapter } from './adapters/rest.adapter';
 import { offlineQueue } from '@/infra/offline/offline-queue';
 
@@ -55,51 +38,42 @@ export function isOfflineMode(): boolean {
   return offline;
 }
 
+function normalizeTags(tags?: Tag | readonly Tag[]): Tag[] | undefined {
+  if (!tags) return undefined;
+  if (typeof tags === 'string') return [tags];
+  if (Array.isArray(tags)) return [...tags]; // ✅ make mutable copy
+  return undefined;
+}
+
 export const transport: Transport = {
   async query(operation, variables, meta) {
     if (offline) {
-      throw new Error('Offline: query is not available');
+      const err: any = new Error('Offline: query is not available');
+      err.code = 'NETWORK_OFFLINE';
+      throw err;
     }
     return activeTransport.query(operation, variables, meta);
   },
 
   async mutate(operation, variables, meta) {
     if (offline) {
-      const tags = Array.isArray(meta?.tags)
-        ? (meta!.tags as string[])
-        : typeof meta?.tags === 'string'
-        ? [meta!.tags as string]
-        : undefined;
-
+      const tags = normalizeTags(meta?.tags);
       offlineQueue.push(operation, variables, tags);
-      return Promise.resolve({
-        offline: true,
-        queued: true,
-      } as any);
+      return Promise.resolve({ offline: true, queued: true } as any);
     }
     return activeTransport.mutate(operation, variables, meta);
   },
 
   subscribe(channel, handler, meta) {
-    if (offline) {
-      return () => {};
-    }
+    if (offline) return () => {};
     return activeTransport.subscribe(channel, handler, meta);
   },
 
   async upload(operation, payload, meta) {
     if (offline) {
-      const tags = Array.isArray(meta?.tags)
-        ? (meta!.tags as string[])
-        : typeof meta?.tags === 'string'
-        ? [meta!.tags as string]
-        : undefined;
-
+      const tags = normalizeTags(meta?.tags);
       offlineQueue.push(operation, payload, tags);
-      return Promise.resolve({
-        offline: true,
-        queued: true,
-      } as any);
+      return Promise.resolve({ offline: true, queued: true } as any);
     }
     return activeTransport.upload(operation, payload, meta);
   },

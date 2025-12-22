@@ -36,7 +36,9 @@ import { attachRefreshTokenInterceptor } from '@/infra/http/interceptors/refresh
 
 // TODO: Replace with your env/config provider
 // @ts-ignore
-const BASE_URL = process.env.API_URL ?? '';
+import { env } from '@/core/config/env';
+const BASE_URL = env.API_URL?.trim() ?? '';
+
 
 export const axiosInstance = axios.create({
   baseURL: BASE_URL,

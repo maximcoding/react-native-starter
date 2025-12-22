@@ -1,4 +1,21 @@
 // Mock worklets completely FIRST
+
+jest.mock('react-native-config', () => ({
+  __esModule: true,
+  default: {
+    USE_MOCK_API: 'true',
+    API_BASE_URL: 'http://localhost',
+    API_TIMEOUT_MS: '15000',
+  },
+}));
+
+
+jest.mock('react-native-bootsplash', () => ({
+  hide: jest.fn().mockResolvedValue(undefined),
+  show: jest.fn().mockResolvedValue(undefined),
+  getVisibilityStatus: jest.fn().mockResolvedValue('hidden'),
+}));
+
 jest.mock('react-native-worklets', () => {
   const mockSerializable = {
     set: jest.fn(),

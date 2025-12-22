@@ -1,9 +1,6 @@
 // src/infra/query/helpers/invalidate-by-tags.ts
 import { QueryClient } from '@tanstack/react-query';
-
-export type Tag = string;
-export type KeyGetter = () => unknown[];
-export type TagMap = Record<Tag, ReadonlyArray<KeyGetter>>;
+import type { Tag, TagMap } from '@/infra/query/tags';
 
 /**
  * Invalidate React Query keys by logical tags.
@@ -12,12 +9,12 @@ export type TagMap = Record<Tag, ReadonlyArray<KeyGetter>>;
  */
 export async function invalidateByTags(
   qc: QueryClient,
-  tags: readonly string[],
+  tags: readonly Tag[],
   maps: readonly TagMap[],
 ) {
   if (!tags?.length || !maps?.length) return;
 
-  const keys: unknown[][] = [];
+  const keys: (readonly unknown[])[] = [];
 
   for (const tag of tags) {
     for (const map of maps) {
@@ -42,7 +39,7 @@ export async function invalidateByTags(
       const sig = JSON.stringify(key);
       if (seen.has(sig)) return Promise.resolve();
       seen.add(sig);
-      return qc.invalidateQueries({ queryKey: key });
+      return qc.invalidateQueries({ queryKey: key as any });
     }),
   );
 }

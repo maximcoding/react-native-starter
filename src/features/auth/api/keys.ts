@@ -1,4 +1,4 @@
-// 2025 — features/auth/api/keys.ts
+// src/features/auth/api/keys.ts
 /**
  * PURPOSE:
  *   Centralized React Query keys for the Auth feature + tag→keys map
@@ -16,23 +16,30 @@
  */
 
 import { qk } from '@/infra/query/keys/factory';
+import type { TagMap } from '@/infra/query/tags';
+
+// ---- key builders (NO self-reference) ----
+
+const me = () => qk('auth', 'me');
+const session = () => qk('auth', 'session');
+
+const prefixes = {
+  all: () => qk('auth'),
+} as const;
+
+const tagMap = {
+  'auth:me': [me],
+  'auth:session': [session],
+  'auth:all': [prefixes.all],
+} as const satisfies TagMap;
+
+// ---- exported API ----
 
 export const authKeys = {
-  // Singletons
-  me: () => qk('auth', 'me'),
-  session: () => qk('auth', 'session'),
+  me,
+  session,
+  prefixes,
+  tagMap,
+} as const;
 
-  /**
-   * Tag → keys mapping for invalidation after mutations.
-   * Example usage:
-   *   [authKeys.tagMap['auth:me'], authKeys.tagMap['auth:session']]
-   *     .flat()
-   *     .forEach((getKey) => qc.invalidateQueries({ queryKey: getKey() }));
-   */
-  tagMap: {
-    'auth:me': [() => authKeys.me()],
-    'auth:session': [() => authKeys.session()],
-  } as const,
-};
-
-export type AuthTag = keyof typeof authKeys.tagMap;
+export type AuthTag = keyof typeof tagMap;

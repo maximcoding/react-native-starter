@@ -1,77 +1,107 @@
+// src/infra/network/netinfo.ts
 /**
  * FILE: netinfo.ts
  * LAYER: infra/network
  * ---------------------------------------------------------------------
  * PURPOSE:
- *   Central place to track offline/online state for the app and wire it
- *   into transport + sync-engine.
+ *   Minimal network state bridge:
+ *   - expose isOffline()
+ *   - allow subscribe onNetworkChange(cb)
+ *   - wire to transport.setOfflineMode()
+ *   - on reconnect -> syncEngine.onConnected()
  *
- * RESPONSIBILITIES:
- *   - Keep a simple boolean "offline" flag.
- *   - Notify listeners when state changes.
- *   - Inform transport (setOfflineMode).
- *   - Trigger syncEngine.onConnected() when going online.
- *
- * DATA-FLOW:
- *   OS/network change (later via @react-native-community/netinfo)
- *      → setNetworkOffline(true/false)
- *         → setOfflineMode(...)
- *         → listeners notified
- *         → if back online → syncEngine.onConnected()
- *
- * EXTENSION GUIDELINES:
- *   - Replace manual setters with real NetInfo integration.
- *   - Add metrics/analytics for connectivity changes if needed.
+ * IMPORTANT:
+ *   Works even if @react-native-community/netinfo is not installed:
+ *   - initNetInfoBridge() becomes a safe no-op
  * ---------------------------------------------------------------------
  */
+
 import { setOfflineMode } from '@/infra/transport/transport';
 import { syncEngine } from '@/infra/offline/sync-engine';
 
-type NetworkListener = (isOffline: boolean) => void;
+type Listener = (offline: boolean) => void;
 
 let offline = false;
-const listeners = new Set<NetworkListener>();
+let listeners: Listener[] = [];
+let didInit = false;
 
-export function setNetworkOffline(isOffline: boolean) {
-  if (offline === isOffline) return;
-
-  offline = isOffline;
-  setOfflineMode(isOffline);
-
-  listeners.forEach(cb => cb(offline));
-
-  if (!offline) {
-    syncEngine.onConnected().catch(() => undefined);
-  }
+function emit(nextOffline: boolean) {
+  offline = nextOffline;
+  setOfflineMode(nextOffline);
+  listeners.forEach(cb => cb(nextOffline));
 }
 
-export function onNetworkChange(listener: NetworkListener): () => void {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
-}
-
-export function isOffline(): boolean {
+export function isOffline() {
   return offline;
 }
 
-// --- APPEND: optional NetInfo bridge (safe no-op if package is absent) ---
+/** Subscribe to offline changes. Returns unsubscribe. */
+export function onNetworkChange(cb: Listener) {
+  listeners.push(cb);
+  return () => {
+    listeners = listeners.filter(x => x !== cb);
+  };
+}
+
 /**
- * Initializes network listener via @react-native-community/netinfo.
- * Safe: if the lib is not installed, this function is a no-op.
+ * Init NetInfo subscription if package exists.
+ * - offline -> emit(true)
+ * - online  -> emit(false) + syncEngine.onConnected()
  */
 export function initNetInfoBridge() {
-  try {
-    // require динамически, чтобы не падать без зависимости
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const NetInfo = require('@react-native-community/netinfo').default;
+  if (didInit) return;
+  didInit = true;
 
+  // try require NetInfo dynamically (so project doesn't crash if missing)
+  let NetInfo: any;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    NetInfo = require('@react-native-community/netinfo').default;
+  } catch {
+    // Package not installed -> keep manual mode
+    return;
+  }
+
+  try {
+    // initial
+    NetInfo.fetch().then((state: any) => {
+      const isConnected = !!state?.isConnected;
+      const isInternetReachable =
+        state?.isInternetReachable == null ? true : !!state.isInternetReachable;
+
+      const nowOffline = !(isConnected && isInternetReachable);
+      emit(nowOffline);
+    });
+
+    // subscribe
     NetInfo.addEventListener((state: any) => {
-      const isOff = !(
-        state?.isConnected && state?.isInternetReachable !== false
-      );
-      setNetworkOffline(isOff);
+      const isConnected = !!state?.isConnected;
+      const isInternetReachable =
+        state?.isInternetReachable == null ? true : !!state.isInternetReachable;
+
+      const nextOffline = !(isConnected && isInternetReachable);
+      const wasOffline = offline;
+
+      emit(nextOffline);
+
+      // became online => replay offline queue
+      if (wasOffline && !nextOffline) {
+        syncEngine.onConnected().catch(() => undefined);
+      }
     });
   } catch {
-    // NetInfo не установлен — оставляем ручное управление офлайн/онлайн
+    // if NetInfo misbehaves, stay safe
+  }
+}
+
+/**
+ * DEV helper (optional):
+ * Allow toggling offline manually when no NetInfo / for testing.
+ */
+export function __setOfflineForDev(nextOffline: boolean) {
+  const wasOffline = offline;
+  emit(nextOffline);
+  if (wasOffline && !nextOffline) {
+    syncEngine.onConnected().catch(() => undefined);
   }
 }
