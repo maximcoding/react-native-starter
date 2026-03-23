@@ -13,14 +13,6 @@ Bare-workflow React Native starter with **TypeScript** (strict), **feature-first
 
 **Highlights:** typed navigation; pluggable transport (REST / GraphQL / WebSocket / Firebase); TanStack Query with persistence; **Biome** + Jest + GitHub Actions quality gate.
 
----
-
-> **Screenshots** — add a GIF or PNG montage here once you run the app.
-> Suggested: `docs/images/demo.gif` showing onboarding → login → home → settings in light and dark mode.
-> See [docs/OPERATIONS.md#screenshots](docs/OPERATIONS.md#screenshots) for guidance.
-
----
-
 ### Quick start
 
 First-time setup (once per clone):
@@ -49,10 +41,9 @@ Prerequisites: [Getting Started](#getting-started).
 - [Environment variables](#environment-variables)
 - [Key commands](#key-commands)
 - [Documentation](#documentation)
-- [Developer reference](docs/development.md)
 - [Permissions](#permissions)
+- [Contributing](#contributing)
 - [CI/CD & Release](#cicd--release)
-- [Roadmap & backlog](docs/TODO.md)
 
 ---
 
@@ -110,7 +101,18 @@ npm run ios
 npm run android
 ```
 
-`npm run ios` and `npm run android` run **`env:ensure`** first (creates `.env` from [`.env.example`](.env.example) if missing). If **`installDebug` fails with “No connected devices”**, start an emulator or connect hardware USB debugging, then check `npm run android:devices`. If **`./gradlew clean`** or **Android Studio → Clean Project** fails with CMake errors about missing `codegen/jni` under `node_modules` (common with the New Architecture), **do not** repeat that until a successful native build has regenerated those folders. Run **`npm run android:clean`** (removes `android/app/.cxx` and Android build outputs only), then **`cd android && ./gradlew :app:assembleDebug`** or **`npm run android`**. If it still fails, try `rm -rf node_modules/*/android/build`, reinstall deps, and rebuild. For a Gradle clean that skips the broken native clean tasks, use **`npm run android:clean:gradle`** (see [docs/development.md#android-build](docs/development.md#android-build)).
+`npm run ios` and `npm run android` run **`env:ensure`** first (creates `.env` from [`.env.example`](.env.example) if missing).
+
+<details>
+<summary>Android build troubleshooting</summary>
+
+- **”No connected devices”** — start an emulator or connect a device with USB debugging, then run `npm run android:devices`.
+- **CMake errors about missing `codegen/jni`** (common with New Architecture) — do not repeat `./gradlew clean` until a successful native build regenerates those folders. Run `npm run android:clean` (removes `android/app/.cxx` and build outputs only), then `npm run android`.
+- **Still failing** — try `rm -rf node_modules/*/android/build`, reinstall deps, and rebuild.
+- **Gradle clean that skips broken native tasks** — use `npm run android:clean:gradle`.
+
+Full detail: [docs/development.md#android-build](docs/development.md#android-build).
+</details>
 
 ### Environment variables
 
@@ -120,6 +122,8 @@ Values are read at build time via **`react-native-config`** (see [`.env.example`
 |----------|----------|---------|
 | `API_URL` | For real API | Backend base URL |
 | `USE_MOCK_API` | No | `true` / `1` uses the mock transport in **dev**; login screen pre-fills **`demo@example.com` / `password`** (any valid email + non-empty password also works) |
+| `WS_URL` | No | WebSocket base URL for the WebSocket transport adapter |
+| `ENV` | No | Runtime environment label (`development` / `staging` / `production`); defaults to `development` in `__DEV__`, `production` otherwise |
 | `SENTRY_DSN` | No | Enables Sentry when non-empty; debug builds stay quiet unless `SENTRY_ENABLE_IN_DEV=1` |
 | `SENTRY_ENABLE_IN_DEV` | No | `1` = send Sentry events from `__DEV__` |
 | `SENTRY_TRACES_SAMPLE_RATE` | No | `0`–`1` performance sampling (`0` = off) |
@@ -139,7 +143,7 @@ Values are read at build time via **`react-native-config`** (see [`.env.example`
 | `npm run android:clean` | Remove Android native/build dirs (`.cxx`, `android/app/build`, `android/build`) — no `./gradlew clean` |
 | `npm run android:devices` | `adb devices` |
 | `npm run lint` | Biome check (no writes) |
-| `npm run format` | Biome apply format + safe fixes |
+| `npm run format` | Biome apply format + safe fixes (writes files) |
 | `npm test` | Jest |
 | `npx tsc --noEmit` | Typecheck |
 | `npm run i18n:all` | i18n extract + types |
@@ -154,13 +158,19 @@ Values are read at build time via **`react-native-config`** (see [`.env.example`
 
 This file is the only **README** in the repo. **Which doc for what:** see the matrix in **[AGENTS.md#documentation-map](AGENTS.md#documentation-map)**.
 
-Coding rules and structure: **[AGENTS.md](AGENTS.md)**. Deep developer reference (hooks, architecture, icons, i18n): **[docs/development.md](docs/development.md)**.
+Coding rules and structure: **[AGENTS.md](AGENTS.md)**. Deep developer reference (hooks, architecture, icons, i18n): **[docs/development.md](docs/development.md)**. Roadmap and backlog: **[docs/TODO.md](docs/TODO.md)**.
 
 ---
 
 ## Permissions
 
 Declare only what you use. Full catalog: **[docs/permissions-bare-rn.md](docs/permissions-bare-rn.md)**.
+
+---
+
+## Contributing
+
+Contributions welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for fork/branch/PR guidelines, quality checks, and PR checklists.
 
 ---
 
