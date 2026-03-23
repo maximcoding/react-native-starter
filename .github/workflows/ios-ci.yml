@@ -1,8 +1,16 @@
 name: iOS CI Build
 
-# Manual simulator build (no signing). PR quality checks live in ci.yml.
+# Manual build or tag-triggered release build.
+# PR quality checks (lint, tests, type-check) live in ci.yml.
 on:
   workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   ios-build:
@@ -21,9 +29,23 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Cache CocoaPods specs
+        uses: actions/cache@v4
+        with:
+          path: ~/.cocoapods
+          key: cocoapods-${{ hashFiles('ios/Podfile.lock') }}
+          restore-keys: cocoapods-
+
       - name: Install Pods
         run: cd ios && pod install
 
+      - name: Seed .env for build
+        run: cp .env.example .env
+
+      # Simulator / CI build (no signing required).
+      # For a real device/TestFlight build, switch to -configuration Release,
+      # add code signing setup (e.g. Fastlane match or manual cert import),
+      # and change -destination to 'generic/platform=iOS'.
       - name: Build iOS (Simulator)
         run: |
           cd ios
@@ -35,6 +57,15 @@ jobs:
             -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath build \
             build
+
+      # Upload Sentry source maps if DSN is configured.
+      # Uncomment and set SENTRY_AUTH_TOKEN + SENTRY_ORG + SENTRY_PROJECT secrets.
+      # - name: Upload Sentry source maps
+      #   env:
+      #     SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      #     SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+      #     SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+      #   run: npx @sentry/cli releases files "${{ github.ref_name }}" upload-sourcemaps ios/build
 
       - name: Upload Simulator app
         uses: actions/upload-artifact@v4

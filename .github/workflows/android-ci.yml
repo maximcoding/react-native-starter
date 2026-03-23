@@ -1,8 +1,16 @@
 name: Android CI Build
 
-# Manual native release build (template). PR quality checks live in ci.yml.
+# Manual build or tag-triggered release build.
+# PR quality checks (lint, tests, type-check) live in ci.yml.
 on:
   workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   android-build:
@@ -27,11 +35,38 @@ jobs:
           distribution: 'temurin'
           java-version: 17
 
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ hashFiles('android/gradle/wrapper/gradle-wrapper.properties', 'android/**/*.gradle*') }}
+          restore-keys: gradle-
+
       - name: Install Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Build Android Release
+      - name: Seed .env for build
+        run: cp .env.example .env
+
+      # Template uses the debug keystore. Replace with a real signing step
+      # (e.g. decode a base64-encoded keystore from secrets) before store upload.
+      - name: Build Android Release APK
         run: cd android && ./gradlew assembleRelease
+
+      # Uncomment for Play Store upload (requires signing + Google service account secret):
+      # - name: Build Android Release Bundle (AAB)
+      #   run: cd android && ./gradlew bundleRelease
+
+      # Upload Sentry source maps if DSN is configured.
+      # Uncomment and set SENTRY_AUTH_TOKEN + SENTRY_ORG + SENTRY_PROJECT secrets.
+      # - name: Upload Sentry source maps
+      #   env:
+      #     SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      #     SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+      #     SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+      #   run: npx @sentry/cli releases files "${{ github.ref_name }}" upload-sourcemaps android/app/build
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4

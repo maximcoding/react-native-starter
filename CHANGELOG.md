@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Changed
+- **CI (`ci.yml`):** split quality gate into two parallel jobs (`lint`: Biome + TypeScript; `test`: Jest with coverage summary + `check:icons` + `check:imports`); add `concurrency` group to cancel stale PR runs; add `dependency-review` job on pull requests.
+- **Android CI (`android-ci.yml`):** add `v*` tag trigger alongside `workflow_dispatch`; add Gradle cache (`~/.gradle`); seed `.env` from `.env.example` before build; add commented stubs for AAB (`bundleRelease`) and Sentry source map upload.
+- **iOS CI (`ios-ci.yml`):** add `v*` tag trigger alongside `workflow_dispatch`; add CocoaPods specs cache (`~/.cocoapods`); seed `.env` from `.env.example` before build; add commented stub for Sentry source map upload.
+- **`docs/OPERATIONS.md`:** update GitHub Actions table and notes to reflect parallel jobs, caching, tag triggers, and Sentry upload stubs.
+
 ## [1.0.0] - 2026-03-23
 
 - Align **react-native-nitro-modules** with **react-native-mmkv** (pin mmkv 4.3.0 + nitro 0.35.0) to fix Android Kotlin compile (`CxxPart` / Nitrogen skew); **`package.json` `overrides`** pins nitro 0.35.0; refresh [`ios/Podfile.lock`](ios/Podfile.lock) (MMKVCore 2.4.0). Doc: [docs/development.md#react-native-mmkv-and-react-native-nitro-modules](docs/development.md#react-native-mmkv-and-react-native-nitro-modules).

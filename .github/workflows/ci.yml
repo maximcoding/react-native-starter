@@ -6,8 +6,14 @@ on:
   pull_request:
     branches: [master, main]
 
+# Cancel in-flight runs for the same PR / branch so stale runs don't queue up.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  quality:
+  lint:
+    name: Lint & type-check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,11 +32,33 @@ jobs:
       - name: Typecheck
         run: npx tsc --noEmit
 
+  test:
+    name: Tests & guards
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
       - name: Unit tests
-        run: npm test
+        run: npm test -- --coverage --coverageReporters=text-summary
 
       - name: Check icons registry
         run: npm run check:icons
 
       - name: Check import paths
         run: npm run check:imports
+
+  dependency-review:
+    name: Dependency review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/dependency-review-action@v4

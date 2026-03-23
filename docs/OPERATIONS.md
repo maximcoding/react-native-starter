@@ -67,24 +67,26 @@ Add YAML flows under `maestro/` and keep them deterministic (seed data, locale, 
 
 | File | Trigger | Purpose |
 |------|---------|---------|
-| [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) | Push / PR to `master` or `main` | **Quality gate:** Biome, TypeScript, Jest, `check:icons`, `check:imports` (Node 20, `npm ci`). |
-| [`.github/workflows/android-ci.yml`](../.github/workflows/android-ci.yml) | Manual (`workflow_dispatch`) | **Android:** JDK 17, Android SDK, `assembleRelease` (uses debug keystore in template `build.gradle`). |
-| [`.github/workflows/ios-ci.yml`](../.github/workflows/ios-ci.yml) | Manual (`workflow_dispatch`) | **iOS:** CocoaPods, **simulator** `xcodebuild` for `ReactNativeStarter` scheme (no device signing). |
+| [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) | Push / PR to `master` or `main` | **Quality gate** (two parallel jobs): `lint` — Biome + TypeScript; `test` — Jest (with coverage summary) + `check:icons` + `check:imports`. Plus a `dependency-review` job on PRs. Stale runs cancelled via `concurrency`. |
+| [`.github/workflows/android-ci.yml`](../.github/workflows/android-ci.yml) | Manual (`workflow_dispatch`) or tag `v*` push | **Android:** JDK 17, Android SDK, Gradle cache, `.env` seeded from `.env.example`, `assembleRelease` (debug keystore — replace with real signing before store upload). Commented stubs for AAB (`bundleRelease`) and Sentry source map upload. |
+| [`.github/workflows/ios-ci.yml`](../.github/workflows/ios-ci.yml) | Manual (`workflow_dispatch`) or tag `v*` push | **iOS:** CocoaPods (with specs cache), `.env` seeded from `.env.example`, **simulator** `xcodebuild` for `ReactNativeStarter` scheme (no device signing). Commented stub for Sentry source map upload. |
 
 ### Notes
 
-- **Release / Play / TestFlight** automation is not included; add Fastlane or your own jobs when you have signing secrets.
+- **Release / Play / TestFlight** automation is not included; add Fastlane or your own jobs when you have signing secrets. Commented stubs in each native workflow show where to add signing and upload steps.
+- Native workflows trigger automatically on `v*` tags (e.g. `v1.2.0`) in addition to `workflow_dispatch`.
 - Align **Node** with `package.json` `engines` (>= 20) across all workflows.
 - After renaming the app in Xcode / Gradle, update **workspace**, **scheme**, and **artifact paths** in the iOS workflow.
+- **Sentry source maps:** uncomment the upload step in both native workflows and set `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT` as repository secrets.
 
 ### Optional consolidation
 
-You can delete `android-ci.yml` / `ios-ci.yml` if you only want PR checks (`ci.yml`), or merge native builds into a single file with a matrix—keep one source of truth for Node version and install steps.
+You can delete `android-ci.yml` / `ios-ci.yml` if you only want PR checks (`ci.yml`), or merge native builds into a single file with a matrix — keep one source of truth for Node version and install steps.
 
 ### Feature branches and store automation
 
 - Run the same checks locally as **`ci.yml`** before push; CI runs them on push/PR to `main` / `master`.
-- **Store release automation** (tag-triggered builds, Google Play / TestFlight upload) is **not** in this template. Manual Android/iOS workflows produce artifacts only; add Fastlane or custom workflows when you need uploads.
+- **Store release automation** (Google Play / TestFlight upload) is not included. Native workflows produce artifacts on tag push; add Fastlane `supply` / `pilot` lanes and the corresponding repository secrets (`GOOGLE_SERVICE_ACCOUNT_JSON`, `APP_STORE_CONNECT_API_KEY_JSON`) when you need automated uploads.
 
 ## Android: native clean and CMake (`codegen/jni`)
 
