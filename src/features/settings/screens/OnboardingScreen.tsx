@@ -45,7 +45,16 @@ const LogoIcon = ({ color }: { color: string }) => (
 
 // ─── Feature pill icons ──────────────────────────────────────────────────────
 const WifiOffIcon = ({ color }: { color: string }) => (
-  <Svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+  <Svg
+    width={18}
+    height={18}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke={color}
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <Line x1={1} y1={1} x2={23} y2={23} />
     <Polyline points="16.72 11.06 10 17.78" />
     <Polyline points="5 12.55 12 5 14.42 7.43" />
@@ -55,13 +64,31 @@ const WifiOffIcon = ({ color }: { color: string }) => (
 )
 
 const ShieldIcon = ({ color }: { color: string }) => (
-  <Svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+  <Svg
+    width={18}
+    height={18}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke={color}
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <Polygon points="12 2 22 6 22 12 12 22 2 12 2 6 12 2" />
   </Svg>
 )
 
 const ZapIcon = ({ color }: { color: string }) => (
-  <Svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+  <Svg
+    width={18}
+    height={18}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke={color}
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <Polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
   </Svg>
 )
@@ -75,6 +102,7 @@ function useStaggerFade(count: number, baseDelay = 120, stagger = 80) {
     })),
   ).current
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: mount-only stagger; anims ref + delays fixed for this hook
   useEffect(() => {
     const animations = anims.map((a, i) =>
       Animated.parallel([
@@ -94,7 +122,7 @@ function useStaggerFade(count: number, baseDelay = 120, stagger = 80) {
       ]),
     )
     Animated.parallel(animations).start()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [])
 
   return anims
 }
@@ -107,7 +135,12 @@ type FeatureCardProps = {
   iconBg: string
 }
 
-const FeatureCard = memo(function FeatureCard({ icon, title, body, iconBg }: FeatureCardProps) {
+const FeatureCard = memo(function FeatureCard({
+  icon,
+  title,
+  body,
+  iconBg,
+}: FeatureCardProps) {
   const { theme } = useTheme()
   const c = theme.colors
   const sp = theme.spacing
@@ -165,10 +198,21 @@ export default function OnboardingScreen() {
 
   const anims = useStaggerFade(5)
 
-  const S = ({ i, children, style }: { i: number; children: React.ReactNode; style?: object }) => (
+  const S = ({
+    i,
+    children,
+    style,
+  }: {
+    i: number
+    children: React.ReactNode
+    style?: object
+  }) => (
     <Animated.View
       style={[
-        { opacity: anims[i]!.opacity, transform: [{ translateY: anims[i]!.translateY }] },
+        {
+          opacity: anims[i]!.opacity,
+          transform: [{ translateY: anims[i]!.translateY }],
+        },
         style,
       ]}
     >
@@ -189,15 +233,39 @@ export default function OnboardingScreen() {
     >
       {/* Ambient glow */}
       <View style={styles.glowWrap} pointerEvents="none">
-        <View style={[styles.glowBlob, { backgroundColor: c.primaryAmbient, width: SCREEN_W * 0.85, height: 260 }]} />
-        <View style={[styles.glowBlob, styles.glowBlobSecondary, { backgroundColor: c.primaryAmbient, opacity: 0.4, width: SCREEN_W, height: 180 }]} />
+        <View
+          style={[
+            styles.glowBlob,
+            {
+              backgroundColor: c.primaryAmbient,
+              width: SCREEN_W * 0.85,
+              height: 260,
+            },
+          ]}
+        />
+        <View
+          style={[
+            styles.glowBlob,
+            styles.glowBlobSecondary,
+            {
+              backgroundColor: c.primaryAmbient,
+              opacity: 0.4,
+              width: SCREEN_W,
+              height: 180,
+            },
+          ]}
+        />
       </View>
 
       <ScrollView
         style={styles.flex}
         contentContainerStyle={[
           styles.scroll,
-          { paddingTop: top + sp.xxl, paddingBottom: bottom + sp.xxl, paddingHorizontal: sp.lg },
+          {
+            paddingTop: top + sp.xxl,
+            paddingBottom: bottom + sp.xxl,
+            paddingHorizontal: sp.lg,
+          },
         ]}
         showsVerticalScrollIndicator={false}
         bounces={false}
@@ -239,20 +307,33 @@ export default function OnboardingScreen() {
 
         {/* Headline */}
         <S i={1} style={{ marginBottom: sp.sm }}>
-          <Text style={[ty.displayMedium, { color: c.textPrimary, textAlign: 'center' }]}>
+          <Text
+            style={[
+              ty.displayMedium,
+              { color: c.textPrimary, textAlign: 'center' },
+            ]}
+          >
             {t('onboarding.headline')}
           </Text>
         </S>
 
         {/* Tagline */}
         <S i={2} style={{ marginBottom: sp.xxxl }}>
-          <Text style={[ty.bodyLarge, { color: c.textTertiary, textAlign: 'center' }]}>
+          <Text
+            style={[
+              ty.bodyLarge,
+              { color: c.textTertiary, textAlign: 'center' },
+            ]}
+          >
             {t('onboarding.tagline')}
           </Text>
         </S>
 
         {/* Feature cards */}
-        <S i={3} style={{ gap: sp.sm, marginBottom: sp.xxxl, alignSelf: 'stretch' }}>
+        <S
+          i={3}
+          style={{ gap: sp.sm, marginBottom: sp.xxxl, alignSelf: 'stretch' }}
+        >
           <FeatureCard
             icon={<WifiOffIcon color={c.primary} />}
             title={t('onboarding.feature_1_title')}

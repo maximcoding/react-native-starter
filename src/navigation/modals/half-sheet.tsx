@@ -41,9 +41,9 @@ import {
   View,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useTheme } from '@/shared/theme'
 import { radius } from '@/shared/theme/tokens/radius'
 import { spacing } from '@/shared/theme/tokens/spacing'
-import { useTheme } from '@/shared/theme'
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window')
 

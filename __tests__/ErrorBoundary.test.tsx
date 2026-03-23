@@ -25,56 +25,66 @@ function Harness() {
   )
 }
 
-test('ErrorBoundary shows fallback when child throws', async () => {
-  let renderer: ReactTestRenderer.ReactTestRenderer
-
-  await act(async () => {
-    renderer = ReactTestRenderer.create(<Harness />)
+describe('ErrorBoundary', () => {
+  beforeEach(() => {
+    jest.spyOn(console, 'error').mockImplementation(() => {})
   })
 
-  await act(async () => {
-    renderer!.root.findByProps({ testID: 'trigger-boom' }).props.onPress()
+  afterEach(() => {
+    jest.restoreAllMocks()
   })
 
-  const treeStr = JSON.stringify(renderer!.toJSON())
-  expect(treeStr).toContain('Something went wrong')
-  expect(treeStr).toContain('Try again')
-})
+  test('ErrorBoundary shows fallback when child throws', async () => {
+    let renderer: ReactTestRenderer.ReactTestRenderer
 
-test('ErrorBoundary retry works after the throwing child is removed', async () => {
-  function RecoveryHarness() {
-    const [phase, setPhase] = useState<'ok' | 'error' | 'recovered'>('ok')
-    return (
-      <ThemeProvider>
-        <ErrorBoundary>
-          {phase === 'error' ? <ThrowingChild /> : <View testID="content" />}
-        </ErrorBoundary>
-        <Pressable testID="to-error" onPress={() => setPhase('error')} />
-        <Pressable testID="recover" onPress={() => setPhase('recovered')} />
-      </ThemeProvider>
-    )
-  }
+    await act(async () => {
+      renderer = ReactTestRenderer.create(<Harness />)
+    })
 
-  let renderer: ReactTestRenderer.ReactTestRenderer
-  await act(async () => {
-    renderer = ReactTestRenderer.create(<RecoveryHarness />)
+    await act(async () => {
+      renderer!.root.findByProps({ testID: 'trigger-boom' }).props.onPress()
+    })
+
+    const treeStr = JSON.stringify(renderer!.toJSON())
+    expect(treeStr).toContain('Something went wrong')
+    expect(treeStr).toContain('Try again')
   })
 
-  await act(async () => {
-    renderer!.root.findByProps({ testID: 'to-error' }).props.onPress()
+  test('ErrorBoundary retry works after the throwing child is removed', async () => {
+    function RecoveryHarness() {
+      const [phase, setPhase] = useState<'ok' | 'error' | 'recovered'>('ok')
+      return (
+        <ThemeProvider>
+          <ErrorBoundary>
+            {phase === 'error' ? <ThrowingChild /> : <View testID="content" />}
+          </ErrorBoundary>
+          <Pressable testID="to-error" onPress={() => setPhase('error')} />
+          <Pressable testID="recover" onPress={() => setPhase('recovered')} />
+        </ThemeProvider>
+      )
+    }
+
+    let renderer: ReactTestRenderer.ReactTestRenderer
+    await act(async () => {
+      renderer = ReactTestRenderer.create(<RecoveryHarness />)
+    })
+
+    await act(async () => {
+      renderer!.root.findByProps({ testID: 'to-error' }).props.onPress()
+    })
+
+    expect(JSON.stringify(renderer!.toJSON())).toContain('Something went wrong')
+
+    await act(async () => {
+      renderer!.root.findByProps({ testID: 'recover' }).props.onPress()
+    })
+
+    await act(async () => {
+      renderer!.root
+        .findByProps({ testID: 'error-boundary-retry' })
+        .props.onPress()
+    })
+
+    expect(renderer!.root.findByProps({ testID: 'content' })).toBeDefined()
   })
-
-  expect(JSON.stringify(renderer!.toJSON())).toContain('Something went wrong')
-
-  await act(async () => {
-    renderer!.root.findByProps({ testID: 'recover' }).props.onPress()
-  })
-
-  await act(async () => {
-    renderer!.root
-      .findByProps({ testID: 'error-boundary-retry' })
-      .props.onPress()
-  })
-
-  expect(renderer!.root.findByProps({ testID: 'content' })).toBeDefined()
 })

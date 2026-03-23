@@ -18,9 +18,10 @@ React Native 0.82 app, TypeScript strict, bare workflow. Top-level under `src/`:
 - **Biome:** `npm run lint` → `biome check .`; `npm run format` → `biome check . --write`
 - **Type-check:** `npx tsc --noEmit`
 - **Tests:** `npm test`
+- Chain checks with `&&` (e.g. `npm run lint && npx tsc --noEmit && npm test`). Do not paste a single line with middle dots (`·`) as separators—those tokens can be passed to Biome as bogus paths and cause `internalError/io`.
 - **Guards:** `npm run check:icons`, `npm run check:imports`
 
-When changing SVGs, run `npm run gen:icons`. When changing i18n keys, run `npm run i18n:all`.
+When changing SVGs, run `npm run gen:icons`. When changing i18n keys, run `npm run i18n:all`. Generated [`src/i18n/i18n-types.d.ts`](src/i18n/i18n-types.d.ts) is listed in [`.biomeignore`](.biomeignore) so Biome does not reformat it on every `npm run format`.
 
 ## Where code lives
 

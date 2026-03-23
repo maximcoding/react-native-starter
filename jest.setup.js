@@ -121,3 +121,13 @@ jest.mock('react-native-gesture-handler', () => {
     },
   }
 })
+
+// Drop i18next's promotional Locize message on init (noisy in every suite that imports i18n)
+const originalConsoleInfo = console.info.bind(console)
+console.info = (...args) => {
+  const msg = typeof args[0] === 'string' ? args[0] : ''
+  if (msg.includes('Locize') || msg.includes('locize.com')) {
+    return
+  }
+  originalConsoleInfo(...args)
+}

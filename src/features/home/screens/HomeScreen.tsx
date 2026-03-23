@@ -14,8 +14,8 @@ import {
 import Svg, { Circle, Line, Path, Polyline, Rect } from 'react-native-svg'
 import { useMeQuery } from '@/features/user/hooks/useMeQuery'
 import { useT } from '@/i18n/useT'
-import ScreenWrapper from '@/shared/components/ui/ScreenWrapper'
 import { ScreenHeader } from '@/shared/components/ui/ScreenHeader'
+import ScreenWrapper from '@/shared/components/ui/ScreenWrapper'
 import { Text } from '@/shared/components/ui/Text'
 import { useTheme } from '@/shared/theme/useTheme'
 
@@ -24,44 +24,142 @@ const TAB_BAR_CLEARANCE = 88
 
 // ─── Demo data ───────────────────────────────────────────────────────────────
 type ActivityType = 'task' | 'message' | 'alert' | 'success'
-type FeedItem = { id: string; type: ActivityType; title: string; subtitle: string; time: string }
+type FeedItem = {
+  id: string
+  type: ActivityType
+  title: string
+  subtitle: string
+  time: string
+}
 
 const FEED: FeedItem[] = [
-  { id: '1', type: 'success', title: 'Sprint completed',   subtitle: 'Q1 goals — 100% achieved',      time: '2m ago' },
-  { id: '2', type: 'task',    title: 'Task assigned',      subtitle: 'Design review for v2.0',         time: '15m ago' },
-  { id: '3', type: 'message', title: 'Team update',        subtitle: 'Alice: API changes are ready',   time: '1h ago' },
-  { id: '4', type: 'alert',   title: 'Deadline tomorrow',  subtitle: 'Mobile release candidate',       time: '2h ago' },
-  { id: '5', type: 'success', title: 'Deployment live',    subtitle: 'v1.4.2 shipped successfully',    time: '3h ago' },
-  { id: '6', type: 'task',    title: 'Code review',        subtitle: 'PR #142 — Auth refactor',        time: '4h ago' },
-  { id: '7', type: 'message', title: 'Meeting moved',      subtitle: 'Daily standup → 10:00 AM',       time: '5h ago' },
-  { id: '8', type: 'alert',   title: 'Storage at 80%',     subtitle: 'Archive old logs soon',          time: 'Yesterday' },
+  {
+    id: '1',
+    type: 'success',
+    title: 'Sprint completed',
+    subtitle: 'Q1 goals — 100% achieved',
+    time: '2m ago',
+  },
+  {
+    id: '2',
+    type: 'task',
+    title: 'Task assigned',
+    subtitle: 'Design review for v2.0',
+    time: '15m ago',
+  },
+  {
+    id: '3',
+    type: 'message',
+    title: 'Team update',
+    subtitle: 'Alice: API changes are ready',
+    time: '1h ago',
+  },
+  {
+    id: '4',
+    type: 'alert',
+    title: 'Deadline tomorrow',
+    subtitle: 'Mobile release candidate',
+    time: '2h ago',
+  },
+  {
+    id: '5',
+    type: 'success',
+    title: 'Deployment live',
+    subtitle: 'v1.4.2 shipped successfully',
+    time: '3h ago',
+  },
+  {
+    id: '6',
+    type: 'task',
+    title: 'Code review',
+    subtitle: 'PR #142 — Auth refactor',
+    time: '4h ago',
+  },
+  {
+    id: '7',
+    type: 'message',
+    title: 'Meeting moved',
+    subtitle: 'Daily standup → 10:00 AM',
+    time: '5h ago',
+  },
+  {
+    id: '8',
+    type: 'alert',
+    title: 'Storage at 80%',
+    subtitle: 'Archive old logs soon',
+    time: 'Yesterday',
+  },
 ]
 
 type QuickActionIcon = 'task' | 'message' | 'schedule' | 'report' | 'upload'
 
-function QuickActionSvg({ icon, color }: { icon: QuickActionIcon; color: string }) {
-  const props = { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: 2, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
+function QuickActionSvg({
+  icon,
+  color,
+}: {
+  icon: QuickActionIcon
+  color: string
+}) {
+  const props = {
+    width: 20,
+    height: 20,
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    stroke: color,
+    strokeWidth: 2,
+    strokeLinecap: 'round' as const,
+    strokeLinejoin: 'round' as const,
+  }
   switch (icon) {
     case 'task':
-      return <Svg {...props}><Polyline points="9 11 12 14 22 4" /><Path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></Svg>
+      return (
+        <Svg {...props}>
+          <Polyline points="9 11 12 14 22 4" />
+          <Path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+        </Svg>
+      )
     case 'message':
-      return <Svg {...props}><Path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></Svg>
+      return (
+        <Svg {...props}>
+          <Path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+        </Svg>
+      )
     case 'schedule':
-      return <Svg {...props}><Rect x="3" y="4" width="18" height="18" rx="2" /><Path d="M16 2v4M8 2v4M3 10h18" /></Svg>
+      return (
+        <Svg {...props}>
+          <Rect x="3" y="4" width="18" height="18" rx="2" />
+          <Path d="M16 2v4M8 2v4M3 10h18" />
+        </Svg>
+      )
     case 'report':
-      return <Svg {...props}><Path d="M18 20V10M12 20V4M6 20v-6" /></Svg>
+      return (
+        <Svg {...props}>
+          <Path d="M18 20V10M12 20V4M6 20v-6" />
+        </Svg>
+      )
     case 'upload':
-      return <Svg {...props}><Path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><Polyline points="17 8 12 3 7 8" /><Line x1="12" y1="3" x2="12" y2="15" /></Svg>
+      return (
+        <Svg {...props}>
+          <Path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <Polyline points="17 8 12 3 7 8" />
+          <Line x1="12" y1="3" x2="12" y2="15" />
+        </Svg>
+      )
   }
 }
 
 type QuickActionColorKey = 'success' | 'info' | 'primary' | 'warning' | 'danger'
-const QUICK_ACTIONS: { id: string; icon: QuickActionIcon; colorKey: QuickActionColorKey; label: string }[] = [
-  { id: '1', icon: 'task',     colorKey: 'success', label: 'New task' },
-  { id: '2', icon: 'message',  colorKey: 'info',    label: 'Message' },
+const QUICK_ACTIONS: {
+  id: string
+  icon: QuickActionIcon
+  colorKey: QuickActionColorKey
+  label: string
+}[] = [
+  { id: '1', icon: 'task', colorKey: 'success', label: 'New task' },
+  { id: '2', icon: 'message', colorKey: 'info', label: 'Message' },
   { id: '3', icon: 'schedule', colorKey: 'primary', label: 'Schedule' },
-  { id: '4', icon: 'report',   colorKey: 'warning', label: 'Report' },
-  { id: '5', icon: 'upload',   colorKey: 'danger',  label: 'Upload' },
+  { id: '4', icon: 'report', colorKey: 'warning', label: 'Report' },
+  { id: '5', icon: 'upload', colorKey: 'danger', label: 'Upload' },
 ]
 
 // ─── Shimmer ─────────────────────────────────────────────────────────────────
@@ -70,8 +168,16 @@ function useShimmer() {
   useEffect(() => {
     const loop = Animated.loop(
       Animated.sequence([
-        Animated.timing(anim, { toValue: 1, duration: 750, useNativeDriver: true }),
-        Animated.timing(anim, { toValue: 0.4, duration: 750, useNativeDriver: true }),
+        Animated.timing(anim, {
+          toValue: 1,
+          duration: 750,
+          useNativeDriver: true,
+        }),
+        Animated.timing(anim, {
+          toValue: 0.4,
+          duration: 750,
+          useNativeDriver: true,
+        }),
       ]),
     )
     loop.start()
@@ -125,20 +231,41 @@ function HomeScreenSkeleton() {
   return (
     <ScrollView
       scrollEnabled={false}
-      contentContainerStyle={{ paddingBottom: TAB_BAR_CLEARANCE, backgroundColor: c.background }}
+      contentContainerStyle={{
+        paddingBottom: TAB_BAR_CLEARANCE,
+        backgroundColor: c.background,
+      }}
       showsVerticalScrollIndicator={false}
     >
       {/* Greeting */}
-      <View style={{ paddingHorizontal: sp.lg, paddingTop: sp.lg, paddingBottom: sp.md, gap: sp.xs }}>
+      <View
+        style={{
+          paddingHorizontal: sp.lg,
+          paddingTop: sp.lg,
+          paddingBottom: sp.md,
+          gap: sp.xs,
+        }}
+      >
         <S w={100} h={12} />
         <S w={200} h={24} radius={r.md} />
       </View>
 
       {/* Section header */}
-      <S w={64} h={11} style={{ marginHorizontal: sp.lg, marginBottom: sp.xs }} />
+      <S
+        w={64}
+        h={11}
+        style={{ marginHorizontal: sp.lg, marginBottom: sp.xs }}
+      />
 
       {/* Stats row */}
-      <View style={{ flexDirection: 'row', paddingHorizontal: sp.lg, gap: sp.sm, marginBottom: sp.md }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          paddingHorizontal: sp.lg,
+          gap: sp.sm,
+          marginBottom: sp.md,
+        }}
+      >
         {[0, 1, 2].map(i => (
           <View
             key={i}
@@ -182,7 +309,11 @@ function HomeScreenSkeleton() {
       </View>
 
       {/* Section header */}
-      <S w={120} h={11} style={{ marginHorizontal: sp.lg, marginBottom: sp.xs }} />
+      <S
+        w={120}
+        h={11}
+        style={{ marginHorizontal: sp.lg, marginBottom: sp.xs }}
+      />
 
       {/* Activity skeletons */}
       {[0, 1, 2, 3, 4].map(i => (
@@ -214,7 +345,10 @@ function HomeScreenSkeleton() {
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-function useGreetingKey(): 'home.greeting_morning' | 'home.greeting_afternoon' | 'home.greeting_evening' {
+function useGreetingKey():
+  | 'home.greeting_morning'
+  | 'home.greeting_afternoon'
+  | 'home.greeting_evening' {
   const h = new Date().getHours()
   if (h < 12) return 'home.greeting_morning'
   if (h < 17) return 'home.greeting_afternoon'
@@ -222,17 +356,39 @@ function useGreetingKey(): 'home.greeting_morning' | 'home.greeting_afternoon' |
 }
 
 type ActivityColors = { bg: string; accent: string }
-function typeConfig(type: ActivityType, c: ReturnType<typeof useTheme>['theme']['colors']): ActivityColors {
+function typeConfig(
+  type: ActivityType,
+  c: ReturnType<typeof useTheme>['theme']['colors'],
+): ActivityColors {
   switch (type) {
-    case 'success': return { accent: c.success,  bg: c.success  + '1F' }
-    case 'task':    return { accent: c.primary,  bg: c.primaryAmbient }
-    case 'message': return { accent: c.info,     bg: c.info     + '1F' }
-    case 'alert':   return { accent: c.warning,  bg: c.warning  + '1F' }
+    case 'success':
+      return { accent: c.success, bg: c.success + '1F' }
+    case 'task':
+      return { accent: c.primary, bg: c.primaryAmbient }
+    case 'message':
+      return { accent: c.info, bg: c.info + '1F' }
+    case 'alert':
+      return { accent: c.warning, bg: c.warning + '1F' }
   }
 }
 
-function ActivityIcon({ type, accent }: { type: ActivityType; accent: string }) {
-  const props = { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: accent, strokeWidth: 2, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
+function ActivityIcon({
+  type,
+  accent,
+}: {
+  type: ActivityType
+  accent: string
+}) {
+  const props = {
+    width: 18,
+    height: 18,
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    stroke: accent,
+    strokeWidth: 2,
+    strokeLinecap: 'round' as const,
+    strokeLinejoin: 'round' as const,
+  }
   switch (type) {
     case 'success':
       return (
@@ -267,19 +423,37 @@ function ActivityIcon({ type, accent }: { type: ActivityType; accent: string }) 
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function GreetingSection({ name, greetingKey }: { name: string; greetingKey: ReturnType<typeof useGreetingKey> }) {
+function GreetingSection({
+  name,
+  greetingKey,
+}: {
+  name: string
+  greetingKey: ReturnType<typeof useGreetingKey>
+}) {
   const t = useT()
   const { theme } = useTheme()
   const c = theme.colors
   const sp = theme.spacing
   const ty = theme.typography
-  const today = new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })
+  const today = new Date().toLocaleDateString(undefined, {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+  })
 
   return (
-    <View style={{ paddingHorizontal: sp.lg, paddingTop: sp.lg, paddingBottom: sp.md, gap: sp.xxs }}>
+    <View
+      style={{
+        paddingHorizontal: sp.lg,
+        paddingTop: sp.lg,
+        paddingBottom: sp.md,
+        gap: sp.xxs,
+      }}
+    >
       <Text style={[ty.bodySmall, { color: c.textTertiary }]}>{today}</Text>
       <Text style={[ty.displaySmall, { color: c.textPrimary }]}>
-        {t(greetingKey)}{name ? `, ${name.split(' ')[0]}` : ''} 👋
+        {t(greetingKey)}
+        {name ? `, ${name.split(' ')[0]}` : ''} 👋
       </Text>
     </View>
   )
@@ -291,7 +465,11 @@ function SectionHeader({ label }: { label: string }) {
     <Text
       style={[
         theme.typography.caps,
-        { color: theme.colors.textTertiary, paddingHorizontal: theme.spacing.lg, paddingBottom: theme.spacing.xs },
+        {
+          color: theme.colors.textTertiary,
+          paddingHorizontal: theme.spacing.lg,
+          paddingBottom: theme.spacing.xs,
+        },
       ]}
     >
       {label}
@@ -301,23 +479,39 @@ function SectionHeader({ label }: { label: string }) {
 
 type StatTrend = { kind: 'text'; value: string } | { kind: 'flame' }
 
-function StatTrendBadge({ trend, color, radius }: { trend: StatTrend; color: string; radius: number }) {
+function StatTrendBadge({
+  trend,
+  color,
+  radius,
+}: {
+  trend: StatTrend
+  color: string
+  radius: number
+}) {
   const { theme } = useTheme()
   const ty = theme.typography
   const SIZE = 28
   return (
-    <View style={{
-      width: SIZE,
-      height: SIZE,
-      borderRadius: radius,
-      backgroundColor: color + '1F',
-      alignItems: 'center',
-      justifyContent: 'center',
-    }}>
+    <View
+      style={{
+        width: SIZE,
+        height: SIZE,
+        borderRadius: radius,
+        backgroundColor: color + '1F',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
       {trend.kind === 'text' ? (
         <Text style={[ty.labelSmall, { color }]}>{trend.value}</Text>
       ) : (
-        <Svg width={14} height={14} viewBox="0 0 24 24" fill={color} stroke="none">
+        <Svg
+          width={14}
+          height={14}
+          viewBox="0 0 24 24"
+          fill={color}
+          stroke="none"
+        >
           <Path d="M12 2s-6 6.5-6 12a6 6 0 0 0 12 0C18 8.5 12 2 12 2zm0 16a2 2 0 0 1-2-2c0-2 2-5 2-5s2 3 2 5a2 2 0 0 1-2 2z" />
         </Svg>
       )}
@@ -333,14 +527,45 @@ function StatsRow() {
   const r = theme.radius
   const ty = theme.typography
 
-  const stats: { key: string; label: string; value: string; trend: StatTrend; trendColor: string }[] = [
-    { key: 'done',   label: t('home.stat_done'),   value: '12', trend: { kind: 'text', value: '+3' }, trendColor: c.success },
-    { key: 'active', label: t('home.stat_active'),  value: '4',  trend: { kind: 'text', value: '–1' }, trendColor: c.danger },
-    { key: 'streak', label: t('home.stat_streak'),  value: '7d', trend: { kind: 'flame' },             trendColor: c.warning },
+  const stats: {
+    key: string
+    label: string
+    value: string
+    trend: StatTrend
+    trendColor: string
+  }[] = [
+    {
+      key: 'done',
+      label: t('home.stat_done'),
+      value: '12',
+      trend: { kind: 'text', value: '+3' },
+      trendColor: c.success,
+    },
+    {
+      key: 'active',
+      label: t('home.stat_active'),
+      value: '4',
+      trend: { kind: 'text', value: '–1' },
+      trendColor: c.danger,
+    },
+    {
+      key: 'streak',
+      label: t('home.stat_streak'),
+      value: '7d',
+      trend: { kind: 'flame' },
+      trendColor: c.warning,
+    },
   ]
 
   return (
-    <View style={{ flexDirection: 'row', paddingHorizontal: sp.lg, gap: sp.sm, marginBottom: sp.md }}>
+    <View
+      style={{
+        flexDirection: 'row',
+        paddingHorizontal: sp.lg,
+        gap: sp.sm,
+        marginBottom: sp.md,
+      }}
+    >
       {stats.map(s => (
         <View
           key={s.key}
@@ -361,10 +586,27 @@ function StatsRow() {
             },
           ]}
         >
-          <Text style={[ty.caps, { color: c.textTertiary, textAlign: 'center' }]}>{s.label}</Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: sp.xxs }}>
-            <Text style={[ty.headlineLarge, { color: c.textPrimary }]}>{s.value}</Text>
-            <StatTrendBadge trend={s.trend} color={s.trendColor} radius={r.xl} />
+          <Text
+            style={[ty.caps, { color: c.textTertiary, textAlign: 'center' }]}
+          >
+            {s.label}
+          </Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: sp.xxs,
+            }}
+          >
+            <Text style={[ty.headlineLarge, { color: c.textPrimary }]}>
+              {s.value}
+            </Text>
+            <StatTrendBadge
+              trend={s.trend}
+              color={s.trendColor}
+              radius={r.xl}
+            />
           </View>
         </View>
       ))}
@@ -396,20 +638,56 @@ function FeaturedCard() {
         gap: sp.sm,
       }}
     >
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+        }}
+      >
         <View style={{ flex: 1, gap: sp.xxs }}>
-          <Text style={[ty.titleMedium, { color: c.primary }]}>{t('home.featured_title')}</Text>
-          <Text style={[ty.bodySmall, { color: c.textSecondary }]}>{t('home.featured_subtitle')}</Text>
+          <Text style={[ty.titleMedium, { color: c.primary }]}>
+            {t('home.featured_title')}
+          </Text>
+          <Text style={[ty.bodySmall, { color: c.textSecondary }]}>
+            {t('home.featured_subtitle')}
+          </Text>
         </View>
-        <View style={{ backgroundColor: c.primary, borderRadius: r.rounded, paddingHorizontal: sp.sm, paddingVertical: sp.xxs, marginLeft: sp.sm }}>
-          <Text style={[ty.labelSmall, { color: c.onPrimary }]}>{done}/{total}</Text>
+        <View
+          style={{
+            backgroundColor: c.primary,
+            borderRadius: r.rounded,
+            paddingHorizontal: sp.sm,
+            paddingVertical: sp.xxs,
+            marginLeft: sp.sm,
+          }}
+        >
+          <Text style={[ty.labelSmall, { color: c.onPrimary }]}>
+            {done}/{total}
+          </Text>
         </View>
       </View>
       <View style={{ gap: sp.xxs }}>
-        <View style={{ height: 6, borderRadius: r.pill, backgroundColor: c.primaryAmbient, overflow: 'hidden' }}>
-          <View style={{ height: '100%', width: `${progress * 100}%`, borderRadius: r.pill, backgroundColor: c.primary }} />
+        <View
+          style={{
+            height: 6,
+            borderRadius: r.pill,
+            backgroundColor: c.primaryAmbient,
+            overflow: 'hidden',
+          }}
+        >
+          <View
+            style={{
+              height: '100%',
+              width: `${progress * 100}%`,
+              borderRadius: r.pill,
+              backgroundColor: c.primary,
+            }}
+          />
         </View>
-        <Text style={[ty.labelSmall, { color: c.textTertiary }]}>{Math.round(progress * 100)}% complete</Text>
+        <Text style={[ty.labelSmall, { color: c.textTertiary }]}>
+          {Math.round(progress * 100)}% complete
+        </Text>
       </View>
     </View>
   )
@@ -473,10 +751,16 @@ const ActivityRow = memo(function ActivityRow({ item }: { item: FeedItem }) {
 
       {/* Content */}
       <View style={[styles.activityContent, { gap: sp.micro }]}>
-        <Text style={[ty.titleSmall, { color: c.textPrimary }]} numberOfLines={1}>
+        <Text
+          style={[ty.titleSmall, { color: c.textPrimary }]}
+          numberOfLines={1}
+        >
           {item.title}
         </Text>
-        <Text style={[ty.bodySmall, { color: c.textSecondary }]} numberOfLines={1}>
+        <Text
+          style={[ty.bodySmall, { color: c.textSecondary }]}
+          numberOfLines={1}
+        >
           {item.subtitle}
         </Text>
       </View>
@@ -491,7 +775,9 @@ const ActivityRow = memo(function ActivityRow({ item }: { item: FeedItem }) {
           alignSelf: 'flex-start',
         }}
       >
-        <Text style={[ty.labelSmall, { color: c.textTertiary }]}>{item.time}</Text>
+        <Text style={[ty.labelSmall, { color: c.textTertiary }]}>
+          {item.time}
+        </Text>
       </View>
     </View>
   )
@@ -514,7 +800,14 @@ function QuickActionsSection() {
   return (
     <View style={{ paddingTop: sp.lg, gap: sp.sm }}>
       <SectionHeader label={t('home.quick_actions')} />
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: sp.lg, gap }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          paddingHorizontal: sp.lg,
+          gap,
+        }}
+      >
         {QUICK_ACTIONS.map(a => (
           <Pressable
             key={a.id}
@@ -530,10 +823,26 @@ function QuickActionsSection() {
               gap: sp.xxs,
             })}
           >
-            <View style={{ width: 40, height: 40, borderRadius: r.xl, backgroundColor: c[a.colorKey] + '1F', alignItems: 'center', justifyContent: 'center' }}>
+            <View
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: r.xl,
+                backgroundColor: c[a.colorKey] + '1F',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
               <QuickActionSvg icon={a.icon} color={c[a.colorKey]} />
             </View>
-            <Text style={[ty.labelSmall, { color: c.textSecondary, textAlign: 'center' }]}>{a.label}</Text>
+            <Text
+              style={[
+                ty.labelSmall,
+                { color: c.textSecondary, textAlign: 'center' },
+              ]}
+            >
+              {a.label}
+            </Text>
           </Pressable>
         ))}
       </View>
@@ -574,7 +883,10 @@ export default function HomeScreen() {
     [],
   )
 
-  const renderItem = useCallback(({ item }: { item: FeedItem }) => <ActivityRow item={item} />, [])
+  const renderItem = useCallback(
+    ({ item }: { item: FeedItem }) => <ActivityRow item={item} />,
+    [],
+  )
   const keyExtractor = useCallback((item: FeedItem) => item.id, [])
 
   return (

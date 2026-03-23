@@ -111,13 +111,19 @@ try {
   const _navRaw = createMMKV({ id: 'navigation-storage' })
 
   _mmkvStorage = createMMKVLike(
-    key => { const v = _mmkvRaw.getString(key); return v !== undefined ? v : null },
+    key => {
+      const v = _mmkvRaw.getString(key)
+      return v !== undefined ? v : null
+    },
     (key, value) => _mmkvRaw.set(key, value),
     key => _mmkvRaw.remove(key),
     () => _mmkvRaw.clearAll(),
   )
   _navigationStorage = createMMKVLike(
-    key => { const v = _navRaw.getString(key); return v !== undefined ? v : null },
+    key => {
+      const v = _navRaw.getString(key)
+      return v !== undefined ? v : null
+    },
     (key, value) => _navRaw.set(key, value),
     key => _navRaw.remove(key),
     () => _navRaw.clearAll(),

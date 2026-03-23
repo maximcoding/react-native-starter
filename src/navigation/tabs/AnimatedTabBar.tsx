@@ -8,19 +8,12 @@
 import { IconName } from '@assets/icons'
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs'
 import React, { useEffect, useRef } from 'react'
-import {
-  Animated,
-  Platform,
-  Pressable,
-  StyleSheet,
-  View,
-} from 'react-native'
+import { Animated, Platform, Pressable, StyleSheet, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Text } from '@/shared/components/ui/Text'
-import { IconSvg } from '@/shared/components/ui/IconSvg'
 import { ROUTES } from '@/navigation/routes'
+import { IconSvg } from '@/shared/components/ui/IconSvg'
+import { Text } from '@/shared/components/ui/Text'
 import { useTheme } from '@/shared/theme'
-
 
 const ICON_SIZE = 22
 const TAB_MIN_TOUCH = 44

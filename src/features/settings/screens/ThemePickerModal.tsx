@@ -1,23 +1,29 @@
 // src/features/settings/screens/ThemePickerModal.tsx
 
-import { useNavigation } from '@react-navigation/native'
 import React, { useCallback } from 'react'
 import { Pressable, StyleSheet, View } from 'react-native'
 import Svg, { Polyline } from 'react-native-svg'
 import { useT } from '@/i18n/useT'
+import { goBack } from '@/navigation/helpers/navigation-helpers'
 import HalfSheet from '@/navigation/modals/half-sheet'
 import { Text } from '@/shared/components/ui/Text'
 import type { ThemeMode } from '@/shared/theme/ThemeContext'
 import { useTheme } from '@/shared/theme/useTheme'
 
-const THEME_OPTIONS: { mode: ThemeMode; labelKey: 'settings.theme_light' | 'settings.theme_dark' | 'settings.theme_system'; emoji: string }[] = [
-  { mode: 'light',  labelKey: 'settings.theme_light',  emoji: '☀️' },
-  { mode: 'dark',   labelKey: 'settings.theme_dark',   emoji: '🌙' },
+const THEME_OPTIONS: {
+  mode: ThemeMode
+  labelKey:
+    | 'settings.theme_light'
+    | 'settings.theme_dark'
+    | 'settings.theme_system'
+  emoji: string
+}[] = [
+  { mode: 'light', labelKey: 'settings.theme_light', emoji: '☀️' },
+  { mode: 'dark', labelKey: 'settings.theme_dark', emoji: '🌙' },
   { mode: 'system', labelKey: 'settings.theme_system', emoji: '⚙️' },
 ]
 
 export default function ThemePickerModal() {
-  const nav = useNavigation()
   const t = useT()
   const { theme, mode, setTheme } = useTheme()
   const c = theme.colors
@@ -25,20 +31,22 @@ export default function ThemePickerModal() {
   const r = theme.radius
   const ty = theme.typography
 
-  const handleClose = useCallback(() => nav.goBack(), [nav])
+  const handleClose = useCallback(() => goBack(), [])
 
   const handleSelect = useCallback(
     (selected: ThemeMode) => {
       setTheme(selected)
-      nav.goBack()
+      goBack()
     },
-    [setTheme, nav],
+    [setTheme],
   )
 
   return (
     <HalfSheet onClose={handleClose}>
       {/* Title */}
-      <Text style={[ty.titleMedium, { color: c.textPrimary, marginBottom: sp.md }]}>
+      <Text
+        style={[ty.titleMedium, { color: c.textPrimary, marginBottom: sp.md }]}
+      >
         {t('settings.theme')}
       </Text>
 
@@ -69,7 +77,11 @@ export default function ThemePickerModal() {
               <Text
                 style={[
                   ty.bodyMedium,
-                  { flex: 1, color: selected ? c.primary : c.textPrimary, marginLeft: sp.sm },
+                  {
+                    flex: 1,
+                    color: selected ? c.primary : c.textPrimary,
+                    marginLeft: sp.sm,
+                  },
                 ]}
               >
                 {t(opt.labelKey)}
