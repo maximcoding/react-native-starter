@@ -5,8 +5,11 @@ import { SettingsSection } from '@/features/settings/components/SettingsSection'
 import { useMeQuery } from '@/features/user/hooks/useMeQuery'
 import i18n from '@/i18n/i18n'
 import { useT } from '@/i18n/useT'
+import { navigate } from '@/navigation/helpers/navigation-helpers'
+import { ROUTES } from '@/navigation/routes'
 import { performLogout } from '@/session/logout'
 import ScreenWrapper from '@/shared/components/ui/ScreenWrapper'
+import { ScreenHeader } from '@/shared/components/ui/ScreenHeader'
 import { Text } from '@/shared/components/ui/Text'
 import { useTheme } from '@/shared/theme/useTheme'
 
@@ -22,29 +25,21 @@ const LANGUAGE_LABELS: Record<string, string> = {
   de: 'Deutsch',
 }
 
-const LANGUAGE_CYCLE = ['en', 'ru', 'de'] as const
-
 export default function SettingsScreen() {
-  const { theme, mode, setTheme } = useTheme()
+  const { theme, mode } = useTheme()
   const t = useT()
   const me = useMeQuery()
-
   const themeModeLabel = t(THEME_MODE_KEYS[mode])
 
   const currentLang = i18n.language
   const languageLabel = LANGUAGE_LABELS[currentLang] ?? currentLang
 
-  const cycleTheme = useCallback(() => {
-    const next =
-      mode === 'light' ? 'dark' : mode === 'dark' ? 'system' : 'light'
-    setTheme(next)
-  }, [mode, setTheme])
+  const openThemePicker = useCallback(() => {
+    navigate(ROUTES.MODAL_THEME_PICKER)
+  }, [])
 
-  const cycleLanguage = useCallback(() => {
-    const lang = i18n.language
-    const idx = LANGUAGE_CYCLE.indexOf(lang as (typeof LANGUAGE_CYCLE)[number])
-    const next = LANGUAGE_CYCLE[(idx + 1) % LANGUAGE_CYCLE.length]
-    i18n.changeLanguage(next)
+  const openLanguagePicker = useCallback(() => {
+    navigate(ROUTES.MODAL_LANGUAGE_PICKER)
   }, [])
 
   const handleLogout = useCallback(() => {
@@ -64,18 +59,8 @@ export default function SettingsScreen() {
   }, [me.data?.name])
 
   return (
-    <ScreenWrapper scroll>
+    <ScreenWrapper scroll header={<ScreenHeader title={t('settings.title')} />}>
       <View style={{ padding: theme.spacing.lg, gap: theme.spacing.lg }}>
-        {/* Screen title */}
-        <Text
-          style={[
-            theme.typography.displaySmall,
-            { color: theme.colors.textPrimary },
-          ]}
-        >
-          {t('settings.title')}
-        </Text>
-
         {/* Account card */}
         <SettingsSection>
           <View
@@ -136,12 +121,12 @@ export default function SettingsScreen() {
           <SettingsRow
             label={t('settings.theme')}
             value={themeModeLabel}
-            onPress={cycleTheme}
+            onPress={openThemePicker}
           />
           <SettingsRow
             label={t('settings.language.label')}
             value={languageLabel}
-            onPress={cycleLanguage}
+            onPress={openLanguagePicker}
           />
         </SettingsSection>
 

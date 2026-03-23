@@ -1,76 +1,55 @@
 /**
  * HALF SHEET MODAL (BOTTOM SHEET)
  * ------------------------------------------------------------------
- * Purpose:
- *   A bottom-docked sheet that supports:
- *     - drag-to-close gesture
- *     - velocity-based dismissal
- *     - animated spring opening
- *     - dimmed backdrop with fade
- *     - tap-outside-to-close
- *     - theme-aware background
- *     - safe-area bottom padding
+ * Uses React Native's built-in Animated API (not Reanimated) so it is
+ * compatible with any Reanimated version. Reanimated 4 removed the
+ * withSpring completion-callback, so all prior logic was broken.
  *
- * When to use:
- *   - pickers
- *   - filters
- *   - small forms
- *   - route-based sheet UI
+ * Features:
+ *   - Spring open from bottom on mount
+ *   - Tap-backdrop-to-close
+ *   - Drag-down-to-close (PanResponder)
+ *   - Backdrop fade
+ *   - Safe-area bottom padding
+ *   - Theme-aware colours
  *
- * How it works:
- *   - When mounted → opens automatically from bottom
- *   - Dragging down or tapping backdrop → closes sheet
- *   - When closed → calls onClose() AFTER animation ends
+ * Usage:
+ *   function MySheetScreen() {
+ *     const nav = useNavigation()
+ *     return (
+ *       <HalfSheet onClose={() => nav.goBack()}>
+ *         <YourContent />
+ *       </HalfSheet>
+ *     )
+ *   }
  *
- * How to register in navigation:
- *
- *    function EditProfileSheetScreen() {
- *      return (
- *        <HalfSheet onClose={() => navigation.goBack()}>
- *          <YourContent />
- *        </HalfSheet>
- *      );
- *    }
- *
- *    <Stack.Screen
- *      name={ROUTES.EDIT_PROFILE}
- *      component={EditProfileSheetScreen}
- *      options={nav.half(ROUTES.EDIT_PROFILE)}
- *    />
- *
- * How to open sheet:
- *    navigation.navigate(ROUTES.EDIT_PROFILE);
- *
- * Notes:
- *   - This component is NOT the screen. The screen should wrap it.
- *   - DO NOT use HalfSheet directly as <Stack.Screen component>.
- *   - The sheet height is auto-adjusted but can be customized.
- *   - Gesture logic cannot exist inside navigation options — only here.
+ *   <Stack.Screen
+ *     name={ROUTES.MY_SHEET}
+ *     component={MySheetScreen}
+ *     options={{ presentation: 'transparentModal', animation: 'none', gestureEnabled: false }}
+ *   />
  * ------------------------------------------------------------------
  */
 
-import React, { useCallback } from 'react'
-import { Dimensions, Pressable, StyleSheet, View } from 'react-native'
-import { Gesture, GestureDetector } from 'react-native-gesture-handler'
-import Animated, {
-  Extrapolate,
-  interpolate,
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated'
+import React, { useCallback, useEffect, useRef } from 'react'
+import {
+  Animated,
+  Dimensions,
+  PanResponder,
+  Pressable,
+  StyleSheet,
+  View,
+} from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { radius } from '@/shared/theme/tokens/radius'
+import { spacing } from '@/shared/theme/tokens/spacing'
 import { useTheme } from '@/shared/theme'
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window')
 
 interface Props {
   children?: React.ReactNode
-  /**
-   * Called AFTER closing animation finishes.
-   * Usually used to call navigation.goBack().
-   */
+  /** Called after the closing animation finishes — usually `navigation.goBack()`. */
   onClose?: () => void
 }
 
@@ -78,74 +57,73 @@ export default function HalfSheet({ children, onClose }: Props) {
   const { theme } = useTheme()
   const insets = useSafeAreaInsets()
 
-  /**
-   * translateY controls vertical position of sheet.
-   * Initial value is off-screen bottom.
-   */
-  const translateY = useSharedValue(SCREEN_HEIGHT)
+  /** Whether the backdrop / drag gesture may trigger a close. */
+  const [interactable, setInteractable] = React.useState(false)
 
-  /**
-   * Close sheet with animation → then call onClose()
-   */
-  // biome-ignore lint/correctness/useExhaustiveDependencies: stable callback for animation; onClose ref from parent
+  /** Sheet position. 0 = fully visible, SCREEN_HEIGHT = off-screen. */
+  const translateY = useRef(new Animated.Value(SCREEN_HEIGHT)).current
+  const backdropOpacity = useRef(new Animated.Value(0)).current
+
+  /** Animate close then call onClose. */
   const closeSheet = useCallback(() => {
-    translateY.value = withSpring(SCREEN_HEIGHT, { damping: 20 }, () => {
-      if (onClose) runOnJS(onClose)()
+    Animated.parallel([
+      Animated.spring(translateY, {
+        toValue: SCREEN_HEIGHT,
+        damping: 20,
+        stiffness: 150,
+        useNativeDriver: true,
+      }),
+      Animated.timing(backdropOpacity, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      onClose?.()
     })
-  }, [])
+  }, [translateY, backdropOpacity, onClose])
 
-  /**
-   * Open sheet to ~40% of screen height
-   */
-  // biome-ignore lint/correctness/useExhaustiveDependencies: translateY is Reanimated shared value (stable ref)
-  const openSheet = useCallback(() => {
-    translateY.value = withSpring(SCREEN_HEIGHT * 0.4, {
-      damping: 20,
-      stiffness: 150,
+  /** Open on mount. Backdrop+drag enabled only after animation completes. */
+  useEffect(() => {
+    Animated.parallel([
+      Animated.spring(translateY, {
+        toValue: 0,
+        damping: 20,
+        stiffness: 150,
+        useNativeDriver: true,
+      }),
+      Animated.timing(backdropOpacity, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setInteractable(true)
     })
-  }, [])
+  }, [translateY, backdropOpacity])
 
-  /**
-   * Open on mount
-   */
-  // biome-ignore lint/correctness/useExhaustiveDependencies: run once on mount only
-  React.useEffect(() => {
-    openSheet()
-  }, [])
-
-  /**
-   * Gesture: drag sheet vertically
-   */
-  const panGesture = Gesture.Pan()
-    .onUpdate(e => {
-      translateY.value = Math.max(e.translationY + SCREEN_HEIGHT * 0.4, 0)
-    })
-    .onEnd(e => {
-      const shouldClose =
-        e.velocityY > 800 || translateY.value > SCREEN_HEIGHT * 0.65
-
-      if (shouldClose) closeSheet()
-      else openSheet()
-    })
-
-  /**
-   * Animated sheet style
-   */
-  const sheetStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: translateY.value }],
-  }))
-
-  /**
-   * Backdrop fade animation
-   */
-  const backdropStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(
-      translateY.value,
-      [SCREEN_HEIGHT * 0.4, SCREEN_HEIGHT],
-      [1, 0],
-      Extrapolate.CLAMP,
-    ),
-  }))
+  /** Drag-to-close gesture. */
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, { dy, dx }) =>
+        Math.abs(dy) > Math.abs(dx) && dy > 5,
+      onPanResponderMove: (_, { dy }) => {
+        if (dy > 0) translateY.setValue(dy)
+      },
+      onPanResponderRelease: (_, { dy, vy }) => {
+        if (vy > 0.5 || dy > SCREEN_HEIGHT * 0.25) {
+          closeSheet()
+        } else {
+          Animated.spring(translateY, {
+            toValue: 0,
+            damping: 20,
+            stiffness: 150,
+            useNativeDriver: true,
+          }).start()
+        }
+      },
+    }),
+  ).current
 
   return (
     <View style={styles.fullscreen}>
@@ -153,37 +131,41 @@ export default function HalfSheet({ children, onClose }: Props) {
       <Animated.View
         style={[
           styles.backdrop,
-          { backgroundColor: theme.colors.overlayBackdrop },
-          backdropStyle,
+          {
+            backgroundColor: theme.colors.overlayBackdrop,
+            opacity: backdropOpacity,
+          },
         ]}
       >
-        <Pressable style={styles.backdropPress} onPress={closeSheet} />
+        <Pressable
+          style={StyleSheet.absoluteFill}
+          onPress={closeSheet}
+          disabled={!interactable}
+        />
       </Animated.View>
 
       {/* Sheet */}
-      <GestureDetector gesture={panGesture}>
-        <Animated.View
+      <Animated.View
+        style={[
+          styles.sheet,
+          {
+            backgroundColor: theme.colors.background,
+            paddingBottom: insets.bottom + spacing.sm,
+            transform: [{ translateY }],
+          },
+        ]}
+        {...(interactable ? panResponder.panHandlers : {})}
+      >
+        {/* Handle bar */}
+        <View
           style={[
-            styles.sheet,
-            {
-              backgroundColor: theme.colors.background,
-              paddingBottom: insets.bottom + 12,
-            },
-            sheetStyle,
+            styles.handle,
+            { backgroundColor: theme.colors.overlayOnSurface },
           ]}
-        >
-          {/* handle bar */}
-          <View
-            style={[
-              styles.handle,
-              { backgroundColor: theme.colors.overlayOnSurface },
-            ]}
-          />
+        />
 
-          {/* sheet content */}
-          {children}
-        </Animated.View>
-      </GestureDetector>
+        {children}
+      </Animated.View>
     </View>
   )
 }
@@ -193,31 +175,24 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'flex-end',
   },
-
   backdrop: {
     ...StyleSheet.absoluteFillObject,
   },
-
-  backdropPress: {
-    flex: 1,
-  },
-
   sheet: {
     width: '100%',
     minHeight: SCREEN_HEIGHT * 0.4,
     maxHeight: SCREEN_HEIGHT * 0.85,
-    borderTopLeftRadius: 18,
-    borderTopRightRadius: 18,
+    borderTopLeftRadius: radius.xxxl,
+    borderTopRightRadius: radius.xxxl,
     overflow: 'hidden',
-    paddingHorizontal: 16,
-    paddingTop: 8,
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.xs,
   },
-
   handle: {
-    width: 44,
-    height: 5,
-    borderRadius: 3,
+    width: spacing.xxxxl,
+    height: spacing.xxs,
+    borderRadius: radius.pill,
     alignSelf: 'center',
-    marginBottom: 12,
+    marginBottom: spacing.sm,
   },
 })
