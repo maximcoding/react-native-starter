@@ -5,7 +5,7 @@ import { useT } from '@/i18n/useT'
 import { goBack } from '@/navigation/helpers/navigation-helpers'
 import { Button } from '@/shared/components/ui/Button'
 import { ScreenHeader } from '@/shared/components/ui/ScreenHeader'
-import ScreenWrapper from '@/shared/components/ui/ScreenWrapper'
+import { ScreenWrapper } from '@/shared/components/ui/ScreenWrapper'
 import { useTheme } from '@/shared/theme/useTheme'
 
 export default function LanguageScreen() {

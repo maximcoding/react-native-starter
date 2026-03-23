@@ -9,6 +9,7 @@ import '@/i18n/i18n'
 import { flags } from '@/config/constants'
 import { authKeys } from '@/features/auth/api/keys'
 import { userKeys } from '@/features/user/api/keys'
+import { useT } from '@/i18n/useT'
 import { useBackButtonHandler } from '@/navigation/helpers/use-back-handler'
 import { NavigationRoot } from '@/navigation/NavigationRoot'
 import { clearNavigationPersistence } from '@/navigation/persistence/navigation-persistence'
@@ -27,6 +28,8 @@ import {
 initSentry()
 
 export default function App() {
+  const t = useT()
+
   useEffect(() => {
     setTransport(flags.USE_MOCK ? mockAdapter : restAdapter)
   }, [])
@@ -50,9 +53,14 @@ export default function App() {
               captureBoundaryError(error, errorInfo)
               clearNavigationPersistence()
             }}
+            labels={{
+              title: t('common.error_title'),
+              hint: t('common.error_hint'),
+              retry: t('common.retry'),
+            }}
           >
             <QueryProvider tagMaps={[authKeys.tagMap, userKeys.tagMap]}>
-              <OfflineBanner />
+              <OfflineBanner message={t('common.offline_banner')} />
               <NavigationRoot />
             </QueryProvider>
           </ErrorBoundary>

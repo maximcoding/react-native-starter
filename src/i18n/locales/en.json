@@ -1,82 +1,79 @@
 {
-  "app": {
-    "title": "My App"
+  "common": {
+    "error_title": "Something went wrong",
+    "error_hint": "An unexpected error occurred. Please try again.",
+    "retry": "Try again",
+    "offline_banner": "You're offline. Showing cached data.",
+    "loading": "Loading…"
   },
   "auth": {
-    "title": "Authorization",
+    "a11y_toggle_theme": "Toggle color theme",
     "welcome": "Welcome back",
     "subtitle": "Sign in to continue to your account",
     "mock_demo_hint": "Demo: fields are pre-filled — tap Sign in (mock API).",
+    "or": "OR",
     "email": "Email",
     "email_placeholder": "you@example.com",
     "password": "Password",
-    "password_placeholder": "••••••••",
     "forgot_password": "Forgot?",
-    "login": "Login",
-    "sign_in": "Sign in",
+    "password_placeholder": "••••••••",
     "signing_in": "Signing in…",
+    "sign_in": "Sign in",
     "no_account": "Don't have an account?",
     "sign_up": "Sign up",
-    "or": "OR",
     "terms_prefix": "By continuing, you agree to our",
     "terms_of_service": "Terms of Service",
     "and": "and",
-    "privacy_policy": "Privacy Policy",
-    "logout": "Log out",
-    "a11y_toggle_theme": "Toggle color theme"
-  },
-  "common": {
-    "loading": "Loading…",
-    "error": "Error",
-    "no_data": "No data",
-    "error_title": "Something went wrong",
-    "error_hint": "Please try again. If the problem continues, restart the app.",
-    "retry": "Try again"
+    "privacy_policy": "Privacy Policy"
   },
   "home": {
+    "stat_done": "Done",
+    "stat_active": "Active",
+    "stat_streak": "Streak",
+    "featured_title": "Daily goal",
+    "featured_subtitle": "You're doing great — keep your streak alive.",
+    "quick_actions": "Quick actions",
+    "overview": "Overview",
+    "recent_activity": "Recent activity",
     "title": "Home",
-    "subtitle": "Welcome!",
-    "go_settings": "Go to Settings",
     "greeting_morning": "Good morning",
     "greeting_afternoon": "Good afternoon",
     "greeting_evening": "Good evening",
-    "overview": "Overview",
-    "recent_activity": "Recent activity",
-    "quick_actions": "Quick actions",
-    "featured_title": "Daily goal",
-    "featured_subtitle": "You're doing great — keep your streak alive.",
-    "stat_done": "Done",
-    "stat_active": "Active",
-    "stat_streak": "Streak"
-  },
-  "onboarding": {
-    "welcome": "Welcome!",
-    "continue": "Continue",
-    "headline": "Everything you need,\nin one place.",
-    "tagline": "Fast, reliable, and beautifully designed.",
-    "get_started": "Get started",
-    "feature_1_title": "Offline-ready",
-    "feature_1_body": "Works seamlessly without a connection",
-    "feature_2_title": "Secure by default",
-    "feature_2_body": "Your data is encrypted end-to-end",
-    "feature_3_title": "Lightning fast",
-    "feature_3_body": "Instant sync across all your devices"
+    "quick_action_task": "New task",
+    "quick_action_message": "Message",
+    "quick_action_schedule": "Schedule",
+    "quick_action_report": "Report",
+    "quick_action_upload": "Upload"
   },
   "settings": {
-    "title": "Settings",
-    "appearance": "Appearance",
-    "theme": "Theme",
     "language": {
       "label": "Language",
       "english": "English",
       "russian": "Russian",
       "german": "German"
     },
+    "title": "Settings",
+    "appearance": "Appearance",
+    "theme": "Theme",
     "about": "About",
     "version": "Version",
     "logout": "Log out",
     "theme_light": "Light",
     "theme_dark": "Dark",
     "theme_system": "System"
+  },
+  "onboarding": {
+    "headline": "Everything you need,\nin one place.",
+    "tagline": "Fast, reliable, and beautifully designed.",
+    "feature_1_title": "Offline-ready",
+    "feature_1_body": "Works seamlessly without a connection",
+    "feature_2_title": "Secure by default",
+    "feature_2_body": "Your data is encrypted end-to-end",
+    "feature_3_title": "Lightning fast",
+    "feature_3_body": "Instant sync across all your devices",
+    "get_started": "Get started"
+  },
+  "app": {
+    "title": "App"
   }
 }

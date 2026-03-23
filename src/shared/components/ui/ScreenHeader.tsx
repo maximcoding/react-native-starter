@@ -5,18 +5,29 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native'
 import Svg, { Polyline } from 'react-native-svg'
 import { Text } from '@/shared/components/ui/Text'
 import { useTheme } from '@/shared/theme'
+import { spacing } from '@/shared/theme/tokens/spacing'
 
 interface Props {
   title: string
   onBack?: () => void
+  /** Translated label for the back button (screen readers). */
+  backLabel?: string
   /** Optional element rendered in the right slot (mirrors back button width). */
   right?: React.ReactNode
 }
 
-const BTN_SIZE = 40
-const HEADER_HEIGHT = 56
+// Derived from spacing tokens
+const BTN_SIZE = spacing.xxxl // 40
+const HEADER_HEIGHT = spacing.xxxxxl // 56
+const ICON_SIZE = spacing.lg // 20
+const ICON_STROKE_WIDTH = 2.2
 
-export function ScreenHeader({ title, onBack, right }: Props) {
+export function ScreenHeader({
+  title,
+  onBack,
+  backLabel = 'Go back',
+  right,
+}: Props) {
   const { theme } = useTheme()
   const c = theme.colors
   const sp = theme.spacing
@@ -40,17 +51,18 @@ export function ScreenHeader({ title, onBack, right }: Props) {
         {onBack ? (
           <TouchableOpacity
             onPress={onBack}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            hitSlop={{ top: sp.xs, bottom: sp.xs, left: sp.xs, right: sp.xs }}
             accessibilityRole="button"
+            accessibilityLabel={backLabel}
             style={styles.iconBtn}
           >
             <Svg
-              width={20}
-              height={20}
+              width={ICON_SIZE}
+              height={ICON_SIZE}
               viewBox="0 0 24 24"
               fill="none"
               stroke={c.textPrimary}
-              strokeWidth={2.2}
+              strokeWidth={ICON_STROKE_WIDTH}
               strokeLinecap="round"
               strokeLinejoin="round"
             >

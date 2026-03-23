@@ -9,7 +9,7 @@ import { navigate } from '@/navigation/helpers/navigation-helpers'
 import { ROUTES } from '@/navigation/routes'
 import { performLogout } from '@/session/logout'
 import { ScreenHeader } from '@/shared/components/ui/ScreenHeader'
-import ScreenWrapper from '@/shared/components/ui/ScreenWrapper'
+import { ScreenWrapper } from '@/shared/components/ui/ScreenWrapper'
 import { Text } from '@/shared/components/ui/Text'
 import { useTheme } from '@/shared/theme/useTheme'
 

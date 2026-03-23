@@ -1,66 +1,16 @@
 /**
  * FILE: Button.tsx
  * LAYER: app/components/ui
- * ---------------------------------------------------------------------
- * PURPOSE:
- *   Enterprise-grade unified button component based on:
- *     - theme.semantic colors   (primary, border, overlay, textPrimary)
- *     - theme.typography        (labelLarge)
- *     - theme.spacing + radius  (layout tokens)
  *
- * GOALS:
- *   - Deterministic design system compatible with native & web design tokens.
- *   - No inline hex values, only semantic theme references.
- *   - Predictable variants + sizes.
- *   - Zero magic numbers outside token system.
- *   - Safe disabled/pressed states.
- *   - 100% accessibility readable contrast.
- *
- * VARIANTS (semantic only):
- *   primary    → solid brand button (CTA)
- *   secondary  → neutral surface button
- *   outline    → transparent button with semantic border
- *
- * SIZES:
- *   md → default height (44)
- *   lg → CTA / primary action height (52)
- *
- * EXAMPLES:
- *   <Button
- *     title={t('auth.login')}
- *     variant="primary"
- *     size="lg"
- *     onPress={handleLogin}
- *   />
- *
- *   <Button
- *     title={t('common.cancel')}
- *     variant="secondary"
- *   />
- *
- *   <Button
- *     title={t('common.delete')}
- *     variant="outline"
- *     disabled
- *   />
- *
- * DESIGN RULES:
- *   - Typography always labelLarge unless overridden.
- *   - Pressed state = slight opacity (0.85).
- *   - Disabled state = reduced opacity + semantic muted colors.
- *
- * EXTENSION:
- *   - Add destructive variant (danger) using theme.colors.danger.
- *   - Add "ghost" variant (transparent, no border).
- *   - Add icon support: left/right icon slots.
- *   - Add fullWidth, compact, pill shapes.
- * ---------------------------------------------------------------------
+ * VARIANTS: primary | secondary | outline
+ * SIZES:    md (44pt touch target) | lg (52pt CTA)
  */
 
 import React from 'react'
 import {
   ActivityIndicator,
   Pressable,
+  StyleSheet,
   TextStyle,
   ViewStyle,
 } from 'react-native'
@@ -70,6 +20,18 @@ import { Text } from './Text'
 type ButtonVariant = 'primary' | 'secondary' | 'outline'
 type ButtonSize = 'md' | 'lg'
 
+// Touch-target heights (WCAG / HIG: 44pt minimum; 52pt for primary CTAs).
+// Not in the general spacing scale — intentional design values.
+const BUTTON_HEIGHT_MD = 44
+const BUTTON_HEIGHT_LG = 52
+
+// Interaction opacities
+const OPACITY_DISABLED = 0.55
+const OPACITY_PRESSED = 0.85
+
+// Outline border weight (not a hairline — needs visual presence)
+const OUTLINE_BORDER_WIDTH = 1
+
 interface ButtonProps {
   title: string
   variant?: ButtonVariant
@@ -77,7 +39,6 @@ interface ButtonProps {
   loading?: boolean
   disabled?: boolean
   onPress?: () => void
-  /** Forwarded to `Pressable` (e.g. Reanimated scale on the wrapping `Animated.View`). */
   onPressIn?: () => void
   onPressOut?: () => void
   style?: ViewStyle
@@ -100,59 +61,49 @@ export function Button({
 }: ButtonProps) {
   const { theme } = useTheme()
 
-  /**
-   * SIZES (token-driven)
-   */
-  const height = size === 'lg' ? 52 : 44
+  const height = size === 'lg' ? BUTTON_HEIGHT_LG : BUTTON_HEIGHT_MD
   const paddingH = size === 'lg' ? theme.spacing.lg : theme.spacing.md
+  const isInactive = disabled || loading
 
-  /**
-   * VARIANTS (semantic)
-   */
-  const variants: Record<ButtonVariant, ViewStyle> = {
-    primary: {
-      backgroundColor: disabled
-        ? theme.colors.overlayMedium
-        : theme.colors.primary,
-    },
+  const variantStyle: ViewStyle = (() => {
+    switch (variant) {
+      case 'primary':
+        return {
+          backgroundColor: disabled
+            ? theme.colors.overlayMedium
+            : theme.colors.primary,
+        }
+      case 'secondary':
+        return { backgroundColor: theme.colors.surfaceSecondary }
+      case 'outline':
+        return {
+          backgroundColor: 'transparent',
+          borderWidth: OUTLINE_BORDER_WIDTH,
+          borderColor: disabled ? theme.colors.divider : theme.colors.primary,
+        }
+    }
+  })()
 
-    secondary: {
-      backgroundColor: disabled
-        ? theme.colors.surfaceSecondary
-        : theme.colors.surfaceSecondary,
-    },
+  const textColor: string = (() => {
+    switch (variant) {
+      case 'primary':
+        return disabled ? theme.colors.textSecondary : theme.colors.onPrimary
+      case 'secondary':
+        return theme.colors.textPrimary
+      case 'outline':
+        return disabled ? theme.colors.textTertiary : theme.colors.primary
+    }
+  })()
 
-    outline: {
-      backgroundColor: 'transparent',
-      borderWidth: 1,
-      borderColor: disabled ? theme.colors.divider : theme.colors.primary,
-    },
-  }
-
-  /**
-   * TEXT COLORS (semantic)
-   */
-  const textColors: Record<ButtonVariant, string> = {
-    primary: disabled ? theme.colors.textSecondary : theme.colors.onPrimary,
-    secondary: theme.colors.textPrimary,
-    outline: disabled ? theme.colors.textTertiary : theme.colors.primary,
-  }
-
-  /**
-   * MERGED CONTAINER STYLE
-   */
   const containerStyle: ViewStyle = {
+    ...styles.base,
     height,
     paddingHorizontal: paddingH,
     borderRadius: theme.radius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    opacity: disabled ? 0.55 : 1,
-    ...variants[variant],
+    opacity: disabled ? OPACITY_DISABLED : 1,
+    ...variantStyle,
     ...style,
   }
-
-  const isInactive = disabled || loading
 
   return (
     <Pressable
@@ -160,20 +111,19 @@ export function Button({
       onPress={isInactive ? undefined : onPress}
       onPressIn={isInactive ? undefined : onPressIn}
       onPressOut={isInactive ? undefined : onPressOut}
+      accessibilityRole="button"
+      accessibilityLabel={title}
+      accessibilityState={{ disabled: isInactive }}
       style={({ pressed }) => [
         containerStyle,
-        pressed && { opacity: disabled ? 0.55 : 0.85 },
+        pressed && { opacity: disabled ? OPACITY_DISABLED : OPACITY_PRESSED },
       ]}
     >
       {loading ? (
-        <ActivityIndicator color={textColors[variant]} />
+        <ActivityIndicator color={textColor} />
       ) : (
         <Text
-          style={[
-            theme.typography.labelLarge,
-            { color: textColors[variant] },
-            textStyle,
-          ]}
+          style={[theme.typography.labelLarge, { color: textColor }, textStyle]}
         >
           {title}
         </Text>
@@ -181,3 +131,10 @@ export function Button({
     </Pressable>
   )
 }
+
+const styles = StyleSheet.create({
+  base: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+})

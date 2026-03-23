@@ -1,23 +1,30 @@
 /**
  * Class error boundary — hooks live only in the themed fallback child.
- * Wrap feature trees or the app shell inside ThemeProvider so fallback can use useTheme / useT.
+ * Wrap feature trees or the app shell inside ThemeProvider so fallback can use useTheme.
+ * Pass `labels` (via useT at the call site) for translated strings; falls back to English defaults.
  */
 
 import React, { Component, type ErrorInfo, type ReactNode } from 'react'
 import { ScrollView, StyleSheet, View } from 'react-native'
-import { useT } from '@/i18n/useT'
 import { useTheme } from '@/shared/theme/useTheme'
 import { Button } from './Button'
 import { Text } from './Text'
+
+type ErrorBoundaryLabels = {
+  title?: string
+  hint?: string
+  retry?: string
+}
 
 type ErrorBoundaryProps = {
   children: ReactNode
   /** Optional hook for Sentry / logging — do not log secrets or PII */
   onError?: (error: Error, errorInfo: ErrorInfo) => void
+  /** Translated strings — pass via useT() at the call site */
+  labels?: ErrorBoundaryLabels
 }
 
 type ErrorBoundaryState = {
-  hasError: boolean
   error: Error | null
 }
 
@@ -25,10 +32,10 @@ export class ErrorBoundary extends Component<
   ErrorBoundaryProps,
   ErrorBoundaryState
 > {
-  state: ErrorBoundaryState = { hasError: false, error: null }
+  state: ErrorBoundaryState = { error: null }
 
-  static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
-    return { hasError: true, error }
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { error }
   }
 
   override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
@@ -39,13 +46,19 @@ export class ErrorBoundary extends Component<
   }
 
   reset = () => {
-    this.setState({ hasError: false, error: null })
+    this.setState({ error: null })
   }
 
   override render() {
-    const { hasError, error } = this.state
-    if (hasError && error) {
-      return <ErrorBoundaryFallback error={error} onRetry={this.reset} />
+    const { error } = this.state
+    if (error) {
+      return (
+        <ErrorBoundaryFallback
+          error={error}
+          onRetry={this.reset}
+          labels={this.props.labels}
+        />
+      )
     }
     return this.props.children
   }
@@ -54,12 +67,19 @@ export class ErrorBoundary extends Component<
 function ErrorBoundaryFallback({
   error,
   onRetry,
+  labels,
 }: {
   error: Error
   onRetry: () => void
+  labels?: ErrorBoundaryLabels
 }) {
   const { theme } = useTheme()
-  const t = useT()
+
+  const title = labels?.title ?? 'Something went wrong'
+  const hint =
+    labels?.hint ??
+    'Please try again. If the problem continues, restart the app.'
+  const retry = labels?.retry ?? 'Try again'
 
   return (
     <View
@@ -71,7 +91,6 @@ function ErrorBoundaryFallback({
           styles.content,
           { padding: theme.spacing.lg, gap: theme.spacing.md },
         ]}
-        keyboardShouldPersistTaps="handled"
       >
         <Text
           style={[
@@ -79,7 +98,7 @@ function ErrorBoundaryFallback({
             { color: theme.colors.textPrimary },
           ]}
         >
-          {t('common.error_title')}
+          {title}
         </Text>
         <Text
           style={[
@@ -87,7 +106,7 @@ function ErrorBoundaryFallback({
             { color: theme.colors.textSecondary },
           ]}
         >
-          {t('common.error_hint')}
+          {hint}
         </Text>
         {__DEV__ ? (
           <Text
@@ -98,10 +117,11 @@ function ErrorBoundaryFallback({
             selectable
           >
             {error.message}
+            {error.stack ? `\n\n${error.stack}` : ''}
           </Text>
         ) : null}
         <Button
-          title={t('common.retry')}
+          title={retry}
           variant="primary"
           onPress={onRetry}
           testID="error-boundary-retry"

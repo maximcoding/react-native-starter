@@ -15,7 +15,7 @@ import Svg, { Circle, Line, Path, Polyline, Rect } from 'react-native-svg'
 import { useMeQuery } from '@/features/user/hooks/useMeQuery'
 import { useT } from '@/i18n/useT'
 import { ScreenHeader } from '@/shared/components/ui/ScreenHeader'
-import ScreenWrapper from '@/shared/components/ui/ScreenWrapper'
+import { ScreenWrapper } from '@/shared/components/ui/ScreenWrapper'
 import { Text } from '@/shared/components/ui/Text'
 import { useTheme } from '@/shared/theme/useTheme'
 
@@ -153,13 +153,43 @@ const QUICK_ACTIONS: {
   id: string
   icon: QuickActionIcon
   colorKey: QuickActionColorKey
-  label: string
+  labelKey:
+    | 'home.quick_action_task'
+    | 'home.quick_action_message'
+    | 'home.quick_action_schedule'
+    | 'home.quick_action_report'
+    | 'home.quick_action_upload'
 }[] = [
-  { id: '1', icon: 'task', colorKey: 'success', label: 'New task' },
-  { id: '2', icon: 'message', colorKey: 'info', label: 'Message' },
-  { id: '3', icon: 'schedule', colorKey: 'primary', label: 'Schedule' },
-  { id: '4', icon: 'report', colorKey: 'warning', label: 'Report' },
-  { id: '5', icon: 'upload', colorKey: 'danger', label: 'Upload' },
+  {
+    id: '1',
+    icon: 'task',
+    colorKey: 'success',
+    labelKey: 'home.quick_action_task',
+  },
+  {
+    id: '2',
+    icon: 'message',
+    colorKey: 'info',
+    labelKey: 'home.quick_action_message',
+  },
+  {
+    id: '3',
+    icon: 'schedule',
+    colorKey: 'primary',
+    labelKey: 'home.quick_action_schedule',
+  },
+  {
+    id: '4',
+    icon: 'report',
+    colorKey: 'warning',
+    labelKey: 'home.quick_action_report',
+  },
+  {
+    id: '5',
+    icon: 'upload',
+    colorKey: 'danger',
+    labelKey: 'home.quick_action_upload',
+  },
 ]
 
 // ─── Shimmer ─────────────────────────────────────────────────────────────────
@@ -811,6 +841,8 @@ function QuickActionsSection() {
         {QUICK_ACTIONS.map(a => (
           <Pressable
             key={a.id}
+            accessibilityRole="button"
+            accessibilityLabel={t(a.labelKey)}
             style={({ pressed }) => ({
               width: itemWidth,
               backgroundColor: pressed ? c.surfaceSecondary : c.surface,
@@ -841,7 +873,7 @@ function QuickActionsSection() {
                 { color: c.textSecondary, textAlign: 'center' },
               ]}
             >
-              {a.label}
+              {t(a.labelKey)}
             </Text>
           </Pressable>
         ))}

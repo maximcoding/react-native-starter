@@ -39,7 +39,7 @@
 
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
-import ScreenWrapper from '@/shared/components/ui/ScreenWrapper'
+import { ScreenWrapper } from '@/shared/components/ui/ScreenWrapper'
 import { useTheme } from '@/shared/theme'
 
 export default function GlobalModal({

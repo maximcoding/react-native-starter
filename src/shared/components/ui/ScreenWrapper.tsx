@@ -26,7 +26,7 @@ interface Props {
   statusBarProps?: Partial<ThemedStatusBarProps>
 }
 
-export default function ScreenWrapper({
+export function ScreenWrapper({
   children,
   scroll = false,
   header,
@@ -62,13 +62,7 @@ export default function ScreenWrapper({
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <Content
-          style={[
-            styles.container,
-            {
-              backgroundColor: bg,
-              paddingBottom,
-            },
-          ]}
+          style={[styles.container, { backgroundColor: bg, paddingBottom }]}
           contentContainerStyle={scroll ? styles.scrollContent : undefined}
           keyboardShouldPersistTaps="handled"
         >

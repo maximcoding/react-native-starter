@@ -19,7 +19,7 @@ import { resetRoot } from '@/navigation/helpers/navigation-helpers'
 import { ROUTES } from '@/navigation/routes'
 import { setOnboardingDone } from '@/session/bootstrap'
 import { Button } from '@/shared/components/ui/Button'
-import ScreenWrapper from '@/shared/components/ui/ScreenWrapper'
+import { ScreenWrapper } from '@/shared/components/ui/ScreenWrapper'
 import { Text } from '@/shared/components/ui/Text'
 import { useTheme } from '@/shared/theme'
 

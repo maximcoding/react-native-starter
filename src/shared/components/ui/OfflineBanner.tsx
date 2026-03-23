@@ -1,28 +1,33 @@
-// src/app/components/OfflineBanner.tsx
 import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import { useOnlineStatus } from '@/shared/hooks/useOnlineStatus'
 import { useTheme } from '@/shared/theme'
+import { Text } from './Text'
 
-type Props = { testID?: string }
+type Props = {
+  testID?: string
+  /** Translated message — pass via t('common.offline_banner') at the call site. */
+  message?: string
+}
 
-export function OfflineBanner({ testID }: Props) {
+const DEFAULT_MESSAGE = "You're offline. Showing cached data."
+
+export function OfflineBanner({ testID, message = DEFAULT_MESSAGE }: Props) {
   const { theme } = useTheme()
   const { isOffline } = useOnlineStatus()
 
   if (!isOffline) return null
 
-  const bg = theme.colors.surfaceSecondary ?? theme.colors.background
-  const border = theme.colors.surface ?? theme.colors.background
-
   return (
     <View
       testID={testID}
+      accessibilityRole="alert"
+      accessibilityLiveRegion="polite"
       style={[
         styles.container,
         {
-          backgroundColor: bg,
-          borderColor: border,
+          backgroundColor: theme.colors.surfaceSecondary,
+          borderColor: theme.colors.divider,
           paddingHorizontal: theme.spacing.sm,
           paddingVertical: theme.spacing.xs,
         },
@@ -35,7 +40,7 @@ export function OfflineBanner({ testID }: Props) {
         ]}
         numberOfLines={1}
       >
-        You’re offline. Showing cached data.
+        {message}
       </Text>
     </View>
   )
