@@ -1,3 +1,4 @@
+````md
 # React Native Bare Starter
 
 [![Use this template](https://img.shields.io/badge/Use%20this%20template-2ea44f?logo=github&logoColor=white)](https://github.com/maximcoding/react-native-starter/generate)
@@ -8,9 +9,10 @@
 
 A bare React Native starter for serious apps — no Expo, fast storage, modern state management, and a production-minded foundation from day one.
 
-----------
+---
 
 ## ✨ Features Included
+
 - **🧱 Bare React Native 0.82.1** — full native control, no Expo lock-in
 - **🧭 React Navigation 7.x** — stacks, tabs, and modals already wired
 - **📦 TanStack Query 5.x** — server-state, caching, retries, invalidation, and persistence
@@ -23,8 +25,9 @@ A bare React Native starter for serious apps — no Expo, fast storage, modern s
 - **🖼️ SVG via script** — `react-native-svg 15.x` with scripted icon generation
 - **🚀 BootSplash 6.x** — native splash screen setup already in place
 - **🧪 Developer experience** — Biome 2.x, Jest 29.x, GitHub Actions CI, and Maestro E2E
+- **AI / agent workflow docs** — includes `.claude` agents and repo rules for more consistent AI-assisted changes
 
------
+---
 
 ## 🛠️ Getting started
 
@@ -32,12 +35,12 @@ A bare React Native starter for serious apps — no Expo, fast storage, modern s
 
 Standard bare React Native toolchain:
 
--   Node.js ≥ 20    
--   Xcode for iOS
--   Android Studio + SDK for Android
--   CocoaPods for iOS
+- Node.js ≥ 20
+- Xcode for iOS
+- Android Studio + SDK for Android
+- CocoaPods for iOS
 
------
+---
 
 ## 🚀 Quick Start
 
@@ -47,7 +50,7 @@ cd react-native-starter
 npm install
 npx pod-install ios
 cp .env.example .env
-```
+````
 
 Edit `.env` as needed, then:
 
@@ -55,9 +58,10 @@ Edit `.env` as needed, then:
 npm start       # Metro bundler
 npm run ios     # or: npm run android
 ```
------
 
-## 🧭 Project structure 
+---
+
+## 🧭 Project structure
 
 Feature-first structure with clear boundaries.
 
@@ -80,15 +84,17 @@ assets/
 ├── svgs/         # Source SVGs
 ├── bootsplash/   # Generated splash assets
 └── icons.ts      # Auto-generated icon registry
+```
 
-- **Repository layout** → [docs/development.md#repository-layout](docs/development.md#repository-layout)
-- **Code rules & ownership** → [AGENTS.md](AGENTS.md)
+* **Repository layout** → [docs/development.md#repository-layout](docs/development.md#repository-layout)
+* **Code rules & ownership** → [AGENTS.md](AGENTS.md)
 
------
+---
 
 ## 🔐 Environment variables
-Values are read at build time via react-native-config.
-See .env.example. Rebuild the app after changing .env.
+
+Values are read at build time via `react-native-config`.
+See [`.env.example`](.env.example). Rebuild the app after changing `.env`.
 
 | Variable                                    | Required     | Purpose                                               |
 | ------------------------------------------- | ------------ | ----------------------------------------------------- |
@@ -103,66 +109,66 @@ See .env.example. Rebuild the app after changing .env.
 
 Useful docs:
 
-Sentry setup
-OTA / updates policy
-Publishing / discoverability
+* [Sentry setup](docs/OPERATIONS.md#sentry)
+* [OTA / updates policy](docs/OPERATIONS.md#over-the-air-updates)
+* [Publishing / discoverability](docs/OPERATIONS.md#publishing--discoverability)
 
------
+---
 
 ## ⌨️ Key Commands
 
-| Command | What it does |
-|---|---|
-| `npm start` | Start Metro (cache reset) |
-| `npm run ios` / `npm run android` | Run on simulator or device |
-| `npm run lint` | Biome check (read-only) |
-| `npm run format` | Biome format + safe fixes |
-| `npm test` | Jest |
-| `npx tsc --noEmit` | Typecheck |
-| `npm run i18n:all` | Extract i18n keys + generate types |
-| `npm run gen:icons` | Regenerate SVG icon registry |
-| `npm run android:clean` | Clean Android build artifacts |
+| Command                           | What it does                       |
+| --------------------------------- | ---------------------------------- |
+| `npm start`                       | Start Metro (cache reset)          |
+| `npm run ios` / `npm run android` | Run on simulator or device         |
+| `npm run lint`                    | Biome check (read-only)            |
+| `npm run format`                  | Biome format + safe fixes          |
+| `npm test`                        | Jest                               |
+| `npx tsc --noEmit`                | Typecheck                          |
+| `npm run i18n:all`                | Extract i18n keys + generate types |
+| `npm run gen:icons`               | Regenerate SVG icon registry       |
+| `npm run android:clean`           | Clean Android build artifacts      |
 
 Full command reference: [docs/development.md#key-commands](docs/development.md#key-commands)
 
------
+---
 
 ## 🛠️ Android Troubleshooting
 
-- **No connected devices** — start an emulator or connect via USB, then `npm run android:devices`
-- **CMake / missing `codegen/jni`** — run `npm run android:clean`, then `npm run android`
-- **Still failing** — `rm -rf node_modules/*/android/build`, reinstall, rebuild
-- **Gradle clean without broken native tasks** — `npm run android:clean:gradle`
+* **No connected devices** — start an emulator or connect via USB, then `npm run android:devices`
+* **CMake / missing `codegen/jni`** — run `npm run android:clean`, then `npm run android`
+* **Still failing** — `rm -rf node_modules/*/android/build`, reinstall, rebuild
+* **Gradle clean without broken native tasks** — `npm run android:clean:gradle`
 
 Full detail: [docs/development.md#android-build](docs/development.md#android-build)
 
------
+---
 
 ## 🔐 Permissions
 
 Declare only what you actually use. Full catalog: [docs/permissions-bare-rn.md](docs/permissions-bare-rn.md)
 
-----------
+---
 
 ## 📚 Documentation
 
-| Topic | Location |
-|---|---|
-| Rules, structure & contribution flow | [AGENTS.md](AGENTS.md) |
-| Developer reference | [docs/development.md](docs/development.md) |
-| Offline behavior | [docs/OFFLINE.md](docs/OFFLINE.md) |
-| Operations, CI, releases, Sentry | [docs/OPERATIONS.md](docs/OPERATIONS.md) |
-| Permissions catalog | [docs/permissions-bare-rn.md](docs/permissions-bare-rn.md) |
-| Roadmap | [docs/TODO.md](docs/TODO.md) |
-| Changelog | [CHANGELOG.md](CHANGELOG.md) |
+| Topic                                | Location                                                   |
+| ------------------------------------ | ---------------------------------------------------------- |
+| Rules, structure & contribution flow | [AGENTS.md](AGENTS.md)                                     |
+| Developer reference                  | [docs/development.md](docs/development.md)                 |
+| Offline behavior                     | [docs/OFFLINE.md](docs/OFFLINE.md)                         |
+| Operations, CI, releases, Sentry     | [docs/OPERATIONS.md](docs/OPERATIONS.md)                   |
+| Permissions catalog                  | [docs/permissions-bare-rn.md](docs/permissions-bare-rn.md) |
+| Roadmap                              | [docs/TODO.md](docs/TODO.md)                               |
+| Changelog                            | [CHANGELOG.md](CHANGELOG.md)                               |
 
-----------
+---
 
 ## 🤝 Contributing
 
 Contributions welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for branch/PR rules, quality checks, and PR checklist.
 
-----------
+---
 
 ## 🚢 CI/CD & Release
 
@@ -170,4 +176,4 @@ GitHub Actions, local release builds, store secrets, Sentry, Maestro, OTA policy
 
 Version history: [CHANGELOG.md](CHANGELOG.md)
 
------
+```
