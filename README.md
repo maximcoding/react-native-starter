@@ -35,40 +35,21 @@ npm run ios     # or: npm run android
 
 ---
 
-## ✨ Features
+## ✨ Features Included
+- **🧱 Bare React Native** — full native control, no Expo lock-in
+- **🧭 Navigation & State** — React Navigation (stacks, tabs, modals), Zustand for global state, TanStack Query for server state with caching, retries, and persistence.
+- **📦 TanStack Query** — caching, persistence, retries, and invalidation
+- **🪶 Zustand** — lightweight global state without Redux overhead
+- **⚡ MMKV Storage** — `react-native-mmkv` via Nitro Modules — up to 30× faster than AsyncStorage.
+- **📡 Offline-Ready** — Query persistence, queue/replay, cache restore, and transport-level offline mode for a solid experience on flaky networks.
+- **🔌 Pluggable Transport** — Adapters for REST, GraphQL, WebSocket, and Firebase. Swap your backend strategy without rewiring the app.
+- **🎨 Theming & i18n** — Light/dark mode with semantic tokens. `i18next` with typed `useT()` hook, ready from day one.
+- **🌍 Localization** — typed i18n support from day one
+- **🖼️ SVG via script** — easier icon generation and maintenance
+- **🚀 BootSplash included** — native splash screen setup already in place
+- **🧪 Developer Experience** — Biome linting, Jest tests, GitHub Actions CI, Maestro E2E, SVG icon generation, and native splash screen via BootSplash.
 
-### 🧱 Core
-
-- **Bare React Native 0.82** with Hermes — full native control, no Expo lock-in
-- **Strict TypeScript** across the entire codebase
-- **Feature-first project structure** that scales past the first few screens
-
-### 🧭 Navigation & State
-
-- **React Navigation** — stacks, bottom tabs, and modals already wired
-- **TanStack Query** — server state with caching, persistence, retries, and tag-based invalidation
-- **Zustand** — lightweight global state without Redux boilerplate
-
-### 📡 Data & Networking
-
-- **MMKV Storage** via Nitro Modules — up to 30× faster than AsyncStorage
-- **Offline-ready flow** — query persistence, queue/replay, cache restore, transport-level offline mode
-- **Pluggable transport layer** — adapters for REST, GraphQL, WebSocket, and Firebase; swap backends without rewiring
-
-### 🎨 UI & Localization
-
-- **Theme tokens** — light/dark mode with semantic design tokens, no magic values
-- **i18next** — typed `useT()` hook with key extraction and type generation
-- **SVG icon pipeline** — scripted generation via `npm run gen:icons`
-- **BootSplash** — native splash screen included and ready to customize
-
-### 🧪 Quality & CI
-
-- **Biome** for linting and formatting
-- **Jest** for unit tests
-- **Maestro** for E2E flows
-- **GitHub Actions** CI pipeline out of the box
-
+- 
 ---
 
 ## 🧭 Project Structure
