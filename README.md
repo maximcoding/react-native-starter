@@ -6,7 +6,7 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-A bare-workflow React Native starter for apps ( no Expo).
+A bare-workflow React Native starter for apps (no Expo).
 
 ---
 
