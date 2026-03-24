@@ -60,25 +60,26 @@ Prerequisites: [Getting Started](#getting-started)
 
 ---
 
-## ✨ Core Features
+## ✨ Features
+
+Built for serious apps, not throwaway demos.
+
+### 🔥 What’s already included
 
 | Capability | Included | Why it matters |
 |---|---|---|
-| **Bare React Native** | Full native control and long-term flexibility |
-| **React Navigation** | Real app navigation with stacks, tabs, and modals already wired |
-| **Server state** | `@tanstack/react-query` with persistence and tag-based invalidation | Clean API data flow, cache control, retries, and better async handling |
-| **Global state** | `zustand` | Lightweight shared state without Redux boilerplate |
-| **Fast local storage** | `react-native-mmkv` + `react-native-nitro-modules` | Blazing-fast persisted storage; positioned as up to **30× faster than AsyncStorage** |
-| **Offline-ready flow** | Queue, replay, and cache persistence for unstable networks |
-| **Transport layer** | Pluggable adapters for REST, GraphQL, WebSocket, Firebase | Swap backend strategy without rewriting the whole app foundation |
-| **Theme system** | Light/Dark mode with semantic tokens and `useTheme()` | Consistent styling without magic values spread everywhere |
-| **Localization** | `i18next` + `react-i18next` + typed `useT()` | Real i18n support from day one, not bolted on later |
-| **SVG icon script** | Easier icon pipeline with `npm run gen:icons` |
-| **BootSplash included** | Native splash setup is already there |
-- **Modern quality gates** with Biome, Jest, GitHub Actions, and Maestro smoke flows
-
-
-### 📦 Stack summary
+| **🧱 Bare React Native** | Bare workflow, Hermes, strict TypeScript | Full native control and a cleaner long-term foundation |
+| **🧭 Typed navigation** | React Navigation with stacks, tabs, and modals | Real navigation structure from day one |
+| **📦 TanStack Query** | Query cache, persistence, and invalidation | Better server-state handling for real API-driven apps |
+| **🪶 Zustand** | Lightweight global state | Simple shared state without heavy setup |
+| **⚡ MMKV storage** | `react-native-mmkv` + Nitro modules | Very fast persisted storage with low overhead |
+| **📡 Offline-ready behavior** | Cache restore, queue/replay, transport offline mode | More resilient UX when connectivity drops |
+| **🔌 Pluggable transport** | REST, GraphQL, WebSocket, Firebase adapters | Flexible backend integration without locking the app to one approach |
+| **🎨 Theme tokens** | Light/Dark mode and semantic theming | Consistent UI without magic values everywhere |
+| **🌍 i18n** | `i18next` + typed translations | Localization support already baked in |
+| **🖼️ SVG via script** | `npm run gen:icons` | Easier icon generation and maintenance |
+| **🚀 BootSplash included** | BootSplash generation script | Native splash screen setup is already in place |
+| **🧪 Quality gates** | Biome, Jest, GitHub Actions, Maestro | Faster dev workflow and stronger delivery confidence |
 
 Pinned versions live in [`package.json`](package.json).
 
