@@ -54,9 +54,29 @@ npm run ios     # or: npm run android
 ```
 ---
 
-## 🧭 Project Structure
+## 🧭 Project structure 
 
-Feature-first layout under `src/features`, shared code in `src/shared`.
+Feature-first structure with clear boundaries.
+
+```text
+src/
+├── navigation/   # App navigation: stacks, tabs, modals, routes
+├── session/      # App bootstrap and session flow
+├── config/       # Env, constants, feature flags
+├── i18n/         # Localization setup and typed translations
+├── shared/       # Cross-app code used by multiple features
+│   ├── components/
+│   ├── hooks/
+│   ├── services/
+│   ├── stores/   # Global UI state only
+│   ├── theme/
+│   └── utils/
+└── features/     # Per-feature slices: screens, hooks, services, api, navigation
+
+assets/
+├── svgs/         # Source SVGs
+├── bootsplash/   # Generated splash assets
+└── icons.ts      # Auto-generated icon registry
 
 - **Repository layout** → [docs/development.md#repository-layout](docs/development.md#repository-layout)
 - **Code rules & ownership** → [AGENTS.md](AGENTS.md)
