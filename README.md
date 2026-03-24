@@ -53,7 +53,7 @@ Prerequisites: [Getting Started](#getting-started)
 
 | Capability | Included | Why it matters |
 |---|---|---|
-| **🧱 Bare React Native** | Bare workflow, Hermes, strict TypeScript | Full native control and a cleaner long-term foundation |
+| **🧱 Bare React Native** | Bare workflow (no Expo), Hermes, strict TypeScript | Full native control and a cleaner long-term foundation |
 | **🧭 Typed navigation** | React Navigation with stacks, tabs, and modals | Real navigation structure from day one |
 | **📦 TanStack Query** | Query cache, persistence, and invalidation | Better server-state handling for real API-driven apps |
 | **🪶 Zustand** | Lightweight global state | Simple shared state without heavy setup |
