@@ -148,7 +148,3 @@ GitHub Actions, local release builds, store secrets, Sentry, Maestro, OTA policy
 Version history: [CHANGELOG.md](CHANGELOG.md)
 
 ---
-
-## License
-
-MIT
