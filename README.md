@@ -100,72 +100,25 @@ Full detail: [docs/development.md#android-build](https://chatgpt.com/c/docs/deve
 ----------
 
 ## 🔐 Environment variables
+Values are read at build time via react-native-config.
+See .env.example. Rebuild the app after changing .env.
 
-Values are read at build time via [`react-native-config`](https://github.com/lugg/react-native-config).  
-See [`.env.example`](https://chatgpt.com/c/.env.example). Rebuild the app after changing `.env`.
-
-Variable
-
-Required
-
-Purpose
-
-`API_URL`
-
-For real API
-
-Backend base URL
-
-`USE_MOCK_API`
-
-No
-
-`true` / `1` uses the mock transport in dev
-
-`WS_URL`
-
-No
-
-WebSocket base URL
-
-`ENV`
-
-No
-
-Runtime label: `development`, `staging`, `production`
-
-`SENTRY_DSN`
-
-No
-
-Enables Sentry when non-empty
-
-`SENTRY_ENABLE_IN_DEV`
-
-No
-
-`1` sends Sentry events from `__DEV__`
-
-`SENTRY_TRACES_SAMPLE_RATE`
-
-No
-
-Performance sampling value from `0` to `1`
-
-`CODEPUSH_KEY_IOS` / `CODEPUSH_KEY_ANDROID`
-
-No
-
-Reserved for OTA; no CodePush SDK ships by default
+| Variable                                    | Required     | Purpose                                               |
+| ------------------------------------------- | ------------ | ----------------------------------------------------- |
+| `API_URL`                                   | For real API | Backend base URL                                      |
+| `USE_MOCK_API`                              | No           | `true` / `1` uses the mock transport in dev           |
+| `WS_URL`                                    | No           | WebSocket base URL                                    |
+| `ENV`                                       | No           | Runtime label: `development`, `staging`, `production` |
+| `SENTRY_DSN`                                | No           | Enables Sentry when non-empty                         |
+| `SENTRY_ENABLE_IN_DEV`                      | No           | `1` sends Sentry events from `__DEV__`                |
+| `SENTRY_TRACES_SAMPLE_RATE`                 | No           | Performance sampling value from `0` to `1`            |
+| `CODEPUSH_KEY_IOS` / `CODEPUSH_KEY_ANDROID` | No           | Reserved for OTA; no CodePush SDK ships by default    |
 
 Useful docs:
 
--   [Sentry setup](https://chatgpt.com/c/docs/OPERATIONS.md#sentry)
-    
--   [OTA / updates policy](https://chatgpt.com/c/docs/OPERATIONS.md#over-the-air-updates)
-    
--   [Publishing / discoverability](https://chatgpt.com/c/docs/OPERATIONS.md#publishing--discoverability)
-    
+Sentry setup
+OTA / updates policy
+Publishing / discoverability
 
 ----------
 
