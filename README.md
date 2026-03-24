@@ -13,19 +13,6 @@ A bare-workflow React Native starter for apps that need more than a demo.
 
 Built for developers who want a clean foundation from day one: **strict TypeScript**, **feature-first structure**, **theme tokens**, **i18n**, **offline-ready behavior**, solid quality gates, and room to grow without rebuilding the same setup again.
 
-Instead of starting from a blank app and wiring everything together again, this starter gives you the pieces most real apps end up needing anyway.
-
-### ✨ Why this starter
-
-- ⚡ **Bare React Native** for full native control and long-term flexibility
-- 🧱 **Feature-first structure** under `src/features` with shared code in `src/shared`
-- 🌐 **Offline-ready foundation** with NetInfo, queue/replay, React Query persistence, and MMKV
-- 🎨 **Theme tokens + i18n** ready for real product work
-- 🛠️ **Modern dev workflow** with Biome, Jest, GitHub Actions, and Maestro smoke flows
-- 🔌 **Pluggable transport layer** for REST, GraphQL, WebSocket, or Firebase
-- 🧯 **Optional Sentry** plus shared ErrorBoundary / Suspense / Activity primitives
-- 📚 **Ops docs included** for CI, OTA policy, publishing, and release flow
-
 ### 🚀 Quick start
 
 First-time setup:
@@ -61,8 +48,6 @@ Prerequisites: [Getting Started](#getting-started)
 ---
 
 ## ✨ Features
-
-Built for serious apps, not throwaway demos.
 
 ### 🔥 What’s already included
 
