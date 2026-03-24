@@ -54,16 +54,16 @@ Prerequisites: [Getting Started](#getting-started)
 | Capability | Included | Why it matters |
 |---|---|---|
 | **🧱 Bare React Native** | Bare workflow (no Expo), Hermes, strict TypeScript | Full native control and a cleaner long-term foundation |
-| **🧭 Typed navigation** | React Navigation with stacks, tabs, and modals | Real navigation structure from day one |
-| **📦 TanStack Query** | Query cache, persistence, and invalidation | Better server-state handling for real API-driven apps |
-| **🪶 Zustand** | Lightweight global state | Simple shared state without heavy setup |
-| **⚡ MMKV storage** | `react-native-mmkv` + Nitro modules | Very fast persisted storage with low overhead |
-| **📡 Offline-ready behavior** | Cache restore, queue/replay, transport offline mode | More resilient UX when connectivity drops |
-| **🔌 Pluggable transport** | REST, GraphQL, WebSocket, Firebase adapters | Flexible backend integration without locking the app to one approach |
+| **🧭 React Navigation** | Stacks, bottom tabs, and modals already wired | Start with real app navigation instead of building the shell from scratch |
+| **📦 Server state** | `@tanstack/react-query` with persistence and tag-based invalidation | Cleaner API data flow, caching, retries, revalidation, and better async UX |
+| **🪶 Global state** | `zustand` | Lightweight shared state without Redux boilerplate |
+| **⚡ Fast local storage** | `react-native-mmkv` + `react-native-nitro-modules` | Very fast persisted storage, commonly positioned as up to **30× faster than AsyncStorage** |
+| **📡 Offline-ready flow** | Query persistence, queue/replay, cache restore, transport offline mode | Better user experience on unstable networks and less fragile app behavior |
+| **🔌 Transport layer** | Pluggable adapters for REST, GraphQL, WebSocket, and Firebase | Change backend strategy without rewriting the whole app foundation |
 | **🎨 Theme tokens** | Light/Dark mode and semantic theming | Consistent UI without magic values everywhere |
-| **🌍 i18n** | `i18next` + typed translations | Localization support already baked in |
-| **🖼️ SVG via script** | `npm run gen:icons` | Easier icon generation and maintenance |
-| **🚀 BootSplash included** | BootSplash generation script | Native splash screen setup is already in place |
+| **🌍 Localization** | `i18next` + `react-i18next` + typed `useT()` | Real i18n support from day one, not something bolted on later |
+| **🖼️ SVG icon workflow** | `react-native-svg` + `npm run gen:icons` | Easier icon pipeline with less manual asset wiring |
+| **🚀 Splash screen included** | `react-native-bootsplash` + `npm run bootsplash:generate` | Native splash setup is already included and ready to customize |
 | **🧪 Quality gates** | Biome, Jest, GitHub Actions, Maestro | Faster dev workflow and stronger delivery confidence |
 
 Pinned versions live in [`package.json`](package.json).
