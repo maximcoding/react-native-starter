@@ -1,6 +1,6 @@
 {
   "name": "react-native-starter",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Production-ready React Native starter — TypeScript (strict), feature-first architecture, theme tokens, i18n (EN/DE/RU), offline-first, pluggable transport, Biome, Jest, GitHub Actions.",
   "keywords": [
     "react-native",
