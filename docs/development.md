@@ -279,7 +279,7 @@ npm run i18n:all
 | Command | Description |
 |---|---|
 | `npm run gen:icons` | Regenerate `assets/icons.ts` from SVGs |
-| `npm run gen:app-icon` | Generate **launcher** icons: iOS `AppIcon.appiconset` + Android `mipmap-*` via [`scripts/generate-app-icon.cjs`](../scripts/generate-app-icon.cjs). Source: `assets/app-icon.png` if present, else `assets/bootsplash/logo@4x.png`, else `logo.png`. Flatten background `#111827`. |
+| `npm run gen:app-icon` | Generate **launcher** icons: iOS `AppIcon.appiconset` + Android `mipmap-*` via [`scripts/generate-app-icon.cjs`](../scripts/generate-app-icon.cjs). Source: `assets/app-icon.png` if present, else best `assets/bootsplash/logo@*.png` (`@4x` → `@3x` → `@2x` → `@1,5x` → `logo.png`). Flatten background `#111827`. |
 | `npm run check:icons` | Verify `icons.ts` is in sync (use in CI) |
 | `npm run check:imports` | Enforce path alias usage (no deep relative imports) |
 | `npm run bootsplash:generate` | Regenerate **native** splash (iOS/Android) via [`scripts/bootsplash-generate.cjs`](../scripts/bootsplash-generate.cjs). Does **not** overwrite `assets/bootsplash/`; writes CLI copies under `assets/bootsplash-generated/` (gitignored). Source: `assets/logo.png` if present, else `assets/bootsplash/logo.png`. Background `#111827`, logo width 160. Then **clean Xcode build** and reinstall — iOS caches the launch screen. |

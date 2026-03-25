@@ -51,7 +51,7 @@ npx pod-install ios
 cp .env.example .env
 ```
 
-**Launcher icon (optional):** add `assets/app-icon.png` (1024×1024, square), or use the default generator source (`assets/bootsplash/logo@4x.png`), then run `npm run gen:app-icon`. See [docs/development.md](docs/development.md#assets--guards).
+**Launcher icon (optional):** add `assets/app-icon.png` (1024×1024, square), or rely on `assets/bootsplash/logo@*.png` (largest available), then run `npm run gen:app-icon`. See [docs/development.md](docs/development.md#assets--guards).
 
 Edit `.env` as needed, then:
 

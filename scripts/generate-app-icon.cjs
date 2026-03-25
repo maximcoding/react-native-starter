@@ -1,6 +1,7 @@
 /**
  * Generate iOS AppIcon.appiconset PNGs + Android mipmap launcher icons from one source.
- * Source: assets/app-icon.png (preferred), else assets/bootsplash/logo@4x.png, else logo.png.
+ * Source: assets/app-icon.png (preferred), else the largest available file under assets/bootsplash/
+ * (logo@4x → @3x → @2x → @1,5x → logo.png).
  * Uses sharp (fit: cover, square). Flattens onto #111827 so marketing icon has no transparency.
  */
 const fs = require('node:fs')
@@ -10,8 +11,15 @@ const sharp = require('sharp')
 
 const root = path.join(__dirname, '..')
 const APP_ICON = path.join(root, 'assets', 'app-icon.png')
-const LOGO_4X = path.join(root, 'assets', 'bootsplash', 'logo@4x.png')
-const LOGO_1X = path.join(root, 'assets', 'bootsplash', 'logo.png')
+const BOOTSPLASH_DIR = path.join(root, 'assets', 'bootsplash')
+/** Prefer largest PNG first (matches typical react-native-bootsplash output names). */
+const BOOTSPLASH_SOURCES = [
+  'logo@4x.png',
+  'logo@3x.png',
+  'logo@2x.png',
+  'logo@1,5x.png',
+  'logo.png',
+]
 
 const BG = { r: 17, g: 24, b: 39 }
 
@@ -91,12 +99,20 @@ const ANDROID_MAP = [
   { folder: 'mipmap-xxxhdpi', px: 192 },
 ]
 
+function resolveBootsplashSource() {
+  for (const name of BOOTSPLASH_SOURCES) {
+    const p = path.join(BOOTSPLASH_DIR, name)
+    if (fs.existsSync(p)) return p
+  }
+  return null
+}
+
 function resolveSource() {
   if (fs.existsSync(APP_ICON)) return APP_ICON
-  if (fs.existsSync(LOGO_4X)) return LOGO_4X
-  if (fs.existsSync(LOGO_1X)) return LOGO_1X
+  const fromBootsplash = resolveBootsplashSource()
+  if (fromBootsplash) return fromBootsplash
   console.error(
-    'app-icon: missing source. Add assets/app-icon.png (1024×1024 recommended) or bootsplash/logo@4x.png / logo.png',
+    'app-icon: missing source. Add assets/app-icon.png (1024×1024 recommended) or PNGs under assets/bootsplash/ (logo@4x.png … logo.png).',
   )
   process.exit(1)
 }
