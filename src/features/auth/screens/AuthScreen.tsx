@@ -48,6 +48,7 @@ import { ROUTES } from '@/navigation/routes'
 import { Button } from '@/shared/components/ui/Button'
 import { ScreenWrapper } from '@/shared/components/ui/ScreenWrapper'
 import { Text } from '@/shared/components/ui/Text'
+import { useToggle } from '@/shared/hooks/useToggle'
 import { useTheme } from '@/shared/theme'
 import { normalizeError } from '@/shared/utils/normalize-error'
 import { showErrorToast } from '@/shared/utils/toast'
@@ -352,9 +353,9 @@ export default function AuthScreen() {
   const [password, setPassword] = useState(() =>
     flags.USE_MOCK ? AUTH_MOCK_DEMO.password : '',
   )
-  const [showPassword, setShowPassword] = useState(false)
-  const [emailFocused, setEmailFocused] = useState(false)
-  const [passFocused, setPassFocused] = useState(false)
+  const [showPassword, toggleShowPassword] = useToggle(false)
+  const [emailFocused, , setEmailFocused, clearEmailFocused] = useToggle(false)
+  const [passFocused, , setPassFocused, clearPassFocused] = useToggle(false)
 
   // Input focus — Reanimated shared values for color interpolation
   const emailFocus = useSharedValue(0)
@@ -692,11 +693,11 @@ export default function AuthScreen() {
               value={email}
               onChangeText={setEmail}
               onFocus={() => {
-                setEmailFocused(true)
+                setEmailFocused()
                 animateFocus(emailFocus, true)
               }}
               onBlur={() => {
-                setEmailFocused(false)
+                clearEmailFocused()
                 animateFocus(emailFocus, false)
               }}
               keyboardType="email-address"
@@ -742,11 +743,11 @@ export default function AuthScreen() {
               value={password}
               onChangeText={setPassword}
               onFocus={() => {
-                setPassFocused(true)
+                setPassFocused()
                 animateFocus(passFocus, true)
               }}
               onBlur={() => {
-                setPassFocused(false)
+                clearPassFocused()
                 animateFocus(passFocus, false)
               }}
               secureTextEntry={!showPassword}
@@ -756,7 +757,7 @@ export default function AuthScreen() {
               textContentType="password"
             />
             <TouchableOpacity
-              onPress={() => setShowPassword(!showPassword)}
+              onPress={toggleShowPassword}
               activeOpacity={0.6}
               style={styles.eyeSlot}
             >
