@@ -38,9 +38,9 @@ src/
 
 assets/
 ├── svgs/                       # Source SVGs — run gen:icons after changes
-├── bootsplash/                 # Generated splash screen assets
+├── bootsplash/                 # Generated splash assets (PNG scales + manifest.json)
 ├── bootsplash-logo.svg         # Splash screen source logo (reference)
-├── logo.png                    # Source image for bootsplash:generate
+├── logo.png                    # Optional high-res source for bootsplash:generate (else uses bootsplash/logo.png)
 └── icons.ts                    # Auto-generated icon registry (never edit manually)
 ```
 
@@ -280,7 +280,7 @@ npm run i18n:all
 | `npm run gen:icons` | Regenerate `assets/icons.ts` from SVGs |
 | `npm run check:icons` | Verify `icons.ts` is in sync (use in CI) |
 | `npm run check:imports` | Enforce path alias usage (no deep relative imports) |
-| `npm run bootsplash:generate` | Regenerate native splash from `assets/logo.png` (see `package.json` script; output under `assets/bootsplash/`) |
+| `npm run bootsplash:generate` | Regenerate native splash (iOS/Android) via [`scripts/bootsplash-generate.cjs`](../scripts/bootsplash-generate.cjs): source `assets/logo.png` if present, else `assets/bootsplash/logo.png`; background `#111827`. After changing splash, **clean Xcode build** and reinstall the app — iOS caches the launch screen. |
 
 ### i18n
 
@@ -324,6 +324,8 @@ This repo **pins** both in [`package.json`](../package.json) (e.g. mmkv **4.3.0*
 When you upgrade mmkv, check its release notes or `devDependencies` for the expected nitro version and bump together.
 
 **After changing either:** `npm install`, then **`npm run pod-install`**. If CocoaPods errors on **`MMKVCore`** vs `Podfile.lock`, run from `ios/`: `pod update MMKVCore NitroModules NitroMmkv`, commit the updated [`Podfile.lock`](../ios/Podfile.lock). On Android, `npm run android:clean` then `./gradlew :app:assembleDebug` is enough in most cases.
+
+**iOS New Architecture codegen:** Fabric headers such as `react/renderer/components/RNCWebViewSpec/Props.h` live under **`ios/build/generated/ios/`**, which is **gitignored** and created by **`pod install`**. If `xcodebuild` fails with **`file not found`** for a `*Spec` path, run **`npm run pod-install`** (then clean build in Xcode if needed).
 
 ### Release
 

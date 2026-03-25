@@ -75,7 +75,7 @@
     "check:icons": "node scripts/check-icons-stale.js",
     "check:imports": "node scripts/check-import-paths.js",
     "android:rebuild": "node scripts/ensure-env.cjs && rm -rf android/app/build android/app/.cxx android/build android/.gradle && cd android && ./gradlew :app:assembleDebug && cd .. && node scripts/wait-for-android-device.cjs && npx react-native run-android",
-    "bootsplash:generate": "npx react-native-bootsplash generate assets/logo.png --platforms=android,ios --background=FFFFFF --logo-width=100 --assets-output=assets/bootsplash --flavor=main"
+    "bootsplash:generate": "node scripts/bootsplash-generate.cjs"
   },
   "dependencies": {
     "@react-native-clipboard/clipboard": "^1.14.1",
