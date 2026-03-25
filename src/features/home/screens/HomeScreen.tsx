@@ -3,7 +3,7 @@
 import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { FlashList } from '@shopify/flash-list'
-import React, { memo, useCallback, useEffect, useRef } from 'react'
+import React, { memo, useCallback } from 'react'
 import { Animated, Platform, Pressable, ScrollView, View } from 'react-native'
 import { useFeedQuery } from '@/features/home/hooks/useFeedQuery'
 import type { FeedItem } from '@/features/home/types'
@@ -12,8 +12,10 @@ import type { RootStackParamList } from '@/navigation/root-param-list'
 import { ROUTES } from '@/navigation/routes'
 import { ScreenHeader } from '@/shared/components/ui/ScreenHeader'
 import { ScreenWrapper } from '@/shared/components/ui/ScreenWrapper'
+import { SectionHeader } from '@/shared/components/ui/SectionHeader'
 import { Text } from '@/shared/components/ui/Text'
 import { useOnlineStatus } from '@/shared/hooks/useOnlineStatus'
+import { useShimmer } from '@/shared/hooks/useShimmer'
 import { useTheme } from '@/shared/theme/useTheme'
 
 type HomeNavProp = NativeStackNavigationProp<RootStackParamList>
@@ -21,29 +23,6 @@ type HomeNavProp = NativeStackNavigationProp<RootStackParamList>
 const TAB_BAR_CLEARANCE = 88
 
 // ─── Shimmer skeleton ─────────────────────────────────────────────────────────
-function useShimmer() {
-  const anim = useRef(new Animated.Value(0.4)).current
-  useEffect(() => {
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(anim, {
-          toValue: 1,
-          duration: 750,
-          useNativeDriver: true,
-        }),
-        Animated.timing(anim, {
-          toValue: 0.4,
-          duration: 750,
-          useNativeDriver: true,
-        }),
-      ]),
-    )
-    loop.start()
-    return () => loop.stop()
-  }, [anim])
-  return anim
-}
-
 function SkeletonCard({ shimmer }: { shimmer: Animated.Value }) {
   const { theme } = useTheme()
   const c = theme.colors
@@ -216,68 +195,6 @@ function GreetingSection({
       <Text style={[ty.displaySmall, { color: c.textPrimary }]}>
         {t(greetingKey)}
       </Text>
-    </View>
-  )
-}
-
-// ─── Section header with optional sync status ─────────────────────────────────
-function SectionHeader({
-  label,
-  sublabel,
-  sublabelIsOffline,
-}: {
-  label: string
-  sublabel?: string | null
-  sublabelIsOffline?: boolean
-}) {
-  const { theme } = useTheme()
-  const c = theme.colors
-  const sp = theme.spacing
-  const r = theme.radius
-  const ty = theme.typography
-  return (
-    <View
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: sp.lg,
-        paddingBottom: sp.xs,
-        gap: sp.xs,
-      }}
-    >
-      <Text style={[ty.caps, { color: c.textTertiary, flex: 1 }]}>{label}</Text>
-      {sublabel ? (
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            backgroundColor: sublabelIsOffline
-              ? c.warning + '22'
-              : c.success + '22',
-            borderRadius: r.pill,
-            paddingHorizontal: sp.xs,
-            paddingVertical: 2,
-            gap: 4,
-          }}
-        >
-          <View
-            style={{
-              width: 6,
-              height: 6,
-              borderRadius: 3,
-              backgroundColor: sublabelIsOffline ? c.warning : c.success,
-            }}
-          />
-          <Text
-            style={[
-              ty.labelSmall,
-              { color: sublabelIsOffline ? c.warning : c.success },
-            ]}
-          >
-            {sublabel}
-          </Text>
-        </View>
-      ) : null}
     </View>
   )
 }
