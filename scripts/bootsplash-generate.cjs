@@ -1,7 +1,8 @@
 /**
- * Regenerate react-native-bootsplash native assets + assets/bootsplash/*.
- * Copies the source PNG to a temp path first so Sharp can read the input while
- * writing outputs into assets/bootsplash (same-dir input+output would error).
+ * Regenerate react-native-bootsplash **iOS/Android** native splash assets.
+ * Writes optional PNG scales to assets/bootsplash-generated/ only — never overwrites
+ * curated files under assets/bootsplash/.
+ * Source: assets/logo.png if present, else assets/bootsplash/logo.png (copied to tmp for Sharp).
  */
 const { spawnSync } = require('node:child_process')
 const fs = require('node:fs')
@@ -26,14 +27,14 @@ const tmp = path.join(
 )
 fs.copyFileSync(src, tmp)
 
-const outDir = path.join(root, 'assets', 'bootsplash')
+const outDir = path.join(root, 'assets', 'bootsplash-generated')
 const args = [
   'react-native-bootsplash',
   'generate',
   tmp,
   '--platforms=android,ios',
   '--background=#111827',
-  '--logo-width=100',
+  '--logo-width=160',
   '--assets-output',
   outDir,
   '--flavor=main',

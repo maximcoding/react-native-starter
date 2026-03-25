@@ -38,7 +38,7 @@ src/
 
 assets/
 ├── svgs/                       # Source SVGs — run gen:icons after changes
-├── bootsplash/                 # Generated splash assets (PNG scales + manifest.json)
+├── bootsplash/                 # Curated splash PNGs + manifest (not overwritten by bootsplash:generate)
 ├── bootsplash-logo.svg         # Splash screen source logo (reference)
 ├── logo.png                    # Optional high-res source for bootsplash:generate (else uses bootsplash/logo.png)
 └── icons.ts                    # Auto-generated icon registry (never edit manually)
@@ -280,7 +280,7 @@ npm run i18n:all
 | `npm run gen:icons` | Regenerate `assets/icons.ts` from SVGs |
 | `npm run check:icons` | Verify `icons.ts` is in sync (use in CI) |
 | `npm run check:imports` | Enforce path alias usage (no deep relative imports) |
-| `npm run bootsplash:generate` | Regenerate native splash (iOS/Android) via [`scripts/bootsplash-generate.cjs`](../scripts/bootsplash-generate.cjs): source `assets/logo.png` if present, else `assets/bootsplash/logo.png`; background `#111827`. After changing splash, **clean Xcode build** and reinstall the app — iOS caches the launch screen. |
+| `npm run bootsplash:generate` | Regenerate **native** splash (iOS/Android) via [`scripts/bootsplash-generate.cjs`](../scripts/bootsplash-generate.cjs). Does **not** overwrite `assets/bootsplash/`; writes CLI copies under `assets/bootsplash-generated/` (gitignored). Source: `assets/logo.png` if present, else `assets/bootsplash/logo.png`. Background `#111827`, logo width 160. Then **clean Xcode build** and reinstall — iOS caches the launch screen. |
 
 ### i18n
 

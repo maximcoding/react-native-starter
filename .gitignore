@@ -82,3 +82,7 @@ yarn-error.log
 # Claude Code local overrides and agent memory
 .claude/settings.local.json
 .claude/agent-memory-local/
+
+# CLI-only splash scales (see scripts/bootsplash-generate.cjs)
+assets/bootsplash-generated/
+
