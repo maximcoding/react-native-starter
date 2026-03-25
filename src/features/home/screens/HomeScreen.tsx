@@ -4,7 +4,14 @@ import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { FlashList } from '@shopify/flash-list'
 import React, { memo, useCallback } from 'react'
-import { Animated, Platform, Pressable, ScrollView, View } from 'react-native'
+import {
+  Animated,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native'
 import { useFeedQuery } from '@/features/home/hooks/useFeedQuery'
 import { useShimmer } from '@/features/home/hooks/useShimmer'
 import type { FeedItem } from '@/features/home/types'
@@ -253,7 +260,7 @@ const StoryCard = memo(function StoryCard({ item }: { item: FeedItem }) {
         {item.title}
       </Text>
 
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: sp.xs }}>
+      <View style={[styles.metaRow, { gap: sp.xs }]}>
         <View
           style={{
             width: 6,
@@ -336,10 +343,7 @@ export default function HomeScreen() {
     [greetingKey, t, sublabel, isOffline],
   )
 
-  const ListFooter = useCallback(
-    () => <View style={{ height: TAB_BAR_CLEARANCE }} />,
-    [],
-  )
+  const ListFooter = useCallback(() => <View style={styles.listFooter} />, [])
 
   const renderItem = useCallback(
     ({ item }: { item: FeedItem }) => <StoryCard item={item} />,
@@ -367,3 +371,13 @@ export default function HomeScreen() {
     </ScreenWrapper>
   )
 }
+
+const styles = StyleSheet.create({
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  listFooter: {
+    height: TAB_BAR_CLEARANCE,
+  },
+})
