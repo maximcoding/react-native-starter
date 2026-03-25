@@ -9,7 +9,6 @@
  *  HOOK                 WHAT IT DOES
  *  ──────────────────── ──────────────────────────────────────
  *  useAppState          Track foreground / background lifecycle
- *  useBackHandler       Intercept Android hardware back button
  *  useKeyboard          Keyboard visibility & height
  *  useRefreshControl    Pull-to-refresh for lists
  *  useDebounce          Delay a value (search, autosave)
@@ -26,16 +25,13 @@
  *  useClipBoard         Clipboard read/write + local state
  *  useWindowDimensions  Screen dimensions (re-export from RN)
  *  useToast             Show toast / error toast
- *  useAppLaunch         App bootstrap ready
  *  useSafeAreaScroll    Safe area insets for ScrollView
  *  useOnlineStatus      Online/offline status
  */
 
-export { useAppLaunch } from './useAppLaunch'
 export { useAppState } from './useAppState'
 export { useArray } from './useArray'
 export { useAsync } from './useAsync'
-export { useBackHandler } from './useBackHandler'
 export { useClipBoard } from './useClipBoard'
 export { useCountdown } from './useCountdown'
 export {
