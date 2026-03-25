@@ -2,43 +2,65 @@
 title: Hoist callbacks to the root of lists
 impact: MEDIUM
 impactDescription: Fewer re-renders and faster lists
-tags: tag1, tag2
+tags: lists, performance, flashlist, callbacks
 ---
 
 ## List performance callbacks
 
-**Impact: HIGH (Fewer re-renders and faster lists)**
+When passing behavior into list rows, **avoid creating new function instances inside `renderItem` on every parent render**. Hoist stable handlers to the list parent and pass **ids or item references** into memoized row components.
 
-When passing callback functions to list items, create a single instance of the
-callback at the root of the list. Items should then call it with a unique
-identifier.
+**Incorrect (creates a new callback per row, per parent render):**
 
-**Incorrect (creates a new callback on each render):**
+```tsx
+import { FlashList } from '@shopify/flash-list'
 
-```typescript
 return (
-  <LegendList
+  <FlashList
+    data={items}
+    estimatedItemSize={72}
     renderItem={({ item }) => {
-      // bad: creates a new callback on each render
       const onPress = () => handlePress(item.id)
-      return <Item key={item.id} item={item} onPress={onPress} />
+      return <Row item={item} onPress={onPress} />
     }}
   />
 )
 ```
 
-**Correct (a single function instance passed to each item):**
+**Correct (stable `renderItem`; row closes over `item` only inside memoized child):**
 
-```typescript
-const onPress = useCallback(() => handlePress(item.id), [handlePress, item.id])
+```tsx
+import { FlashList } from '@shopify/flash-list'
+import { memo, useCallback } from 'react'
+import { Pressable } from 'react-native'
+
+const handlePress = useCallback((id: string) => {
+  // ...
+}, [])
+
+const renderItem = useCallback(
+  ({ item }: { item: Item }) => <Row item={item} onPressItem={handlePress} />,
+  [handlePress],
+)
 
 return (
-  <LegendList
-    renderItem={({ item }) => (
-      <Item key={item.id} item={item} onPress={onPress} />
-    )}
+  <FlashList
+    data={items}
+    estimatedItemSize={72}
+    keyExtractor={(item) => item.id}
+    renderItem={renderItem}
   />
 )
+
+const Row = memo(function Row({
+  item,
+  onPressItem,
+}: {
+  item: Item
+  onPressItem: (id: string) => void
+}) {
+  const onPress = useCallback(() => onPressItem(item.id), [item.id, onPressItem])
+  return <Pressable onPress={onPress}>{/* ... */}</Pressable>
+})
 ```
 
-Reference: [Link to documentation or resource](https://example.com)
+Reference: [FlashList performance](https://shopify.github.io/flash-list/docs/fundamentals/performant-components)

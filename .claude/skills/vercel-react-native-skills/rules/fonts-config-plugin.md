@@ -10,7 +10,7 @@ tags: fonts, performance, config-plugin
 For managed workflow: use the font config plugin to embed fonts at build time instead of
 `useFonts` or `Font.loadAsync`. Embedded fonts are more efficient.
 
-**For bare React Native:** use `react-native-asset` via `npm run link` to link font files. See AGENTS.md.
+**For bare React Native:** use `react-native-asset` via `npm run link` to link font files. See repository root **`AGENTS.md`** (project-wide rules).
 
 **Incorrect (async font loading):**
 

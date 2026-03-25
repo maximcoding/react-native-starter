@@ -2,20 +2,16 @@
 title: Use Native Navigators for Navigation
 impact: HIGH
 impactDescription: native performance, platform-appropriate UI
-tags: navigation, react-navigation, native-stack, tabs
+tags: navigation, react-navigation, native-stack, bottom-tabs
 ---
 
 ## Use Native Navigators for Navigation
 
-Always use native navigators instead of JS-based ones. Native navigators use
-platform APIs (UINavigationController on iOS, Fragment on Android) for better
-performance and native behavior.
+Prefer **native-backed** navigators from React Navigation so stacks use platform APIs (e.g. `UINavigationController` on iOS) where possible.
 
-**For stacks:** Use `@react-navigation/native-stack`
-stack (which uses native-stack). Avoid `@react-navigation/stack`.
+**Stacks:** Use **`@react-navigation/native-stack`** (`createNativeStackNavigator`). Avoid the legacy JS-based **`@react-navigation/stack`** (`createStackNavigator`) unless you have a specific reason.
 
-**For tabs:** Use `react-native-bottom-tabs` (native)
-tabs. Avoid `@react-navigation/bottom-tabs` when native feel matters.
+**Tabs (this starter):** Use **`@react-navigation/bottom-tabs`** (`createBottomTabNavigator`). A **custom `tabBar`** (e.g. themed or animated) is fine—see `src/navigation/root/root-navigator.tsx`.
 
 ### Stack Navigation
 
@@ -29,14 +25,14 @@ const Stack = createStackNavigator()
 function App() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name='Home' component={HomeScreen} />
-      <Stack.Screen name='Details' component={DetailsScreen} />
+      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="Details" component={DetailsScreen} />
     </Stack.Navigator>
   )
 }
 ```
 
-**Correct (native stack with react-navigation):**
+**Correct (native stack):**
 
 ```tsx
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
@@ -46,91 +42,40 @@ const Stack = createNativeStackNavigator()
 function App() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name='Home' component={HomeScreen} />
-      <Stack.Screen name='Details' component={DetailsScreen} />
+      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="Details" component={DetailsScreen} />
     </Stack.Navigator>
   )
 }
 ```
 
-**Correct (React Navigation native stack):**
+### Tab Navigation (this template)
 
-```tsx
-import { createNativeStackNavigator } from '@react-navigation/native-stack'
-const Stack = createNativeStackNavigator()
-export default function Layout() {
-  return <Stack.Navigator>...</Stack.Navigator>
-}
-```
-
-### Tab Navigation
-
-**Incorrect (JS bottom tabs):**
+**Correct (bottom tabs + custom tab bar, matches this repo):**
 
 ```tsx
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 
 const Tab = createBottomTabNavigator()
 
-function App() {
+function HomeTabs() {
   return (
-    <Tab.Navigator>
-      <Tab.Screen name='Home' component={HomeScreen} />
-      <Tab.Screen name='Settings' component={SettingsScreen} />
+    <Tab.Navigator
+      tabBar={(props) => <AnimatedTabBar {...props} />}
+      screenOptions={{ headerShown: false }}
+    >
+      <Tab.Screen name="TAB_HOME" component={HomeScreen} />
+      <Tab.Screen name="TAB_SETTINGS" component={SettingsScreen} />
     </Tab.Navigator>
   )
 }
 ```
 
-**Correct (native bottom tabs with react-navigation):**
+Use **route name constants** from `src/navigation/routes.ts` in real code.
 
-```tsx
-import { createNativeBottomTabNavigator } from '@bottom-tabs/react-navigation'
+### Optional: native bottom tabs (extra dependency)
 
-const Tab = createNativeBottomTabNavigator()
-
-function App() {
-  return (
-    <Tab.Navigator>
-      <Tab.Screen
-        name='Home'
-        component={HomeScreen}
-        options={{
-          tabBarIcon: () => ({ sfSymbol: 'house' }),
-        }}
-      />
-      <Tab.Screen
-        name='Settings'
-        component={SettingsScreen}
-        options={{
-          tabBarIcon: () => ({ sfSymbol: 'gear' }),
-        }}
-      />
-    </Tab.Navigator>
-  )
-}
-```
-
-**Correct (native tabs):**
-
-```tsx
-import { createNativeBottomTabNavigator } from '@bottom-tabs/react-navigation'
-const Tab = createNativeBottomTabNavigator()
-
-export default function TabLayout() {
-  return (
-    <Tab.Navigator>
-      <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarIcon: () => ({ sfSymbol: 'house.fill' }) }} />
-      <Tab.Screen name="Settings" component={SettingsScreen} options={{ tabBarIcon: () => ({ sfSymbol: 'gear' }) }} />
-    </Tab.Navigator>
-  )
-}
-```
-
-On iOS, native tabs automatically enable `contentInsetAdjustmentBehavior` on the
-first `ScrollView` at the root of each tab screen, so content scrolls correctly
-behind the translucent tab bar. If you need to disable this, use
-`disableAutomaticContentInsets` on the trigger.
+For **platform-native** tab bars (SF Symbols on iOS, etc.), you can adopt Callstack’s **`@bottom-tabs/react-navigation`**—it is **not** installed in this starter. See: [React Native Bottom Tabs — React Navigation](https://oss.callstack.com/react-native-bottom-tabs/docs/guides/usage-with-react-navigation).
 
 ### Prefer Native Header Options Over Custom Components
 
@@ -138,10 +83,10 @@ behind the translucent tab bar. If you need to disable this, use
 
 ```tsx
 <Stack.Screen
-  name='Profile'
+  name="Profile"
   component={ProfileScreen}
   options={{
-    header: () => <CustomHeader title='Profile' />,
+    header: () => <CustomHeader title="Profile" />,
   }}
 />
 ```
@@ -150,7 +95,7 @@ behind the translucent tab bar. If you need to disable this, use
 
 ```tsx
 <Stack.Screen
-  name='Profile'
+  name="Profile"
   component={ProfileScreen}
   options={{
     title: 'Profile',
@@ -162,19 +107,13 @@ behind the translucent tab bar. If you need to disable this, use
 />
 ```
 
-Native headers support iOS large titles, search bars, blur effects, and proper
-safe area handling automatically.
+### Why Native Stack
 
-### Why Native Navigators
-
-- **Performance**: Native transitions and gestures run on the UI thread
-- **Platform behavior**: Automatic iOS large titles, Android material design
-- **System integration**: Scroll-to-top on tab tap, PiP avoidance, proper safe
-  areas
-- **Accessibility**: Platform accessibility features work automatically
+- **Performance**: Native transitions and gestures where supported
+- **Platform behavior**: Large titles, search bars, blur on iOS
+- **Accessibility**: Platform accessibility features integrate more predictably
 
 Reference:
 
 - [React Navigation Native Stack](https://reactnavigation.org/docs/native-stack-navigator)
-- [React Native Bottom Tabs with React Navigation](https://oss.callstack.com/react-native-bottom-tabs/docs/guides/usage-with-react-navigation)
-- [React Native Bottom Tabs with React Navigation](https://oss.callstack.com/react-native-bottom-tabs/docs/guides/usage-with-react-navigation)
+- [React Navigation Bottom Tabs](https://reactnavigation.org/docs/bottom-tab-navigator)

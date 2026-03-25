@@ -5,6 +5,8 @@ impactDescription: avoids duplicate bundles, version conflicts
 tags: monorepo, dependencies, installation
 ---
 
+**Scope:** Single-package apps (this starter) can **skip** this rule unless you adopt a **monorepo**.
+
 ## Use Single Dependency Versions Across Monorepo
 
 Use a single version of each dependency across all packages in your monorepo.

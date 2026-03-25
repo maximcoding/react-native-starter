@@ -5,6 +5,8 @@ impactDescription: stable references, fewer re-renders
 tags: rerender, hooks, performance, react-compiler
 ---
 
+> **This starter does not enable the React Compiler by default.** Apply the guidance below only when/if you turn it on in Babel/Metro config.
+
 ## Destructure Functions Early in Render
 
 This rule is only applicable if you are using the React Compiler.

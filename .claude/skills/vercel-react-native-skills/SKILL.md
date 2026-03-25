@@ -28,7 +28,7 @@ Reference these guidelines when:
 - Configuring native modules or fonts
 - Structuring projects with native dependencies
 
-> **Project constraints:** Bare workflow only, no Nativewind, no Tailwind. Styling uses `StyleSheet.create()` with theme tokens only. Font setup uses `react-native-asset`. Use React Native's built-in `Image` or `react-native-fast-image`.
+> **Project constraints:** Bare workflow only, no Nativewind, no Tailwind. Styling uses `StyleSheet.create()` with theme tokens only. Font setup uses `react-native-asset`. Use React Native's built-in `Image` or `react-native-fast-image`. **Lists:** prefer `@shopify/flash-list` (examples in `rules/` use FlashList). **Monorepo** rules apply only in a multi-package repo; this starter is a **single app**—skip them unless you adopt a monorepo layout.
 
 ## Rule Categories by Priority
 
@@ -64,7 +64,7 @@ Reference these guidelines when:
 
 ### 3. Navigation (HIGH)
 
-- `navigation-native-navigators` - Use native stack and native tabs over JS navigators
+- `navigation-native-navigators` - Use `@react-navigation/native-stack` for stacks; this template uses `@react-navigation/bottom-tabs` with a custom tab bar (optional: Callstack native bottom tabs if you add the dependency)
 
 ### 4. UI Patterns (HIGH)
 
@@ -93,8 +93,8 @@ Reference these guidelines when:
 
 ### 7. Monorepo (MEDIUM)
 
-- `monorepo-native-deps-in-app` - Keep native dependencies in app package
-- `monorepo-single-dependency-versions` - Use single versions across packages
+- `monorepo-native-deps-in-app` - Keep native dependencies in app package (**ignore** in single-package apps)
+- `monorepo-single-dependency-versions` - Single versions across packages (**ignore** unless monorepo)
 
 ### 8. Configuration (LOW)
 
@@ -118,6 +118,6 @@ Each rule file contains:
 - Correct code example with explanation
 - Additional context and references
 
-## Full Compiled Document
+## Pointer doc
 
-For the complete guide with all rules expanded: `AGENTS.md`
+[`AGENTS.md`](AGENTS.md) in this folder summarizes the stack and links to repository-wide [`AGENTS.md`](../../../AGENTS.md). **All expanded examples** live under `rules/`—there is no monolithic compiled rollup (avoids drift from this starter).

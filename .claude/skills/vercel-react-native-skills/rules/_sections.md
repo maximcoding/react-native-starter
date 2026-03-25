@@ -14,7 +14,7 @@ runtime crashes or broken UI.
 ## 2. List Performance (list-performance)
 
 **Impact:** HIGH  
-**Description:** Optimizing virtualized lists (FlatList, LegendList, FlashList)
+**Description:** Optimizing virtualized lists (FlatList, **FlashList** in this starter)
 for smooth scrolling and fast updates.
 
 ## 3. Animation (animation)

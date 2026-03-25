@@ -5,6 +5,8 @@ impactDescription: required for React Compiler compatibility
 tags: reanimated, react-compiler, shared-values
 ---
 
+> **This starter does not enable the React Compiler by default.** The `.get()` / `.set()` API is still valid on recent Reanimated versions; use the pattern below when the compiler is enabled.
+
 ## Use .get() and .set() for Shared Values with React Compiler
 
 With React Compiler enabled, use `.get()` and `.set()` instead of reading or

@@ -21,8 +21,8 @@ import { useT } from '@/i18n/useT'
 import { ROUTES } from '@/navigation/routes'
 import { IconSvg } from '@/shared/components/ui/IconSvg'
 import { Text } from '@/shared/components/ui/Text'
-import { useTheme } from '@/shared/theme'
 import type { LightTheme } from '@/shared/theme'
+import { useTheme } from '@/shared/theme'
 
 // ─── Constants ─────────────────────────────────────────────────────
 
@@ -119,7 +119,11 @@ const TabItem = memo(function TabItem({
           indicatorStyle,
         ]}
       >
-        <IconSvg name={iconForRoute(routeName)} size={ICON_SIZE} color={tabColor} />
+        <IconSvg
+          name={iconForRoute(routeName)}
+          size={ICON_SIZE}
+          color={tabColor}
+        />
         <Text style={[ty.labelSmall, { color: tabColor }]} numberOfLines={1}>
           {label}
         </Text>

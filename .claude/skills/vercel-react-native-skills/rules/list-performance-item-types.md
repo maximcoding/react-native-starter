@@ -2,15 +2,13 @@
 title: Use Item Types for Heterogeneous Lists
 impact: HIGH
 impactDescription: efficient recycling, less layout thrashing
-tags: list, performance, recycling, heterogeneous, LegendList
+tags: list, performance, recycling, heterogeneous, flashlist
 ---
 
 ## Use Item Types for Heterogeneous Lists
 
 When a list has different item layouts (messages, images, headers, etc.), use a
-`type` field on each item and provide `getItemType` to the list. This puts items
-into separate recycling pools so a message component never gets recycled into an
-image component.
+`type` field on each item and provide **`getItemType`** to **FlashList**. That helps the list recycle cells with compatible layouts.
 
 **Incorrect (single component with conditionals):**
 
@@ -29,10 +27,11 @@ function ListItem({ item }: { item: Item }) {
 
 function Feed({ items }: { items: Item[] }) {
   return (
-    <LegendList
+    <FlashList
       data={items}
+      estimatedItemSize={72}
+      keyExtractor={(item) => item.id}
       renderItem={({ item }) => <ListItem item={item} />}
-      recycleItems
     />
   )
 }
@@ -41,6 +40,8 @@ function Feed({ items }: { items: Item[] }) {
 **Correct (typed items with separate components):**
 
 ```tsx
+import { FlashList } from '@shopify/flash-list'
+
 type HeaderItem = { id: string; type: 'header'; title: string }
 type MessageItem = { id: string; type: 'message'; text: string }
 type ImageItem = { id: string; type: 'image'; url: string }
@@ -48,8 +49,9 @@ type FeedItem = HeaderItem | MessageItem | ImageItem
 
 function Feed({ items }: { items: FeedItem[] }) {
   return (
-    <LegendList
+    <FlashList
       data={items}
+      estimatedItemSize={72}
       keyExtractor={(item) => item.id}
       getItemType={(item) => item.type}
       renderItem={({ item }) => {
@@ -62,7 +64,6 @@ function Feed({ items }: { items: FeedItem[] }) {
             return <ImageRow url={item.url} />
         }
       }}
-      recycleItems
     />
   )
 }
@@ -73,32 +74,7 @@ function Feed({ items }: { items: FeedItem[] }) {
 - **Recycling efficiency**: Items with the same type share a recycling pool
 - **No layout thrashing**: A header never recycles into an image cell
 - **Type safety**: TypeScript can narrow the item type in each branch
-- **Better size estimation**: Use `getEstimatedItemSize` with `itemType` for
-  accurate estimates per type
 
-```tsx
-<LegendList
-  data={items}
-  keyExtractor={(item) => item.id}
-  getItemType={(item) => item.type}
-  getEstimatedItemSize={(index, item, itemType) => {
-    switch (itemType) {
-      case 'header':
-        return 48
-      case 'message':
-        return 72
-      case 'image':
-        return 300
-      default:
-        return 72
-    }
-  }}
-  renderItem={({ item }) => {
-    /* ... */
-  }}
-  recycleItems
-/>
-```
+For **very different row heights**, tune **`estimatedItemSize`** (average) and use FlashList’s **`overrideItemSize`** / layout APIs as needed—see the docs below.
 
-Reference:
-[LegendList getItemType](https://legendapp.com/open-source/list/api/props/#getitemtype-v2)
+Reference: [FlashList — performant components / `getItemType`](https://shopify.github.io/flash-list/docs/fundamentals/performant-components)

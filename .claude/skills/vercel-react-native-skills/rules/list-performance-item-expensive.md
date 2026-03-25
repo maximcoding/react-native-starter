@@ -49,13 +49,17 @@ function ProductRow({ name, price, imageUrl }: Props) {
 **Move data fetching to parent:**
 
 ```tsx
+import { FlashList } from '@shopify/flash-list'
+
 // Parent fetches all data once
 function ProductList() {
   const { data: products } = useQuery(['products'], fetchProducts)
 
   return (
-    <LegendList
+    <FlashList
       data={products}
+      estimatedItemSize={88}
+      keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
         <ProductRow name={item.name} price={item.price} imageUrl={item.image} />
       )}

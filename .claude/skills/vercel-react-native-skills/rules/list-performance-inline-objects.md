@@ -2,7 +2,7 @@
 title: Avoid Inline Objects in renderItem
 impact: HIGH
 impactDescription: prevents unnecessary re-renders of memoized list items
-tags: lists, performance, flatlist, virtualization, memo
+tags: lists, performance, flashlist, virtualization, memo
 ---
 
 ## Avoid Inline Objects in renderItem
@@ -14,10 +14,14 @@ values directly from `item` instead.
 **Incorrect (inline object breaks memoization):**
 
 ```tsx
+import { FlashList } from '@shopify/flash-list'
+
 function UserList({ users }: { users: User[] }) {
   return (
-    <LegendList
+    <FlashList
       data={users}
+      estimatedItemSize={72}
+      keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
         <UserRow
           // Bad: new object on every render
@@ -44,10 +48,14 @@ renderItem={({ item }) => (
 **Correct (pass item directly or primitives):**
 
 ```tsx
+import { FlashList } from '@shopify/flash-list'
+
 function UserList({ users }: { users: User[] }) {
   return (
-    <LegendList
+    <FlashList
       data={users}
+      estimatedItemSize={72}
+      keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
         // Good: pass the item directly
         <UserRow user={item} />

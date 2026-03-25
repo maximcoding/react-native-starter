@@ -5,6 +5,8 @@ impactDescription: required for autolinking to work
 tags: monorepo, native, autolinking, installation
 ---
 
+**Scope:** Single-package apps (this starter) can **skip** this rule. It applies when you use a **monorepo** with multiple `package.json` files.
+
 ## Install Native Dependencies in App Directory
 
 In a monorepo, packages with native code must be installed in the native app's

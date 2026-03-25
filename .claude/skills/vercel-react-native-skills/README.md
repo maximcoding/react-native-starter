@@ -10,7 +10,7 @@ optimized for agents and LLMs.
   - `_template.md` - Template for creating new rules
   - `area-description.md` - Individual rule files
 - `metadata.json` - Document metadata (version, organization, abstract)
-- **`AGENTS.md`** - Compiled output (generated)
+- **`AGENTS.md`** - Short pointer + stack summary for this starter (not a compiled rollup)
 
 ## Rules
 
@@ -21,8 +21,7 @@ optimized for agents and LLMs.
 
 ### List Performance (HIGH)
 
-- `list-performance-virtualize.md` - Use virtualized lists (LegendList,
-  FlashList)
+- `list-performance-virtualize.md` - Use virtualized lists (FlashList primary)
 - `list-performance-function-references.md` - Keep stable object references
 - `list-performance-callbacks.md` - Hoist callbacks to list root
 - `list-performance-inline-objects.md` - Avoid inline objects in renderItem
@@ -44,7 +43,7 @@ optimized for agents and LLMs.
 
 ### Navigation (HIGH)
 
-- `navigation-native-navigators.md` - Use native stack and native tabs
+- `navigation-native-navigators.md` - Native stack + bottom tabs (this template)
 
 ### React State (MEDIUM)
 
