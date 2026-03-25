@@ -1,7 +1,7 @@
 // src/app/hooks/useAppLaunch.ts
-import { useBootstrapRoute } from '@/session/useBootstrapRoute'
+import { useInitialRoute } from '@/session/useInitialRoute'
 
 export function useAppLaunch() {
-  const route = useBootstrapRoute()
+  const route = useInitialRoute()
   return { isReady: route !== null }
 }

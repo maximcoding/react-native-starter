@@ -31,7 +31,7 @@ When changing SVGs, run `npm run gen:icons`. When changing i18n keys, run `npm r
 - **src/i18n/** — useT, locales, extraction.
 - **src/shared/components/ui/** — Reusable UI primitives (Button, Text, ScreenWrapper, …). If a component needs sharing, it either belongs here (truly generic) or stays in the feature that owns it — there is no intermediate category.
 - **src/shared/hooks/** — Shared hooks.
-- **src/shared/constants/** — Shared non-config constants (e.g. query invalidation tag lists). Storage key names and env-backed flags stay in **`src/config/`**.
+- **src/shared/constants/** — Shared non-config constants. Storage key names and env-backed flags stay in **`src/config/`**. Tag arrays for cache invalidation (e.g. `AUTH_SESSION_TAGS`) belong in each feature's `api/keys.ts` — not here.
 - **src/shared/services/api/** — HTTP, transport, query client, network, offline.
 - **src/shared/services/monitoring/** — Optional crash reporting (e.g. Sentry init); see `docs/OPERATIONS.md#sentry`.
 - **src/shared/services/storage/** — MMKV, cache, Zustand persistence adapter.
@@ -73,6 +73,7 @@ Use path alias `@/` only (e.g. `@/navigation/`, `@/session/`, `@/config/`, `@/i1
 - No server data in Zustand; no feature logic in `src/shared/components/ui/` or `src/shared/stores/`.
 - No deep relative imports; path aliases only (`check:imports`).
 - When adding/changing SVGs: run `npm run gen:icons` and keep `check:icons` passing.
+- No empty directories in `src/`. When moving or deleting files, remove the containing folder if it becomes empty. Empty folders signal dead code and confuse codebase navigation.
 
 ## When adding
 

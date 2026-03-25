@@ -27,12 +27,9 @@ export const AuthService = {
       throw normalizeError(new Error(message))
     }
 
-    // when MOCK is on, skip network entirely
-    if (!flags.USE_MOCK) {
-      if (isOffline()) {
-        // Message prefix matches normalize-error offline detection
-        throw new Error('Offline: login requires network')
-      }
+    // skip network check when mock transport is active
+    if (!flags.USE_MOCK && isOffline()) {
+      throw new Error('Offline: login requires network')
     }
 
     // use OPS (Operation = union of OPS)

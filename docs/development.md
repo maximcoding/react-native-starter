@@ -17,7 +17,7 @@ src/
 ├── shared/                     # Cross-app code (must NOT import from features)
 │   ├── components/ui/          # Button, Text, ScreenWrapper, OfflineBanner, IconSvg, ErrorBoundary, Activity, SuspenseBoundary
 │   ├── hooks/                  # Shared hooks (useAppState, useToggle, …)
-│   ├── constants/              # Shared non-config constants (e.g. query tag lists)
+│   ├── constants/              # Shared non-config constants (tag arrays belong in feature api/keys.ts)
 │   ├── services/
 │   │   ├── api/                # http, transport, query, network, offline
 │   │   ├── monitoring/         # Optional Sentry init + boundary reporting (see OPERATIONS.md#sentry)

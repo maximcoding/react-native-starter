@@ -37,7 +37,6 @@ export default function App() {
   // Android: exit app from root-level leaves (main tabs, login, onboarding).
   useBackButtonHandler(
     routeName =>
-      routeName === ROUTES.HOME_TABS ||
       routeName === ROUTES.TAB_HOME ||
       routeName === ROUTES.TAB_SETTINGS ||
       routeName === ROUTES.AUTH_LOGIN ||

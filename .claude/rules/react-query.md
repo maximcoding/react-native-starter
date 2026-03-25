@@ -38,6 +38,7 @@ Never hardcode numeric stale/gc values — always reference a `Freshness` profil
 
 ## Must not
 - No React Query keys inline in components — always use `api/keys.ts`.
+- No tag arrays (e.g. `['auth:me', 'auth:session']`) inline in hooks — export named arrays from the feature's `api/keys.ts` and import from there.
 - No `invalidateQueries()` without a targeted key — use tag-based invalidation.
 - No magic `staleTime` / `gcTime` numbers — use `Freshness` profiles.
 - No server data duplicated in Zustand.

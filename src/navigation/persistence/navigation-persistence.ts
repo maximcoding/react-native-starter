@@ -7,7 +7,7 @@ import type { NavigationState, PartialState } from '@react-navigation/native'
 
 import { constants } from '@/config/constants'
 import { ROUTES } from '@/navigation/routes'
-import { getBootstrapRoute } from '@/session/bootstrap'
+import { getInitialRoute } from '@/session/bootstrap'
 import { navigationStorage } from '@/shared/services/storage/mmkv'
 
 const KEY = constants.NAVIGATION_STATE_V1
@@ -34,7 +34,7 @@ export function isRestoredStateAllowed(
 ): boolean {
   const rootName = getRootRouteName(state)
   if (!rootName || !ROOT_NAMES.has(rootName)) return false
-  const expected = getBootstrapRoute()
+  const expected = getInitialRoute()
   return rootName === expected
 }
 

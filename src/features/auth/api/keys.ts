@@ -43,3 +43,8 @@ export const authKeys = {
 } as const
 
 export type AuthTag = keyof typeof tagMap
+
+export const AUTH_SESSION_TAGS = [
+  'auth:me',
+  'auth:session',
+] as const satisfies readonly AuthTag[]

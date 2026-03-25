@@ -1,21 +1,19 @@
-/**
- * FILE: root-navigator.tsx
- * LAYER: navigation/root
- */
+// src/navigation/root/root-navigator.tsx
 
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import React from 'react'
+import AuthScreen from '@/features/auth/screens/AuthScreen'
+import HomeScreen from '@/features/home/screens/HomeScreen'
+import StoryScreen from '@/features/home/screens/StoryScreen'
 import LanguagePickerModal from '@/features/settings/screens/LanguagePickerModal'
+import OnboardingScreen from '@/features/settings/screens/OnboardingScreen'
+import SettingsScreen from '@/features/settings/screens/SettingsScreen'
 import ThemePickerModal from '@/features/settings/screens/ThemePickerModal'
-import { RootStackParamList } from '@/navigation'
+import type { HomeTabParamList, RootStackParamList } from '@/navigation/root-param-list'
 import { ROUTES } from '@/navigation/routes'
-import AuthStack from '@/navigation/stacks/auth-stack'
-import OnboardingStack from '@/navigation/stacks/onboarding-stack'
-import HomeTabs from '@/navigation/tabs/home-tabs'
-
-import { useBootstrapRoute } from '@/session/useBootstrapRoute'
-
-const Stack = createNativeStackNavigator<RootStackParamList>()
+import { AnimatedTabBar } from '@/navigation/tabs/AnimatedTabBar'
+import { useInitialRoute } from '@/session/useInitialRoute'
 
 const HALF_SHEET_OPTIONS = {
   presentation: 'transparentModal',
@@ -23,17 +21,33 @@ const HALF_SHEET_OPTIONS = {
   gestureEnabled: false,
 } as const
 
-export default function RootNavigator() {
-  const boot = useBootstrapRoute()
+const Tab = createBottomTabNavigator<HomeTabParamList>()
+const Stack = createNativeStackNavigator<RootStackParamList>()
+
+function HomeTabs() {
+  return (
+    <Tab.Navigator
+      tabBar={props => <AnimatedTabBar {...props} />}
+      screenOptions={{ headerShown: false }}
+    >
+      <Tab.Screen name={ROUTES.TAB_HOME} component={HomeScreen} />
+      <Tab.Screen name={ROUTES.TAB_SETTINGS} component={SettingsScreen} />
+    </Tab.Navigator>
+  )
+}
+
+export function RootNavigator() {
+  const initialRoute = useInitialRoute()
 
   return (
     <Stack.Navigator
-      initialRouteName={boot}
+      initialRouteName={initialRoute}
       screenOptions={{ headerShown: false }}
     >
-      <Stack.Screen name={ROUTES.ROOT_ONBOARDING} component={OnboardingStack} />
-      <Stack.Screen name={ROUTES.ROOT_AUTH} component={AuthStack} />
+      <Stack.Screen name={ROUTES.ROOT_ONBOARDING} component={OnboardingScreen} />
+      <Stack.Screen name={ROUTES.ROOT_AUTH} component={AuthScreen} />
       <Stack.Screen name={ROUTES.ROOT_APP} component={HomeTabs} />
+      <Stack.Screen name={ROUTES.HOME_STORY} component={StoryScreen} />
       <Stack.Screen
         name={ROUTES.MODAL_THEME_PICKER}
         component={ThemePickerModal}

@@ -34,7 +34,7 @@
     "featured_subtitle": "Du machst das super — halte deinen Streak aufrecht.",
     "quick_actions": "Schnellaktionen",
     "overview": "Übersicht",
-    "recent_activity": "Letzte Aktivitäten",
+    "recent_activity": "Top-Storys",
     "title": "Startseite",
     "greeting_morning": "Guten Morgen",
     "greeting_afternoon": "Guten Tag",
@@ -72,6 +72,13 @@
     "feature_3_title": "Blitzschnell",
     "feature_3_body": "Sofortige Synchronisierung auf allen Geräten",
     "get_started": "Loslegen"
+  },
+  "uikit": {
+    "title": "Komponenten",
+    "section_buttons": "Schaltflächen",
+    "section_typography": "Typografie",
+    "section_icons": "Icons",
+    "section_surfaces": "Oberflächen & Zustände"
   },
   "app": {
     "title": "App"

@@ -13,6 +13,9 @@ export default function LanguageScreen() {
   const t = useT()
 
   const handleBack = useCallback(() => goBack(), [])
+  const handleEnglish = useCallback(() => i18n.changeLanguage('en'), [])
+  const handleRussian = useCallback(() => i18n.changeLanguage('ru'), [])
+  const handleGerman = useCallback(() => i18n.changeLanguage('de'), [])
 
   return (
     <ScreenWrapper
@@ -26,16 +29,13 @@ export default function LanguageScreen() {
       <View style={{ padding: theme.spacing.lg, gap: theme.spacing.sm }}>
         <Button
           title={t('settings.language.english')}
-          onPress={() => i18n.changeLanguage('en')}
+          onPress={handleEnglish}
         />
         <Button
           title={t('settings.language.russian')}
-          onPress={() => i18n.changeLanguage('ru')}
+          onPress={handleRussian}
         />
-        <Button
-          title={t('settings.language.german')}
-          onPress={() => i18n.changeLanguage('de')}
-        />
+        <Button title={t('settings.language.german')} onPress={handleGerman} />
       </View>
     </ScreenWrapper>
   )

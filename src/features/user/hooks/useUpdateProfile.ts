@@ -11,9 +11,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { z } from 'zod'
-import { authKeys } from '@/features/auth/api/keys'
-import { userKeys } from '@/features/user/api/keys'
-import { SESSION_RELATED_QUERY_TAGS } from '@/shared/constants'
+import { USER_PROFILE_TAGS, userKeys } from '@/features/user/api/keys'
 import { invalidateByTags } from '@/shared/services/api/query/helpers/invalidate-by-tags'
 import { OPS } from '@/shared/services/api/transport/operations'
 import { transport } from '@/shared/services/api/transport/transport'
@@ -42,17 +40,14 @@ export function useUpdateProfile() {
       const parsed = UpdateProfileInput.parse(payload)
 
       return transport.mutate(OPS.USER_UPDATE_PROFILE, parsed, {
-        tags: SESSION_RELATED_QUERY_TAGS,
+        tags: USER_PROFILE_TAGS,
       }) as Promise<TransportResult>
     },
 
     onSuccess: async result => {
       if ((result as any)?.queued) return
 
-      await invalidateByTags(qc, SESSION_RELATED_QUERY_TAGS, [
-        userKeys.tagMap,
-        authKeys.tagMap,
-      ])
+      await invalidateByTags(qc, USER_PROFILE_TAGS, [userKeys.tagMap])
     },
   })
 }

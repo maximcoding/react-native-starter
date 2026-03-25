@@ -34,7 +34,7 @@
     "featured_subtitle": "You're doing great — keep your streak alive.",
     "quick_actions": "Quick actions",
     "overview": "Overview",
-    "recent_activity": "Recent activity",
+    "recent_activity": "Top Stories",
     "title": "Home",
     "greeting_morning": "Good morning",
     "greeting_afternoon": "Good afternoon",
@@ -72,6 +72,13 @@
     "feature_3_title": "Lightning fast",
     "feature_3_body": "Instant sync across all your devices",
     "get_started": "Get started"
+  },
+  "uikit": {
+    "title": "Components",
+    "section_buttons": "Buttons",
+    "section_typography": "Typography",
+    "section_icons": "Icons",
+    "section_surfaces": "Surfaces & States"
   },
   "app": {
     "title": "App"

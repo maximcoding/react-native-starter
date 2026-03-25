@@ -1,9 +1,9 @@
 import { constants } from '@/config/constants'
 import { kvStorage } from '@/shared/services/storage/mmkv'
 
-export type BootstrapRoute = 'ROOT_ONBOARDING' | 'ROOT_AUTH' | 'ROOT_APP'
+export type InitialRoute = 'ROOT_ONBOARDING' | 'ROOT_AUTH' | 'ROOT_APP'
 
-export function getBootstrapRoute(): BootstrapRoute {
+export function getInitialRoute(): InitialRoute {
   const onboardingDone = kvStorage.getString(constants.ONBOARDING_DONE) === '1'
   const token = kvStorage.getString(constants.AUTH_TOKEN)
 

@@ -8,12 +8,12 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Linking, Platform, useColorScheme } from 'react-native'
 import BootSplash from 'react-native-bootsplash'
 
-import AppLayout from '@/navigation/AppLayout'
 import { navigationRef } from '@/navigation/helpers/navigation-helpers'
 import {
   loadPersistedNavigationState,
   persistNavigationState,
 } from '@/navigation/persistence/navigation-persistence'
+import { RootNavigator } from '@/navigation/root/root-navigator'
 import { ThemedStatusBar } from '@/shared/components/ui/ThemedStatusBar'
 import { useTheme } from '@/shared/theme'
 
@@ -99,7 +99,7 @@ export function NavigationRoot() {
         onStateChange={onStateChange}
         onReady={() => BootSplash.hide({ fade: true })}
       >
-        <AppLayout />
+        <RootNavigator />
       </NavigationContainer>
     </>
   )

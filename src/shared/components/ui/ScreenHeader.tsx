@@ -1,7 +1,7 @@
 // src/shared/components/ui/ScreenHeader.tsx
 
 import React from 'react'
-import { StyleSheet, TouchableOpacity, View } from 'react-native'
+import { Pressable, StyleSheet, View } from 'react-native'
 import Svg, { Polyline } from 'react-native-svg'
 import { Text } from '@/shared/components/ui/Text'
 import { useTheme } from '@/shared/theme'
@@ -49,12 +49,15 @@ export function ScreenHeader({
       {/* Left: back button or placeholder to balance centering */}
       <View style={styles.side}>
         {onBack ? (
-          <TouchableOpacity
+          <Pressable
             onPress={onBack}
             hitSlop={{ top: sp.xs, bottom: sp.xs, left: sp.xs, right: sp.xs }}
             accessibilityRole="button"
             accessibilityLabel={backLabel}
-            style={styles.iconBtn}
+            style={({ pressed }) => [
+              styles.iconBtn,
+              pressed && styles.iconBtnPressed,
+            ]}
           >
             <Svg
               width={ICON_SIZE}
@@ -68,7 +71,7 @@ export function ScreenHeader({
             >
               <Polyline points="15 18 9 12 15 6" />
             </Svg>
-          </TouchableOpacity>
+          </Pressable>
         ) : null}
       </View>
 
@@ -108,6 +111,9 @@ const styles = StyleSheet.create({
     height: BTN_SIZE,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  iconBtnPressed: {
+    opacity: 0.6,
   },
   titleCenter: {
     flex: 1,

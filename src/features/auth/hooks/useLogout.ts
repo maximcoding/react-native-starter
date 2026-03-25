@@ -9,7 +9,7 @@ export function useLogout() {
   return useCallback(async () => {
     try {
       await AuthService.logout()
-      await qc.cancelQueries().catch(() => undefined)
+      await qc.cancelQueries()
       qc.clear()
     } catch (e) {
       throw normalizeError(e)

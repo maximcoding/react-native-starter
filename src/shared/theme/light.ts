@@ -27,6 +27,7 @@
  * ---------------------------------------------------------------------
  */
 
+import { brand } from './tokens/brand'
 import { elevation } from './tokens/elevation'
 import { radius } from './tokens/radius'
 import { spacing } from './tokens/spacing'
@@ -100,6 +101,7 @@ export const lightTheme = {
   radius,
   typography,
   elevation,
+  brand,
 } as const
 
 export type LightTheme = typeof lightTheme

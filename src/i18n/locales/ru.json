@@ -34,7 +34,7 @@
     "featured_subtitle": "Отличная работа — не останавливайтесь на достигнутом.",
     "quick_actions": "Быстрые действия",
     "overview": "Обзор",
-    "recent_activity": "Недавняя активность",
+    "recent_activity": "Топ статей",
     "title": "Главная",
     "greeting_morning": "Доброе утро",
     "greeting_afternoon": "Добрый день",
@@ -72,6 +72,13 @@
     "feature_3_title": "Молниеносная скорость",
     "feature_3_body": "Мгновенная синхронизация на всех устройствах",
     "get_started": "Начать"
+  },
+  "uikit": {
+    "title": "Компоненты",
+    "section_buttons": "Кнопки",
+    "section_typography": "Типографика",
+    "section_icons": "Иконки",
+    "section_surfaces": "Поверхности и состояния"
   },
   "app": {
     "title": "Приложение"

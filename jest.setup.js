@@ -110,6 +110,16 @@ jest.mock('react-native-mmkv', () => {
   return { createMMKV }
 })
 
+jest.mock('react-native-webview', () => {
+  const React = require('react')
+  const { View } = require('react-native')
+  const WebView = React.forwardRef((props, _ref) =>
+    React.createElement(View, props),
+  )
+  WebView.displayName = 'WebView'
+  return { __esModule: true, default: WebView }
+})
+
 jest.mock('react-native-gesture-handler', () => {
   const View = require('react-native').View
   return {

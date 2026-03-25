@@ -81,6 +81,13 @@ declare module 'i18next' {
           feature_3_body: string
           get_started: string
         }
+        uikit: {
+          title: string
+          section_buttons: string
+          section_typography: string
+          section_icons: string
+          section_surfaces: string
+        }
         app: {
           title: string
         }

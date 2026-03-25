@@ -45,8 +45,8 @@ export function SettingsSection({ title, children }: SettingsSectionProps) {
             {idx < childArray.length - 1 ? (
               <View
                 style={{
-                  height: StyleSheet.hairlineWidth,
-                  backgroundColor: theme.colors.divider,
+                  height: 1,
+                  backgroundColor: theme.colors.border,
                   marginHorizontal: theme.spacing.md,
                 }}
               />
