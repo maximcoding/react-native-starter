@@ -41,6 +41,7 @@
     "format": "biome check . --write",
     "test": "jest",
     "gen:icons": "node scripts/generate-icons.js",
+    "gen:app-icon": "node scripts/generate-app-icon.cjs",
     "cache:clean": "npm cache clean --force",
     "clean:auto": "react-native clean-project-auto",
     "clean": "react-native clean-project",
@@ -137,6 +138,7 @@
     "lint-staged": "^16.2.7",
     "prettier": "^3.8.1",
     "react-test-renderer": "19.1.1",
+    "sharp": "0.34.2",
     "standard-version": "^9.5.0",
     "typescript": "^5.8.3"
   },

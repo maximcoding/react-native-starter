@@ -1,0 +1,169 @@
+/**
+ * Generate iOS AppIcon.appiconset PNGs + Android mipmap launcher icons from one source.
+ * Source: assets/app-icon.png (preferred), else assets/bootsplash/logo@4x.png, else logo.png.
+ * Uses sharp (fit: cover, square). Flattens onto #111827 so marketing icon has no transparency.
+ */
+const fs = require('node:fs')
+const path = require('node:path')
+
+const sharp = require('sharp')
+
+const root = path.join(__dirname, '..')
+const APP_ICON = path.join(root, 'assets', 'app-icon.png')
+const LOGO_4X = path.join(root, 'assets', 'bootsplash', 'logo@4x.png')
+const LOGO_1X = path.join(root, 'assets', 'bootsplash', 'logo.png')
+
+const BG = { r: 17, g: 24, b: 39 }
+
+/** @type {{ px: number; filename: string; idiom: string; size: string; scale: string }[]} */
+const IOS_SLOTS = [
+  {
+    px: 40,
+    filename: 'Icon-App-20x20@2x.png',
+    idiom: 'iphone',
+    size: '20x20',
+    scale: '2x',
+  },
+  {
+    px: 60,
+    filename: 'Icon-App-20x20@3x.png',
+    idiom: 'iphone',
+    size: '20x20',
+    scale: '3x',
+  },
+  {
+    px: 58,
+    filename: 'Icon-App-29x29@2x.png',
+    idiom: 'iphone',
+    size: '29x29',
+    scale: '2x',
+  },
+  {
+    px: 87,
+    filename: 'Icon-App-29x29@3x.png',
+    idiom: 'iphone',
+    size: '29x29',
+    scale: '3x',
+  },
+  {
+    px: 80,
+    filename: 'Icon-App-40x40@2x.png',
+    idiom: 'iphone',
+    size: '40x40',
+    scale: '2x',
+  },
+  {
+    px: 120,
+    filename: 'Icon-App-40x40@3x.png',
+    idiom: 'iphone',
+    size: '40x40',
+    scale: '3x',
+  },
+  {
+    px: 120,
+    filename: 'Icon-App-60x60@2x.png',
+    idiom: 'iphone',
+    size: '60x60',
+    scale: '2x',
+  },
+  {
+    px: 180,
+    filename: 'Icon-App-60x60@3x.png',
+    idiom: 'iphone',
+    size: '60x60',
+    scale: '3x',
+  },
+  {
+    px: 1024,
+    filename: 'Icon-App-1024x1024@1x.png',
+    idiom: 'ios-marketing',
+    size: '1024x1024',
+    scale: '1x',
+  },
+]
+
+/** Density folder → launcher side length (px) */
+const ANDROID_MAP = [
+  { folder: 'mipmap-mdpi', px: 48 },
+  { folder: 'mipmap-hdpi', px: 72 },
+  { folder: 'mipmap-xhdpi', px: 96 },
+  { folder: 'mipmap-xxhdpi', px: 144 },
+  { folder: 'mipmap-xxxhdpi', px: 192 },
+]
+
+function resolveSource() {
+  if (fs.existsSync(APP_ICON)) return APP_ICON
+  if (fs.existsSync(LOGO_4X)) return LOGO_4X
+  if (fs.existsSync(LOGO_1X)) return LOGO_1X
+  console.error(
+    'app-icon: missing source. Add assets/app-icon.png (1024×1024 recommended) or bootsplash/logo@4x.png / logo.png',
+  )
+  process.exit(1)
+}
+
+/**
+ * @param {string} inputPath
+ * @param {number} px
+ */
+async function renderIcon(inputPath, px) {
+  return sharp(inputPath)
+    .resize(px, px, { fit: 'cover', position: 'centre' })
+    .flatten({ background: BG })
+    .png({ compressionLevel: 9 })
+    .toBuffer()
+}
+
+async function main() {
+  const src = resolveSource()
+  console.log(`app-icon: using source ${path.relative(root, src)}`)
+
+  const iosDir = path.join(
+    root,
+    'ios',
+    'ReactNativeStarter',
+    'Images.xcassets',
+    'AppIcon.appiconset',
+  )
+  fs.mkdirSync(iosDir, { recursive: true })
+
+  for (const slot of IOS_SLOTS) {
+    const buf = await renderIcon(src, slot.px)
+    fs.writeFileSync(path.join(iosDir, slot.filename), buf)
+    console.log(`  iOS ${slot.filename} (${slot.px}px)`)
+  }
+
+  const contents = {
+    images: IOS_SLOTS.map(s => ({
+      idiom: s.idiom,
+      scale: s.scale,
+      size: s.size,
+      filename: s.filename,
+    })),
+    info: {
+      author: 'xcode',
+      version: 1,
+    },
+  }
+  fs.writeFileSync(
+    path.join(iosDir, 'Contents.json'),
+    `${JSON.stringify(contents, null, 2)}\n`,
+  )
+
+  const androidRes = path.join(root, 'android', 'app', 'src', 'main', 'res')
+  for (const { folder, px } of ANDROID_MAP) {
+    const dir = path.join(androidRes, folder)
+    fs.mkdirSync(dir, { recursive: true })
+    const buf = await renderIcon(src, px)
+    for (const name of ['ic_launcher.png', 'ic_launcher_round.png']) {
+      fs.writeFileSync(path.join(dir, name), buf)
+    }
+    console.log(`  Android ${folder} (${px}px)`)
+  }
+
+  console.log('app-icon: done')
+}
+
+main().catch(err => {
+  console.error(err)
+  process.exit(1)
+})
