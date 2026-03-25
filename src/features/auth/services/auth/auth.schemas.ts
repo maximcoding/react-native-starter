@@ -40,3 +40,10 @@ export const zLoginResponse = z.object({
 
 export type LoginRequest = z.infer<typeof zLoginRequest>
 export type LoginResponse = z.infer<typeof zLoginResponse>
+
+export const zSessionResponse = z.object({
+  userId: z.string().or(z.number()),
+  email: z.string().email().optional(),
+})
+
+export type SessionResponse = z.infer<typeof zSessionResponse>
