@@ -1,7 +1,7 @@
 // src/features/settings/screens/LanguagePickerModal.tsx
 
 import { IconName } from '@assets/icons'
-import React, { useCallback } from 'react'
+import React, { memo, useCallback } from 'react'
 import { Pressable, StyleSheet, View } from 'react-native'
 import i18n from '@/i18n/i18n'
 import { useT } from '@/i18n/useT'
@@ -24,12 +24,98 @@ const LANGUAGE_OPTIONS: {
   { code: 'de', labelKey: 'settings.language.german', abbr: 'DE' },
 ]
 
-export default function LanguagePickerModal() {
+// ─── Item ─────────────────────────────────────────────────────────────────────
+
+interface LanguageOptionRowProps {
+  opt: (typeof LANGUAGE_OPTIONS)[number]
+  selected: boolean
+  onSelect: (code: string) => void
+}
+
+const LanguageOptionRow = memo(function LanguageOptionRow({
+  opt,
+  selected,
+  onSelect,
+}: LanguageOptionRowProps) {
   const t = useT()
   const { theme } = useTheme()
   const c = theme.colors
   const sp = theme.spacing
   const r = theme.radius
+  const ty = theme.typography
+
+  const handlePress = useCallback(
+    () => onSelect(opt.code),
+    [opt.code, onSelect],
+  )
+
+  return (
+    <Pressable
+      onPress={handlePress}
+      accessibilityRole="button"
+      accessibilityLabel={t(opt.labelKey)}
+      accessibilityState={{ selected }}
+      style={({ pressed }) => [
+        styles.row,
+        {
+          backgroundColor: selected
+            ? c.primaryAmbient
+            : pressed
+              ? c.surfaceSecondary
+              : c.surface,
+          borderColor: selected ? c.primary : c.border,
+          borderRadius: r.xl,
+          paddingVertical: sp.md,
+          paddingHorizontal: sp.md,
+        },
+      ]}
+    >
+      <View
+        style={[
+          styles.badge,
+          {
+            backgroundColor: c.surfaceSecondary,
+            borderRadius: r.sm,
+            paddingHorizontal: sp.xs,
+            paddingVertical: sp.xxs,
+          },
+        ]}
+      >
+        <Text style={[ty.labelSmall, { color: c.textSecondary }]}>
+          {opt.abbr}
+        </Text>
+      </View>
+      <Text
+        style={[
+          ty.bodyMedium,
+          {
+            flex: 1,
+            color: selected ? c.primary : c.textPrimary,
+            marginLeft: sp.sm,
+          },
+        ]}
+      >
+        {t(opt.labelKey)}
+      </Text>
+      {selected ? (
+        <IconSvg
+          name={IconName.CHECK}
+          size={18}
+          color={c.primary}
+          style={{ width: 18, height: 18 }}
+        />
+      ) : null}
+    </Pressable>
+  )
+})
+
+// ─── Screen ───────────────────────────────────────────────────────────────────
+
+export default function LanguagePickerModal() {
+  const t = useT()
+  const { theme } = useTheme()
+  const c = theme.colors
+  const sp = theme.spacing
   const ty = theme.typography
 
   const currentLang = i18n.language
@@ -43,74 +129,21 @@ export default function LanguagePickerModal() {
 
   return (
     <HalfSheet onClose={handleClose}>
-      {/* Title */}
       <Text
         style={[ty.titleMedium, { color: c.textPrimary, marginBottom: sp.md }]}
       >
         {t('settings.language.label')}
       </Text>
 
-      {/* Options */}
       <View style={{ gap: sp.xs }}>
-        {LANGUAGE_OPTIONS.map(opt => {
-          const selected = currentLang === opt.code
-          return (
-            <Pressable
-              key={opt.code}
-              onPress={() => handleSelect(opt.code)}
-              style={({ pressed }) => [
-                styles.row,
-                {
-                  backgroundColor: selected
-                    ? c.primaryAmbient
-                    : pressed
-                      ? c.surfaceSecondary
-                      : c.surface,
-                  borderColor: selected ? c.primary : c.border,
-                  borderRadius: r.xl,
-                  paddingVertical: sp.md,
-                  paddingHorizontal: sp.md,
-                },
-              ]}
-            >
-              <View
-                style={[
-                  styles.badge,
-                  {
-                    backgroundColor: c.surfaceSecondary,
-                    borderRadius: r.sm,
-                    paddingHorizontal: sp.xs,
-                    paddingVertical: sp.xxs,
-                  },
-                ]}
-              >
-                <Text style={[ty.labelSmall, { color: c.textSecondary }]}>
-                  {opt.abbr}
-                </Text>
-              </View>
-              <Text
-                style={[
-                  ty.bodyMedium,
-                  {
-                    flex: 1,
-                    color: selected ? c.primary : c.textPrimary,
-                    marginLeft: sp.sm,
-                  },
-                ]}
-              >
-                {t(opt.labelKey)}
-              </Text>
-              {selected ? (
-                <IconSvg
-                  name={IconName.CHECK}
-                  size={18}
-                  color={c.primary}
-                  style={{ width: 18, height: 18 }}
-                />
-              ) : null}
-            </Pressable>
-          )
-        })}
+        {LANGUAGE_OPTIONS.map(opt => (
+          <LanguageOptionRow
+            key={opt.code}
+            opt={opt}
+            selected={currentLang === opt.code}
+            onSelect={handleSelect}
+          />
+        ))}
       </View>
     </HalfSheet>
   )

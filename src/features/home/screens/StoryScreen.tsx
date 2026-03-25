@@ -59,6 +59,8 @@ export default function StoryScreen({ route, navigation }: Props) {
     [c.textPrimary],
   )
 
+  const handleClose = useCallback(() => navigation.goBack(), [navigation])
+
   const handleBack = useCallback(() => {
     if (canGoBack) {
       webViewRef.current?.goBack()
@@ -132,7 +134,7 @@ export default function StoryScreen({ route, navigation }: Props) {
           </View>
 
           <Pressable
-            onPress={() => navigation.goBack()}
+            onPress={handleClose}
             hitSlop={{ top: sp.xs, bottom: sp.xs, left: sp.xs, right: sp.xs }}
             accessibilityRole="button"
             accessibilityLabel="Close article"
