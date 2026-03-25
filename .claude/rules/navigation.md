@@ -7,11 +7,11 @@ Global rules: [AGENTS.md](../../AGENTS.md). Claude stack summary: [CLAUDE.md](..
 # Rules — navigation
 
 ## Structure
-- **Static config** (`src/navigation/root/root-navigator.tsx`): `createNativeStackNavigator({screens:{}})` — no JSX navigator wrappers.
-- **Root entry** `src/navigation/NavigationRoot.tsx`: `createStaticNavigation(RootStack)` — render exactly once, no second instance.
-- **Initial route:** `getInitialRoute()` from `src/session/bootstrap.ts` — sync MMKV read that resolves `ROOT_ONBOARDING | ROOT_AUTH | ROOT_APP`.
+- **Navigator** (`src/navigation/root/root-navigator.tsx`): JSX `<Stack.Navigator>` + `<Stack.Screen>` pattern. Export `RootNavigator` (the root stack component) and `HomeTabs` (tab navigator component). Create navigators at module level: `const Stack = createNativeStackNavigator<RootStackParamList>()`.
+- **Root entry** `src/navigation/NavigationRoot.tsx`: single `<NavigationContainer>` with `ref={navigationRef}` — render exactly once, no second instance.
+- **Initial route:** `useInitialRoute()` from `src/session/useInitialRoute.ts` — sync `useState` initializer that reads MMKV once, resolves `ROOT_ONBOARDING | ROOT_AUTH | ROOT_APP`.
 - **Routes:** all constants in `src/navigation/routes.ts` — never inline route string literals anywhere.
-- **ParamList:** `RootStackParamList` in `src/navigation/root-param-list.ts`; declared manually (not via `StaticParamList`) to avoid circular deps through feature screens. Declared globally once:
+- **ParamLists:** `RootStackParamList` and `HomeTabParamList` in `src/navigation/root-param-list.ts`; declared manually to avoid circular deps. Global augmentation declared once there:
   ```ts
   declare global {
     namespace ReactNavigation {
@@ -30,14 +30,15 @@ GestureHandlerRootView
       ErrorBoundary
         QueryProvider
           OfflineBanner
-          NavigationRoot
+          NavigationRoot        ← contains NavigationContainer + RootNavigator
 ```
 
-## Static config rules (React Navigation v7)
-- Add screens via the `screens` object — each value is a component, a nested static navigator, or `{ screen, options, linking }`.
-- Use `groups` to share `screenOptions` across a set of screens — do not create a nested navigator just for code organization.
-- Use the `if` property (hook callback) on a screen or group for conditional rendering (auth gate, feature flag). Never call `navigation.navigate()` after auth state changes — React Navigation transitions automatically.
-- Attach dynamic logic (runtime `screenOptions`, `screenListeners`) via `.with()` — it shallow-merges with the static config.
+## Dynamic navigator rules (React Navigation v7)
+- Create navigator instances (`const Stack = createNativeStackNavigator<T>()`) at module scope — not inside components.
+- Add new screens as `<Stack.Screen name={ROUTES.X} component={ScreenComponent} />` inside the appropriate navigator JSX.
+- Share `screenOptions` via the `screenOptions` prop on `<Stack.Navigator>` — do not repeat options on individual screens if they apply to all.
+- For auth gating or feature flags: conditionally render `<Stack.Screen>` in JSX — do not call `navigation.navigate()` after auth state changes.
+- Nested navigators (e.g. tabs inside a stack screen): create a dedicated component (e.g. `HomeTabs`) and register it as the screen component.
 
 ## Params
 - Params must be **JSON-serializable** — required for state persistence and deep linking.
@@ -79,10 +80,10 @@ GestureHandlerRootView
 - `InteractionManager.runAfterInteractions` for heavy non-UI work triggered by navigation.
 
 ## Must not
-- Do not render a second `createStaticNavigation(...)` instance — one root only.
+- Do not render a second `<NavigationContainer>` — one root only.
 - Do not call `navigation.navigate()` after an auth state change — conditional screen rendering handles it.
 - Do not nest navigators of the same type (tabs-in-tabs, stack-in-stack at the same level).
-- Do not create a nested navigator solely for code organization — use `groups` instead.
+- Do not create a nested navigator solely for code organization — group screens under a shared `screenOptions` prop instead.
 - Do not navigate from `src/shared/**` directly — pass callbacks as props or use `navigationRef` helpers.
 - Do not add navigation logic inside `src/shared/components/ui/` components.
 - Do not pass full data objects as params — pass IDs and fetch data inside the screen.

@@ -44,3 +44,8 @@ export const userKeys = {
 } as const
 
 export type UserTag = keyof typeof tagMap
+
+export const USER_PROFILE_TAGS = [
+  'user:me',
+  'user:list',
+] as const satisfies readonly UserTag[]

@@ -29,7 +29,7 @@ src/
 ├── shared/                # Cross-cutting code — must NOT import from features
 │   ├── components/ui/     # Button, Text, ScreenWrapper, …
 │   ├── hooks/
-│   ├── constants/         # shared non-config constants (not storage keys)
+│   ├── constants/         # shared non-config constants (not storage keys; tag arrays belong in feature api/keys.ts)
 │   ├── services/api|storage/
 │   ├── stores/
 │   ├── theme/

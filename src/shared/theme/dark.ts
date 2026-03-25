@@ -1,3 +1,4 @@
+import { brand } from './tokens/brand'
 import { elevation } from './tokens/elevation'
 import { radius } from './tokens/radius'
 import { spacing } from './tokens/spacing'
@@ -93,6 +94,7 @@ export const darkTheme = {
   radius,
   typography,
   elevation,
+  brand,
 } as const
 
 export type DarkTheme = typeof darkTheme

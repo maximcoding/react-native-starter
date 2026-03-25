@@ -7,17 +7,36 @@
 
 import { IconName } from '@assets/icons'
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs'
-import React, { useEffect, useRef } from 'react'
-import { Animated, Platform, Pressable, StyleSheet, View } from 'react-native'
+import React, { memo, useEffect } from 'react'
+import { Platform, Pressable, StyleSheet, View } from 'react-native'
+import Animated, {
+  interpolate,
+  interpolateColor,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useT } from '@/i18n/useT'
 import { ROUTES } from '@/navigation/routes'
 import { IconSvg } from '@/shared/components/ui/IconSvg'
 import { Text } from '@/shared/components/ui/Text'
 import { useTheme } from '@/shared/theme'
+import type { LightTheme } from '@/shared/theme'
+
+// ─── Constants ─────────────────────────────────────────────────────
 
 const ICON_SIZE = 22
 const TAB_MIN_TOUCH = 44
+const INACTIVE_OPACITY = 0.45
+
+const SPRING_CONFIG = {
+  damping: 20,
+  stiffness: 180,
+  mass: 0.7,
+} as const
+
+// ─── Helpers ───────────────────────────────────────────────────────
 
 function iconForRoute(routeName: string): IconName {
   switch (routeName) {
@@ -41,6 +60,76 @@ function labelForRoute(routeName: string, t: ReturnType<typeof useT>): string {
   }
 }
 
+// ─── TabItem ───────────────────────────────────────────────────────
+
+type TabItemProps = {
+  isFocused: boolean
+  label: string
+  routeName: string
+  theme: LightTheme
+  onPress: () => void
+  onLongPress: () => void
+}
+
+const TabItem = memo(function TabItem({
+  isFocused,
+  label,
+  routeName,
+  theme,
+  onPress,
+  onLongPress,
+}: TabItemProps) {
+  const { colors: c, radius: r, spacing: sp, typography: ty } = theme
+
+  const progress = useSharedValue(isFocused ? 1 : 0)
+
+  useEffect(() => {
+    progress.value = withSpring(isFocused ? 1 : 0, SPRING_CONFIG)
+  }, [isFocused, progress])
+
+  const indicatorStyle = useAnimatedStyle(() => ({
+    backgroundColor: interpolateColor(
+      progress.value,
+      [0, 1],
+      ['transparent', c.primaryAmbient],
+    ),
+    opacity: interpolate(progress.value, [0, 1], [INACTIVE_OPACITY, 1]),
+  }))
+
+  const tabColor = isFocused ? c.primary : c.textTertiary
+
+  return (
+    <Pressable
+      onPress={onPress}
+      onLongPress={onLongPress}
+      accessibilityRole="tab"
+      accessibilityState={isFocused ? { selected: true } : {}}
+      accessibilityLabel={label}
+      style={styles.tabItem}
+    >
+      <Animated.View
+        style={[
+          styles.indicator,
+          {
+            borderRadius: r.xl,
+            paddingVertical: sp.xs,
+            paddingHorizontal: sp.md,
+            gap: sp.xxs,
+          },
+          indicatorStyle,
+        ]}
+      >
+        <IconSvg name={iconForRoute(routeName)} size={ICON_SIZE} color={tabColor} />
+        <Text style={[ty.labelSmall, { color: tabColor }]} numberOfLines={1}>
+          {label}
+        </Text>
+      </Animated.View>
+    </Pressable>
+  )
+})
+
+// ─── AnimatedTabBar ────────────────────────────────────────────────
+
 export function AnimatedTabBar({
   state,
   descriptors,
@@ -49,28 +138,7 @@ export function AnimatedTabBar({
   const { theme } = useTheme()
   const t = useT()
   const insets = useSafeAreaInsets()
-  const c = theme.colors
-  const sp = theme.spacing
-  const r = theme.radius
-  const ty = theme.typography
-  const el = theme.elevation
-
-  const progress = useRef(
-    state.routes.map((_, i) => new Animated.Value(i === state.index ? 1 : 0)),
-  ).current
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: progress is a stable ref; routes are fixed for this bar
-  useEffect(() => {
-    state.routes.forEach((_, i) => {
-      Animated.spring(progress[i], {
-        toValue: i === state.index ? 1 : 0,
-        useNativeDriver: false,
-        damping: 20,
-        stiffness: 180,
-        mass: 0.7,
-      }).start()
-    })
-  }, [state.index])
+  const { colors: c, spacing: sp, radius: r, elevation: el } = theme
 
   return (
     <View
@@ -83,7 +151,6 @@ export function AnimatedTabBar({
         },
       ]}
     >
-      {/* Floating card */}
       <View
         style={[
           styles.bar,
@@ -107,30 +174,13 @@ export function AnimatedTabBar({
       >
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key]
+          const isFocused = state.index === index
           const label =
             typeof options.tabBarLabel === 'string'
               ? options.tabBarLabel
               : typeof options.title === 'string'
                 ? options.title
                 : labelForRoute(route.name, t)
-
-          const isFocused = state.index === index
-          const p = progress[index]
-
-          // Rounded-square bg: transparent → primaryAmbient
-          const squareBg = p.interpolate({
-            inputRange: [0, 1],
-            outputRange: ['transparent', c.primaryAmbient],
-          })
-
-          // Content opacity: dim when inactive
-          const contentOpacity = p.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0.45, 1],
-          })
-
-          const iconColor = isFocused ? c.primary : c.textTertiary
-          const labelColor = isFocused ? c.primary : c.textTertiary
 
           const onPress = () => {
             const event = navigation.emit({
@@ -143,53 +193,27 @@ export function AnimatedTabBar({
             }
           }
 
-          return (
-            <Pressable
-              key={route.key}
-              onPress={onPress}
-              onLongPress={() =>
-                navigation.emit({ type: 'tabLongPress', target: route.key })
-              }
-              accessibilityRole="tab"
-              accessibilityState={isFocused ? { selected: true } : {}}
-              accessibilityLabel={label}
-              style={styles.tabItem}
-            >
-              <Animated.View
-                style={[
-                  styles.indicator,
-                  {
-                    backgroundColor: squareBg,
-                    borderRadius: r.xl,
-                    paddingVertical: sp.xs,
-                    paddingHorizontal: sp.md,
-                    gap: sp.xxs,
-                    opacity: contentOpacity,
-                  },
-                ]}
-              >
-                {/* Icon */}
-                <IconSvg
-                  name={iconForRoute(route.name)}
-                  size={ICON_SIZE}
-                  color={iconColor}
-                />
+          const onLongPress = () =>
+            navigation.emit({ type: 'tabLongPress', target: route.key })
 
-                {/* Label — always visible, below icon */}
-                <Text
-                  style={[ty.labelSmall, { color: labelColor }]}
-                  numberOfLines={1}
-                >
-                  {label}
-                </Text>
-              </Animated.View>
-            </Pressable>
+          return (
+            <TabItem
+              key={route.key}
+              isFocused={isFocused}
+              label={label}
+              routeName={route.name}
+              theme={theme}
+              onPress={onPress}
+              onLongPress={onLongPress}
+            />
           )
         })}
       </View>
     </View>
   )
 }
+
+// ─── Styles ────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
   outerContainer: {
@@ -207,7 +231,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   indicator: {
-    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
   },

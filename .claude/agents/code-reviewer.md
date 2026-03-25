@@ -33,20 +33,28 @@ You are a senior code reviewer for this React Native TypeScript project. Your st
 - [ ] Strict mode compliance — no implicit `any`, no untyped function returns on exported APIs
 - [ ] Zod schemas validate every API response in feature services before returning domain models
 
+### Code Quality
+- [ ] No magic numbers in logic — numeric literals with meaning (timeouts, limits, sizes, counts, offsets) must be named constants defined at module or config level
+- [ ] No magic strings in logic — non-i18n string literals used as identifiers, keys, or config values must be named constants (e.g. storage keys from `src/config/constants.ts`, route names from `src/navigation/routes.ts`)
+- [ ] Functions do one thing — no function exceeds ~40 lines or mixes concerns (data fetching + transformation + UI logic); extract helpers when a function grows beyond a single clear responsibility
+- [ ] No deeply nested callbacks or conditionals — flatten with early returns and extracted helpers
+
 ### UI & Styling
 - [ ] All screens use `ScreenWrapper` as root element
-- [ ] No raw hex colors, numeric spacing, or font sizes — `useTheme()` tokens only
-- [ ] `StyleSheet.create()` used; inline styles only for dynamically computed values
+- [ ] No raw hex colors, numeric spacing, or font sizes — `useTheme()` tokens only; brand colors via `theme.brand.*`
+- [ ] `StyleSheet.create()` used; inline styles only for values that are dynamically computed at render time — not for static overrides
+- [ ] Repeated style patterns extracted into shared `StyleSheet` entries or shared style constants — no copy-pasted style blocks across components
 - [ ] Shared UI components accept strings as props — no hardcoded user-facing copy
 
 ### i18n
-- [ ] All user-facing strings use `useT('<feature>')` with the correct per-feature namespace
-- [ ] Namespace matches the feature directory name (lowercase)
+- [ ] All user-facing strings use `useT()` (no argument) and access keys via `t('feature.key')`
+- [ ] Key prefix matches the feature directory name (lowercase)
 
 ### State & Data
 - [ ] Server state via React Query; local UI state via `useState`; global UI state via Zustand in `src/shared/stores/`
 - [ ] Query keys defined in feature `api/keys.ts` using `[feature, entity, id?, params?]` format
-- [ ] Mutations include `meta.tags` for targeted invalidation
+- [ ] Tag arrays (e.g. `AUTH_SESSION_TAGS`) exported from the feature's `api/keys.ts` — not defined inline in hooks or placed in `src/shared/constants/`
+- [ ] Mutations include `meta.tags` for targeted invalidation; invalidation uses `invalidateByTags` with the feature's own `tagMap` only — no cross-feature tagMap references
 - [ ] MMKV key strings imported from `src/config/constants.ts`, not hardcoded
 
 ### React Native Specifics

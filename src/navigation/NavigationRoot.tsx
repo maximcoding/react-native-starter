@@ -1,8 +1,8 @@
 import type { NavigationState, PartialState } from '@react-navigation/native'
 import {
-  createStaticNavigation,
   DarkTheme,
   DefaultTheme,
+  NavigationContainer,
 } from '@react-navigation/native'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Linking, Platform, useColorScheme } from 'react-native'
@@ -13,11 +13,9 @@ import {
   loadPersistedNavigationState,
   persistNavigationState,
 } from '@/navigation/persistence/navigation-persistence'
-import { RootStack } from '@/navigation/root/root-navigator'
+import { RootNavigator } from '@/navigation/root/root-navigator'
 import { ThemedStatusBar } from '@/shared/components/ui/ThemedStatusBar'
 import { useTheme } from '@/shared/theme'
-
-const Navigation = createStaticNavigation(RootStack)
 
 /**
  * Navigation + StatusBar wired to app theme (inside ThemeProvider).
@@ -94,13 +92,15 @@ export function NavigationRoot() {
   return (
     <>
       <ThemedStatusBar />
-      <Navigation
+      <NavigationContainer
         ref={navigationRef}
         theme={navigationTheme}
         initialState={initialState}
         onStateChange={onStateChange}
         onReady={() => BootSplash.hide({ fade: true })}
-      />
+      >
+        <RootNavigator />
+      </NavigationContainer>
     </>
   )
 }

@@ -11,8 +11,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { z } from 'zod'
-import type { UserTag } from '@/features/user/api/keys'
-import { userKeys } from '@/features/user/api/keys'
+import { USER_PROFILE_TAGS, userKeys } from '@/features/user/api/keys'
 import { invalidateByTags } from '@/shared/services/api/query/helpers/invalidate-by-tags'
 import { OPS } from '@/shared/services/api/transport/operations'
 import { transport } from '@/shared/services/api/transport/transport'
@@ -31,8 +30,6 @@ export type UpdateProfileInput = z.infer<typeof UpdateProfileInput>
 
 type TransportResult = { offline?: boolean; queued?: boolean } | unknown
 
-const USER_UPDATE_TAGS: readonly UserTag[] = ['user:me', 'user:list']
-
 export function useUpdateProfile() {
   const qc = useQueryClient()
 
@@ -43,14 +40,14 @@ export function useUpdateProfile() {
       const parsed = UpdateProfileInput.parse(payload)
 
       return transport.mutate(OPS.USER_UPDATE_PROFILE, parsed, {
-        tags: USER_UPDATE_TAGS,
+        tags: USER_PROFILE_TAGS,
       }) as Promise<TransportResult>
     },
 
     onSuccess: async result => {
       if ((result as any)?.queued) return
 
-      await invalidateByTags(qc, USER_UPDATE_TAGS, [userKeys.tagMap])
+      await invalidateByTags(qc, USER_PROFILE_TAGS, [userKeys.tagMap])
     },
   })
 }

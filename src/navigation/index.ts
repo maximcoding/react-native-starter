@@ -1,4 +1,5 @@
 export type {
+  HomeTabParamList,
   RootStackParamList,
   StoryScreenParams,
 } from '@/navigation/root-param-list'

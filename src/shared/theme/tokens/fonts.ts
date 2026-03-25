@@ -15,7 +15,7 @@
  *
  * EXTENSION:
  *   - Add variable-font weights (InterVariable).
- *   - Add italic variants when imported.
+ *   - Add italic variants (requires Inter-Italic.ttf linked via react-native.config.js).
  *   - Add brand typography override system.
  * ---------------------------------------------------------------------
  */
@@ -47,15 +47,6 @@ export const fonts = {
     ios: 'Inter-Bold',
     android: 'Inter-Bold',
     default: 'Inter-Bold',
-  }),
-
-  /**
-   * ITALICS (optional — can be commented until imported)
-   */
-  italic: Platform.select({
-    ios: 'Inter-Italic',
-    android: 'Inter-Italic',
-    default: 'Inter-Italic',
   }),
 
   /**

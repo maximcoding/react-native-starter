@@ -11,7 +11,13 @@ export type StoryScreenParams = {
   domain?: string
 }
 
-/** Root navigator: onboarding, auth, main app shell, and global modals. */
+/** Bottom tab navigator screens. */
+export type HomeTabParamList = {
+  [ROUTES.TAB_HOME]: undefined
+  [ROUTES.TAB_SETTINGS]: undefined
+}
+
+/** Root stack: onboarding, auth, main app shell, and global modals. */
 export type RootStackParamList = {
   [ROUTES.ROOT_APP]: undefined
   [ROUTES.ROOT_AUTH]: undefined
@@ -19,4 +25,10 @@ export type RootStackParamList = {
   [ROUTES.HOME_STORY]: StoryScreenParams
   [ROUTES.MODAL_THEME_PICKER]: undefined
   [ROUTES.MODAL_LANGUAGE_PICKER]: undefined
+}
+
+declare global {
+  namespace ReactNavigation {
+    interface RootParamList extends RootStackParamList {}
+  }
 }
