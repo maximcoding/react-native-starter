@@ -1,16 +1,23 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+### 1.0.2 (2026-03-25)
 
-## [Unreleased]
 
-### Changed
-- **CI (`ci.yml`):** split quality gate into two parallel jobs (`lint`: Biome + TypeScript; `test`: Jest with coverage summary + `check:icons` + `check:imports`); add `concurrency` group to cancel stale PR runs; add `dependency-review` job on pull requests.
-- **Android CI (`android-ci.yml`):** add `v*` tag trigger alongside `workflow_dispatch`; add Gradle cache (`~/.gradle`); seed `.env` from `.env.example` before build; add commented stubs for AAB (`bundleRelease`) and Sentry source map upload.
-- **iOS CI (`ios-ci.yml`):** add `v*` tag trigger alongside `workflow_dispatch`; add CocoaPods specs cache (`~/.cocoapods`); seed `.env` from `.env.example` before build; add commented stub for Sentry source map upload.
-- **`docs/OPERATIONS.md`:** update GitHub Actions table and notes to reflect parallel jobs, caching, tag triggers, and Sentry upload stubs.
+### Features
+
+* add UI components, CI workflows, offline docs, and feature types ([2883b1b](https://github.com/maximcoding/react-native-starter/commit/2883b1b7122c6f974d999fabe68ac4a3783f897b))
+* fix settings modals, quick actions grid, and tab bar warning ([b520ecc](https://github.com/maximcoding/react-native-starter/commit/b520eccda9677178f60d6f5167f3e585d40fcaf6))
+* HN news reader with offline-first feed and premium UI ([9113efe](https://github.com/maximcoding/react-native-starter/commit/9113efe206897082e25e5142bda73b0b0e398f60))
+* production-ready UI, i18n, a11y, and test coverage ([9393382](https://github.com/maximcoding/react-native-starter/commit/9393382a0e87bb3506650f62319d990753cf04e1))
+
+
+### Bug Fixes
+
+* **dev:** add standard-version devDependency for release scripts ([5360c64](https://github.com/maximcoding/react-native-starter/commit/5360c64b996a06c0ad8dab478918a66b08e977e6))
+* **lint:** apply biome format fixes across changed files ([666333c](https://github.com/maximcoding/react-native-starter/commit/666333cc7e28855da50bc1e9c9cdd7462eedd38c))
+* **navigation:** React Navigation 7 static configuration (v1.0.1) ([88573f4](https://github.com/maximcoding/react-native-starter/commit/88573f4826ce9a225bbc36f195342ba93fbb464c))
 
 ## [1.0.1] - 2026-03-25
 
