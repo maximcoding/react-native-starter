@@ -51,7 +51,7 @@ npx pod-install ios
 cp .env.example .env
 ```
 
-**Launcher icon (optional):** `npm run gen:app-icon` is independent from splash generation and by default uses `assets/bootsplash-logo.svg`; fallback is `assets/app-icon.png` then `assets/bootsplash/logo@*.png`. See [docs/development.md](docs/development.md#assets--guards).
+**Launcher icon (optional):** `npm run gen:app-icon` is independent from splash generation and uses `assets/bootsplash/logo@*.png` first; fallback is `assets/app-icon.png` then `assets/bootsplash-logo.svg`. See [docs/development.md](docs/development.md#assets--guards).
 
 Edit `.env` as needed, then:
 
@@ -83,7 +83,8 @@ src/
 
 assets/
 ├── svgs/                # Source SVGs
-├── bootsplash-logo.svg  # Optional fallback source for splash / app-icon scripts
+├── logo.png             # BootSplash source of truth (`npm run bootsplash:generate`)
+├── bootsplash-logo.svg  # App icon fallback source (`npm run gen:app-icon`)
 ├── bootsplash/          # Splash PNGs + manifest (`npm run bootsplash:generate`)
 └── icons.ts             # Auto-generated icon registry
 ```

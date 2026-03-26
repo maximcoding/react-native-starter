@@ -1,7 +1,7 @@
 /**
  * Generate iOS AppIcon.appiconset PNGs + Android mipmap launcher icons from one source.
- * Source: assets/bootsplash-logo.svg (rasterized to temp), else assets/app-icon.png, else
- * the largest PNG under assets/bootsplash/ (logo@4x → … → logo.png).
+ * Source: largest PNG under assets/bootsplash/ (logo@4x → … → logo.png), else
+ * assets/app-icon.png, else assets/bootsplash-logo.svg (rasterized to temp).
  * Uses sharp (fit: cover, square). Flattens onto #111827 so marketing icon has no transparency.
  */
 const fs = require('node:fs')
@@ -114,22 +114,24 @@ function resolveBootsplashSource() {
  * @returns {{ path: string; cleanup: boolean; label: string } | null}
  */
 function resolveSourceSync() {
-  if (fs.existsSync(SVG_LOGO)) {
-    return {
-      path: SVG_LOGO,
-      cleanup: true,
-      label: 'assets/bootsplash-logo.svg',
-    }
-  }
-  if (fs.existsSync(APP_ICON)) {
-    return { path: APP_ICON, cleanup: false, label: 'assets/app-icon.png' }
-  }
   const fromBootsplash = resolveBootsplashSource()
   if (fromBootsplash) {
     return {
       path: fromBootsplash,
       cleanup: false,
       label: path.relative(root, fromBootsplash),
+    }
+  }
+
+  if (fs.existsSync(APP_ICON)) {
+    return { path: APP_ICON, cleanup: false, label: 'assets/app-icon.png' }
+  }
+
+  if (fs.existsSync(SVG_LOGO)) {
+    return {
+      path: SVG_LOGO,
+      cleanup: true,
+      label: 'assets/bootsplash-logo.svg',
     }
   }
   return null
@@ -165,7 +167,7 @@ async function main() {
   const resolved = resolveSourceSync()
   if (!resolved) {
     console.error(
-      'app-icon: missing source. Add assets/bootsplash-logo.svg, assets/app-icon.png (1024×1024 recommended), or PNGs under assets/bootsplash/ (logo@4x.png … logo.png).',
+      'app-icon: missing source. Add PNGs under assets/bootsplash/ (logo@4x.png … logo.png), assets/app-icon.png, or assets/bootsplash-logo.svg.',
     )
     process.exit(1)
   }
