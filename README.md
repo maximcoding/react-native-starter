@@ -32,8 +32,6 @@ React native starter project (no Expo) - modern state management, fast storage, 
 
 </div>
 
----
-
 ## 🧭 Project structure
 
 Feature-first structure with clear boundaries.
@@ -91,8 +89,6 @@ Edit `.env` as needed, then:
 npm start       # Metro bundler
 npm run ios     # or: npm run android
 ```
-
----
 
 ## 🔐 Environment variables
 
