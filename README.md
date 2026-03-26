@@ -143,9 +143,8 @@ Full command reference: [docs/development.md#key-commands](docs/development.md#k
 
 ---
 
-## 🔐 Permissions
-
-Declare only what you actually use. Full catalog: [docs/permissions-bare-rn.md](docs/permissions-bare-rn.md)
+## 🔐 Permissions (A gift pack)
+List of full existing native permissions for IOS, and Android , declare only what you actually use. Full catalog: [docs/permissions-bare-rn.md](docs/permissions-bare-rn.md)
 
 ---
 
