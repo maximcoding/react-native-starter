@@ -155,7 +155,6 @@ List of full existing native permissions for IOS, and Android , declare only wha
 | Rules, structure & contribution flow | [AGENTS.md](AGENTS.md)                                     |
 | Developer reference                  | [docs/development.md](docs/development.md)                 |
 | Offline behavior                     | [docs/OFFLINE.md](docs/OFFLINE.md)                         |
-| Operations, CI, releases, Sentry     | [docs/OPERATIONS.md](docs/OPERATIONS.md)                   |
 | Permissions catalog                  | [docs/permissions-bare-rn.md](docs/permissions-bare-rn.md) |
 | Roadmap                              | [docs/TODO.md](docs/TODO.md)                               |
 | Changelog                            | [CHANGELOG.md](CHANGELOG.md)                               |
