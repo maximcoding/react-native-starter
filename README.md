@@ -29,7 +29,7 @@ A bare React Native starter for serious apps — no Expo, fast storage, modern s
 - **🎨 Theming** — light/dark mode with semantic tokens
 - **🌍 i18next 25.x** — typed translations with a typed `useT()` hook
 - **🖼️ SVG via script** — `react-native-svg 15.x` with scripted icon generation ```npm run gen:icons```
-- **🚀 BootSplash 6.x** — native splash screen setup already in place. Put your logo into assets/logo.png as source image, then execute ```npm run bootsplash:generate``` .
+- **🚀 BootSplash 6.x** — native splash screen setup already in place. Put your splash icon into assets/logo.png and execute ```npm run bootsplash:generate```.
 - **🧪 Developer experience** — Biome 2.x, Jest 29.x, GitHub Actions CI, and Maestro E2E
 - **AI / agent workflow docs** — includes `.claude` agents and repo rules for more consistent AI-assisted changes
 
