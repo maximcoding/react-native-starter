@@ -86,7 +86,7 @@ src/
 │   ├── stores/   # Global UI state only
 │   ├── theme/
 │   └── utils/
-└── features/     # Per-feature slices: screens, hooks, services, api, navigation
+└── features/     # auth, home, settings, user
 
 assets/
 ├── svgs/                # Source SVGs
