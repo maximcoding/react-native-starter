@@ -21,7 +21,7 @@ A bare React Native starter for serious apps — no Expo, fast storage, modern s
 
 - **🧱 Bare React Native 0.82.1** — full native control, no Expo lock-in
 - **🧭 React Navigation 7.x** — stacks, tabs, and modals already wired
-- **📦 TanStack Query 5.x** — server data fetching, caching,update, retries, invalidation, and persistence.
+- **📦 TanStack Query 5.x** — Framework agnostic powerful server data fetching library. Caching, updating, retries, invalidation, and persistence.
 - **🪶 Zustand 5.x** — A small 1KB size, fast state management hook-based API. Eliminating boilerplates and prop drilling.
 - **⚡ MMKV Storage 4.3** — `react-native-mmkv` via Nitro Modules, commonly described as up to **30× faster than AsyncStorage**
 - **📡 Offline-ready** — query persistence, queue/replay, cache restore, and transport-level offline mode for a solid experience on flaky networks
