@@ -11,12 +11,6 @@ React native starter project (no Expo) - modern state management, fast storage, 
 
 ---
 
-<div align="center">
-
-[![Demo video](thumbnail.png)](https://github.com/user-attachments/assets/f7e1c02d-bdcd-4ecc-96f8-ad315038b1eb)
-
-</div>
-
 ## ✨ Features Included
 
 - **🧱 Bare React Native 0.82.1** — full native control, (no Expo lock-in)
@@ -34,6 +28,12 @@ React native starter project (no Expo) - modern state management, fast storage, 
 - **AI / agent workflow docs** — includes `.claude` agents and repo rules for more consistent AI-assisted changes
 
 ---
+
+<div align="center">
+
+[![Demo video](thumbnail.png)](https://github.com/user-attachments/assets/f7e1c02d-bdcd-4ecc-96f8-ad315038b1eb)
+
+</div>
 
 ## 🛠️ Getting started
 
