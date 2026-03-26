@@ -1,15 +1,17 @@
 /**
  * Generate iOS AppIcon.appiconset PNGs + Android mipmap launcher icons from one source.
- * Source: assets/app-icon.png (preferred), else the largest available file under assets/bootsplash/
- * (logo@4x → @3x → @2x → @1,5x → logo.png).
+ * Source: assets/bootsplash-logo.svg (rasterized to temp), else assets/app-icon.png, else
+ * the largest PNG under assets/bootsplash/ (logo@4x → … → logo.png).
  * Uses sharp (fit: cover, square). Flattens onto #111827 so marketing icon has no transparency.
  */
 const fs = require('node:fs')
+const os = require('node:os')
 const path = require('node:path')
 
 const sharp = require('sharp')
 
 const root = path.join(__dirname, '..')
+const SVG_LOGO = path.join(root, 'assets', 'bootsplash-logo.svg')
 const APP_ICON = path.join(root, 'assets', 'app-icon.png')
 const BOOTSPLASH_DIR = path.join(root, 'assets', 'bootsplash')
 /** Prefer largest PNG first (matches typical react-native-bootsplash output names). */
@@ -22,6 +24,7 @@ const BOOTSPLASH_SOURCES = [
 ]
 
 const BG = { r: 17, g: 24, b: 39 }
+const SVG_RASTER_PX = 1024
 
 /** @type {{ px: number; filename: string; idiom: string; size: string; scale: string }[]} */
 const IOS_SLOTS = [
@@ -107,14 +110,43 @@ function resolveBootsplashSource() {
   return null
 }
 
-function resolveSource() {
-  if (fs.existsSync(APP_ICON)) return APP_ICON
+/**
+ * @returns {{ path: string; cleanup: boolean; label: string } | null}
+ */
+function resolveSourceSync() {
+  if (fs.existsSync(SVG_LOGO)) {
+    return {
+      path: SVG_LOGO,
+      cleanup: true,
+      label: 'assets/bootsplash-logo.svg',
+    }
+  }
+  if (fs.existsSync(APP_ICON)) {
+    return { path: APP_ICON, cleanup: false, label: 'assets/app-icon.png' }
+  }
   const fromBootsplash = resolveBootsplashSource()
-  if (fromBootsplash) return fromBootsplash
-  console.error(
-    'app-icon: missing source. Add assets/app-icon.png (1024×1024 recommended) or PNGs under assets/bootsplash/ (logo@4x.png … logo.png).',
-  )
-  process.exit(1)
+  if (fromBootsplash) {
+    return {
+      path: fromBootsplash,
+      cleanup: false,
+      label: path.relative(root, fromBootsplash),
+    }
+  }
+  return null
+}
+
+/**
+ * @param {string} destPng
+ */
+async function rasterizeSvgToPng(destPng) {
+  await sharp(SVG_LOGO)
+    .resize(SVG_RASTER_PX, SVG_RASTER_PX, {
+      fit: 'cover',
+      position: 'centre',
+    })
+    .flatten({ background: BG })
+    .png({ compressionLevel: 9 })
+    .toFile(destPng)
 }
 
 /**
@@ -130,53 +162,81 @@ async function renderIcon(inputPath, px) {
 }
 
 async function main() {
-  const src = resolveSource()
-  console.log(`app-icon: using source ${path.relative(root, src)}`)
-
-  const iosDir = path.join(
-    root,
-    'ios',
-    'ReactNativeStarter',
-    'Images.xcassets',
-    'AppIcon.appiconset',
-  )
-  fs.mkdirSync(iosDir, { recursive: true })
-
-  for (const slot of IOS_SLOTS) {
-    const buf = await renderIcon(src, slot.px)
-    fs.writeFileSync(path.join(iosDir, slot.filename), buf)
-    console.log(`  iOS ${slot.filename} (${slot.px}px)`)
+  const resolved = resolveSourceSync()
+  if (!resolved) {
+    console.error(
+      'app-icon: missing source. Add assets/bootsplash-logo.svg, assets/app-icon.png (1024×1024 recommended), or PNGs under assets/bootsplash/ (logo@4x.png … logo.png).',
+    )
+    process.exit(1)
   }
 
-  const contents = {
-    images: IOS_SLOTS.map(s => ({
-      idiom: s.idiom,
-      scale: s.scale,
-      size: s.size,
-      filename: s.filename,
-    })),
-    info: {
-      author: 'xcode',
-      version: 1,
-    },
+  let inputPath = resolved.path
+  if (resolved.cleanup) {
+    inputPath = path.join(
+      os.tmpdir(),
+      `app-icon-svg-${process.pid}-${Date.now()}.png`,
+    )
   }
-  fs.writeFileSync(
-    path.join(iosDir, 'Contents.json'),
-    `${JSON.stringify(contents, null, 2)}\n`,
-  )
 
-  const androidRes = path.join(root, 'android', 'app', 'src', 'main', 'res')
-  for (const { folder, px } of ANDROID_MAP) {
-    const dir = path.join(androidRes, folder)
-    fs.mkdirSync(dir, { recursive: true })
-    const buf = await renderIcon(src, px)
-    for (const name of ['ic_launcher.png', 'ic_launcher_round.png']) {
-      fs.writeFileSync(path.join(dir, name), buf)
+  try {
+    if (resolved.cleanup) {
+      await rasterizeSvgToPng(inputPath)
     }
-    console.log(`  Android ${folder} (${px}px)`)
-  }
+    console.log(`app-icon: using source ${resolved.label}`)
 
-  console.log('app-icon: done')
+    const iosDir = path.join(
+      root,
+      'ios',
+      'ReactNativeStarter',
+      'Images.xcassets',
+      'AppIcon.appiconset',
+    )
+    fs.mkdirSync(iosDir, { recursive: true })
+
+    for (const slot of IOS_SLOTS) {
+      const buf = await renderIcon(inputPath, slot.px)
+      fs.writeFileSync(path.join(iosDir, slot.filename), buf)
+      console.log(`  iOS ${slot.filename} (${slot.px}px)`)
+    }
+
+    const contents = {
+      images: IOS_SLOTS.map(s => ({
+        idiom: s.idiom,
+        scale: s.scale,
+        size: s.size,
+        filename: s.filename,
+      })),
+      info: {
+        author: 'xcode',
+        version: 1,
+      },
+    }
+    fs.writeFileSync(
+      path.join(iosDir, 'Contents.json'),
+      `${JSON.stringify(contents, null, 2)}\n`,
+    )
+
+    const androidRes = path.join(root, 'android', 'app', 'src', 'main', 'res')
+    for (const { folder, px } of ANDROID_MAP) {
+      const dir = path.join(androidRes, folder)
+      fs.mkdirSync(dir, { recursive: true })
+      const buf = await renderIcon(inputPath, px)
+      for (const name of ['ic_launcher.png', 'ic_launcher_round.png']) {
+        fs.writeFileSync(path.join(dir, name), buf)
+      }
+      console.log(`  Android ${folder} (${px}px)`)
+    }
+
+    console.log('app-icon: done')
+  } finally {
+    if (resolved.cleanup) {
+      try {
+        fs.unlinkSync(inputPath)
+      } catch {
+        // ignore
+      }
+    }
+  }
 }
 
 main().catch(err => {

@@ -83,6 +83,3 @@ yarn-error.log
 .claude/settings.local.json
 .claude/agent-memory-local/
 
-# CLI-only splash scales (see scripts/bootsplash-generate.cjs)
-assets/bootsplash-generated/
-
